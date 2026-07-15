@@ -19,7 +19,7 @@ export type AlertSeverity = "info" | "warning" | "high" | "critical";
 export type BudgetStatus = "on_track" | "warning" | "high" | "critical" | "exceeded";
 export type ThemeMode = "system" | "light" | "dark";
 
-interface AuditFields {
+export interface AuditFields {
   [key: string]: unknown;
   created_at: string;
   updated_at: string;
