@@ -12,11 +12,11 @@
 
 **Project:** FinOS
 
-**Status:** Phase 1 scaffold implemented
+**Status:** Phase 1 complete and verified
 
 **Version:** 0.1.0
 
-**Current Phase:** Phase 1 - Project setup, routing, theme, layout and Supabase scaffold
+**Current Phase:** Phase 2 generated locally - pending Supabase SQL execution before Phase 3
 
 ------------------------------------------------------------------------
 
@@ -84,13 +84,23 @@ Reason: PostgreSQL, SQL, RLS and better relational modeling.
 
 ## ADR-003
 
+No Supabase Auth for v1.
+
+Reason: Product requirement is no authentication; Supabase is used only to persist app data remotely.
+
+Implication: RLS policies cannot rely on `auth.uid()` or authenticated user isolation. This is acceptable only for trusted/private deployment.
+
+------------------------------------------------------------------------
+
+## ADR-004
+
 Chart.js selected.
 
 Reason: Lightweight, flexible and sufficient for dashboard needs.
 
 ------------------------------------------------------------------------
 
-## ADR-004
+## ADR-005
 
 React + Vite.
 
@@ -141,14 +151,14 @@ Tasks:
 
 ## Phase 3 --- Database
 
-Status: ⏳ Pending
+Status: ✅ Generated locally
 
 Tasks:
 
--   Generate SQL package
--   Configure migrations
--   Apply RLS
--   Seed database
+-   Generated SQL package under `04_Database/`
+-   Added no-auth RLS policies for anonymous persistence
+-   Added seed data
+-   Pending execution against Supabase because local `psql` is unavailable
 
 ------------------------------------------------------------------------
 
@@ -171,12 +181,13 @@ Tasks:
 -   Documentation and implementation may diverge if not updated.
 -   Performance of dashboard queries must be monitored.
 -   Simulator must never affect production data.
+-   No-auth Supabase persistence is not a security boundary for public multi-user deployments.
 
 ------------------------------------------------------------------------
 
 # Open Questions
 
--   Will authentication remain disabled?
+-   Will the no-auth persistence model remain private/trusted deployment only?
 -   Will profiles eventually synchronize across devices?
 -   Will investments be included in v2?
 
@@ -234,13 +245,130 @@ PowerShell blocks direct `npm` execution through `npm.ps1`; use `npm.cmd`. Depen
 
 ------------------------------------------------------------------------
 
+## Session 003
+
+Date: 2026-07-14
+
+Completed:
+
+-   Installed dependencies successfully with `npm.cmd install`.
+-   Generated `package-lock.json`.
+-   Verified TypeScript with `npm.cmd run typecheck`.
+-   Verified production build with `npm.cmd run build`.
+-   Confirmed no Phase 1 code fixes were required after verification.
+
+Pending:
+
+-   Get approval before starting Phase 2 database work.
+
+Notes:
+
+Phase 1 implementation is now installed and verified in this Windows environment. Continue using `npm.cmd` for npm scripts in PowerShell.
+
+Decision update: user confirmed the app will not have authentication and Supabase will be used only for data persistence.
+
+------------------------------------------------------------------------
+
+## Session 004
+
+Date: 2026-07-14
+
+Completed:
+
+-   Started Phase 2 after user approval.
+-   Generated modular SQL package under `04_Database/` with extensions, enums, tables, indexes, constraints, functions, triggers, views, no-auth RLS policies and seed data.
+-   Added `04_Database/schema.sql` with ordered script includes.
+-   Added `04_Database/README.md` documenting execution order and no-auth persistence risk.
+-   Added typed database contract in `src/types/database.ts`.
+-   Typed the Supabase client with `Database`.
+-   Added typed query helpers in `src/supabase/queries.ts`.
+-   Verified `npm.cmd run typecheck` and `npm.cmd run build`.
+
+Pending:
+
+-   Execute the SQL package against a fresh Supabase project.
+-   Fix SQL runtime issues if Supabase reports any during execution.
+-   Get approval before starting Phase 3.
+
+Notes:
+
+Local `psql` is not installed in this Windows environment, so SQL syntax/runtime validation could not be executed locally. Phase 2 code artifacts are generated and TypeScript-valid.
+
+------------------------------------------------------------------------
+
+## Session 005
+
+Date: 2026-07-14
+
+Completed:
+
+-   Resumed from Phase 2 pending SQL execution.
+-   Confirmed `psql` is not installed locally.
+-   Confirmed Supabase CLI is not installed locally.
+-   Re-ran `npm.cmd run typecheck` successfully.
+-   Re-ran `npm.cmd run build` successfully.
+-   Updated `04_Database/README.md` with execution options for `psql`, Supabase CLI and Supabase SQL Editor.
+-   Updated `TODO.md` with the explicit tooling/dashboard prerequisite.
+
+Pending:
+
+-   Execute the SQL package against a fresh Supabase project using `psql`, Supabase CLI or Supabase SQL Editor.
+-   Fix SQL runtime issues if Supabase reports any during execution.
+-   Get approval before starting Phase 3.
+
+Notes:
+
+The project remains locally valid. The current blocker is external database execution, not TypeScript/build correctness.
+
+---
+
+## Session 006
+
+Date: 2026-07-14
+
+Completed:
+
+-   Executed SQL package (001-010) against Supabase via SQL Editor successfully (no errors).
+-   Started Phase 3 after user approval.
+-   Created `src/engine/` — deterministic TypeScript financial engine with modular calculations:
+    -   `cashflow.ts` — income, expenses, net cashflow, cashflow status
+    -   `liquidity.ts` — total available cash, liquidity ratio, liquidity level
+    -   `burnRate.ts` — daily burn rate, monthly prediction
+    -   `savingsRate.ts` — savings rate calculation and level
+    -   `debtRatio.ts` — debt/income ratio, total debt, ratio level
+    -   `budgetUsage.ts` — usage %, budget status, discipline score
+    -   `goalEta.ts` — estimated months remaining, progress %, goal score
+    -   `financialScore.ts` — 0-100 health score from 6 weighted components
+    -   `predictions.ts` — monthly expense/income/cashflow projections
+    -   `purchaseAdvisor.ts` — purchase evaluation with decision matrix
+    -   `types.ts` — shared engine types and interfaces
+    -   `index.ts` — unified re-exports
+-   Updated `src/supabase/queries.ts` — added query helpers for transactions, budgets, debts, debt payments, goals, alerts, categories.
+-   Created `src/services/dashboardService.ts` — aggregates Supabase data through engine calculations and produces full `DashboardData`.
+-   Created `src/features/dashboard/hooks/useDashboard.ts` — TanStack Query hook for dashboard data.
+-   Updated `DashboardPage.tsx` — replaces placeholders with live KPIs (cashflow, liquidity, score, debt ratio, burn rate, savings rate), score breakdown bars, and alert list.
+-   Verified `npm.cmd run typecheck` and `npm.cmd run build` pass.
+
+Pending:
+
+-   Implement remaining feature pages (transactions, budgets, debts, goals, etc.) with real hooks/services.
+-   Add Chart.js visualizations to dashboard.
+-   Implement simulator engine.
+-   Implement purchase advisor UI.
+
+Notes:
+
+Phase 3 engine is pure TypeScript, deterministic, no external dependencies beyond database types. All calculations mirror the SQL-side engine but operate on in-memory data fetched from Supabase.
+
+------------------------------------------------------------------------
+
 # Pending Decisions
 
 -   Final SQL implementation.
 -   CI/CD workflow.
 -   Testing framework details.
 -   Analytics integration.
--   Final authentication/RLS model because PRD says no authentication while database documentation requires authenticated RLS.
+-   Public/private deployment boundary for no-auth Supabase persistence.
 
 ------------------------------------------------------------------------
 
@@ -252,11 +380,11 @@ None.
 
 # Next Recommended Task
 
-1.  Generate SQL package.
-2.  Bootstrap React application.
-3.  Configure Supabase.
-4.  Build layout and routing.
-5.  Implement dashboard foundation.
+1.  Install/configure `psql` or Supabase CLI, or open the Supabase SQL Editor.
+2.  Execute the Phase 2 SQL package against a fresh Supabase project.
+3.  Fix any SQL runtime issues reported by Supabase.
+4.  Get approval before starting Phase 3.
+5.  Start deterministic financial engine implementation.
 
 ------------------------------------------------------------------------
 

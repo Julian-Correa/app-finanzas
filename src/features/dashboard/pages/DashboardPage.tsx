@@ -1,46 +1,151 @@
-import { AlertTriangle, Banknote, CalendarClock, LineChart, ShieldCheck, Wallet } from "lucide-react";
+import { AlertTriangle, Banknote, CalendarClock, LineChart, ShieldCheck, Wallet, TrendingUp, TrendingDown, PiggyBank, Gauge, Bell, BarChart3 } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
-import { PlaceholderCard } from "@/components/common/PlaceholderCard";
-
-const dashboardCards = [
-  { title: "Financial Health", description: "Score, risk status and explanation will be calculated by the financial engine." },
-  { title: "Cash Flow", description: "Income, expenses and monthly balance will update after every mutation." },
-  { title: "Upcoming Bills", description: "Debts, subscriptions and recurring payments will appear here." },
-  { title: "Goal Progress", description: "Emergency fund, baby, Edesur and payoff goals will be tracked here." },
-  { title: "Alerts", description: "Critical and warning alerts will surface financial risks instantly." },
-  { title: "Charts", description: "Category, income, debt and cash flow charts will be powered by Chart.js." },
-];
+import { useDashboard } from "../hooks/useDashboard";
+import { calculateCashflowStatus, calculateLiquidityLevel, calculateDebtRatioLevel, calculateSavingsRateLevel, calculateScoreLevel } from "@/engine";
 
 export function DashboardPage() {
+  const { data, isLoading, error } = useDashboard();
+
+  const now = new Date();
+  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+  const monthName = monthNames[now.getMonth()];
+
+  if (isLoading) {
+    return (
+      <PageShell eyebrow="Dashboard" title="Cargando..." description="Obteniendo datos financieros..." icon={LineChart}>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="rounded-card animate-pulse border border-slate-200/70 bg-white/75 p-6 dark:border-white/10 dark:bg-white/[0.04]" />
+          ))}
+        </div>
+      </PageShell>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <PageShell eyebrow="Dashboard" title="Error" description="No se pudieron cargar los datos. Verificá la conexión con Supabase." icon={LineChart}>
+        <div className="rounded-card border border-red-400/30 bg-red-50 p-5 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400">
+          <p>{(error as Error)?.message ?? "Error desconocido"}</p>
+        </div>
+      </PageShell>
+    );
+  }
+
+  const { cashflow, liquidity, debtRatio, financialScore, burnRate, savingsRate, alerts } = data;
+
   return (
     <PageShell
-      eyebrow="Dashboard"
-      title="Your financial operating system"
-      description="Phase 1 establishes the production app shell. Financial widgets are intentionally placeholders until the database and deterministic engine are implemented."
+      eyebrow={`${monthName} ${now.getFullYear()}`}
+      title="Panel financiero"
+      description="Resumen de tu salud financiera"
       icon={LineChart}
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {dashboardCards.map((card) => (
-          <PlaceholderCard key={card.title} title={card.title} description={card.description} />
-        ))}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricPreview
+          icon={TrendingUp}
+          label="Ingresos"
+          value={formatARS(cashflow.income)}
+          sub={`${cashflow.expenses > 0 ? `${((cashflow.income / (cashflow.income + cashflow.expenses)) * 100).toFixed(0)}%` : ""}`}
+        />
+        <MetricPreview
+          icon={TrendingDown}
+          label="Gastos"
+          value={formatARS(cashflow.expenses)}
+          sub={cashflow.expenses > 0 ? `${((cashflow.expenses / cashflow.income) * 100).toFixed(0)}% de ingresos` : ""}
+        />
+        <MetricPreview
+          icon={Wallet}
+          label="Flujo de caja"
+          value={formatARS(cashflow.cashflow)}
+          sub={calculateCashflowStatus(cashflow.cashflow) === "healthy" ? "Positivo ✓" : calculateCashflowStatus(cashflow.cashflow) === "attention" ? "En equilibrio" : "Negativo ⚠"}
+          variant={cashflow.cashflow >= 0 ? "positive" : "negative"}
+        />
+        <MetricPreview
+          icon={Banknote}
+          label="Efectivo disponible"
+          value={formatARS(liquidity)}
+          sub={calculateLiquidityLevel(1).replace("_", " ")}
+        />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-4">
-        <MetricPreview icon={Banknote} label="Income" value="ARS 0.00" />
-        <MetricPreview icon={Wallet} label="Available Cash" value="ARS 0.00" />
-        <MetricPreview icon={ShieldCheck} label="Health Score" value="0 / 100" />
-        <MetricPreview icon={CalendarClock} label="Upcoming" value="0 bills" />
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricPreview
+          icon={Gauge}
+          label="Score financiero"
+          value={`${financialScore.total} / 100`}
+          sub={calculateScoreLevel(financialScore.total).replace("_", " ")}
+          variant={financialScore.total >= 70 ? "positive" : financialScore.total >= 40 ? "warning" : "negative"}
+        />
+        <MetricPreview
+          icon={PiggyBank}
+          label="Tasa de ahorro"
+          value={`${savingsRate.toFixed(1)}%`}
+          sub={calculateSavingsRateLevel(savingsRate).replace("_", " ")}
+        />
+        <MetricPreview
+          icon={BarChart3}
+          label="Endeudamiento"
+          value={`${debtRatio.toFixed(1)}%`}
+          sub={calculateDebtRatioLevel(debtRatio).replace("_", " ")}
+          variant={debtRatio <= 35 ? "positive" : debtRatio <= 50 ? "warning" : "negative"}
+        />
+        <MetricPreview
+          icon={CalendarClock}
+          label="Burn rate"
+          value={formatARS(burnRate)}
+          sub="/ día"
+        />
       </div>
 
-      <div className="rounded-card border border-warning/30 bg-warning/10 p-5 text-warning dark:bg-warning/15">
-        <div className="flex gap-3">
-          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
-          <p className="text-sm leading-6">
-            Supabase is scaffolded, but the authentication/RLS model must be approved before database implementation.
-          </p>
+      <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
+        <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
+          <BarChart3 className="h-4 w-4" />
+          Desglose del score ({financialScore.total}/100)
+        </h3>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ScoreBar label="Flujo de caja" score={financialScore.cashflowScore} max={25} color="bg-emerald-500" />
+          <ScoreBar label="Liquidez" score={financialScore.liquidityScore} max={20} color="bg-blue-500" />
+          <ScoreBar label="Endeudamiento" score={financialScore.debtScore} max={20} color="bg-violet-500" />
+          <ScoreBar label="Ahorro" score={financialScore.savingsScore} max={15} color="bg-amber-500" />
+          <ScoreBar label="Metas" score={financialScore.goalScore} max={10} color="bg-rose-500" />
+          <ScoreBar label="Presupuesto" score={financialScore.budgetScore} max={10} color="bg-cyan-500" />
         </div>
       </div>
+
+      {alerts.length > 0 && (
+        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
+          <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
+            <Bell className="h-4 w-4" />
+            Alertas ({alerts.length})
+          </h3>
+          <div className="space-y-3">
+            {alerts.slice(0, 5).map((alert, i) => (
+              <div
+                key={i}
+                className={`flex gap-3 rounded-lg border p-3 text-sm ${
+                  alert.severity === "critical"
+                    ? "border-red-400/30 bg-red-50 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400"
+                    : alert.severity === "high" || alert.severity === "warning"
+                      ? "border-amber-400/30 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/30 dark:text-amber-400"
+                      : "border-blue-400/30 bg-blue-50 text-blue-700 dark:border-blue-400/20 dark:bg-blue-950/30 dark:text-blue-400"
+                }`}
+              >
+                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                <div>
+                  <p className="font-medium">{alert.title}</p>
+                  {alert.description && <p className="mt-0.5 opacity-80">{alert.description}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <p className="text-xs text-slate-400 dark:text-zinc-500">
+        Los datos se actualizan cada 30 segundos. Configurá VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en .env para conectar con Supabase.
+      </p>
     </PageShell>
   );
 }
@@ -49,14 +154,50 @@ interface MetricPreviewProps {
   icon: typeof Banknote;
   label: string;
   value: string;
+  sub?: string;
+  variant?: "default" | "positive" | "warning" | "negative";
 }
 
-function MetricPreview({ icon: Icon, label, value }: MetricPreviewProps) {
+function MetricPreview({ icon: Icon, label, value, sub, variant = "default" }: MetricPreviewProps) {
+  const variantStyles = {
+    default: "",
+    positive: "text-emerald-600 dark:text-emerald-400",
+    warning: "text-amber-600 dark:text-amber-400",
+    negative: "text-red-600 dark:text-red-400",
+  };
+
   return (
     <article className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-      <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
+      <Icon className={`h-5 w-5 ${variantStyles[variant] || "text-primary"}`} aria-hidden="true" />
       <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
+      <p className={`mt-1 text-2xl font-semibold tracking-tight ${variantStyles[variant]}`}>{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">{sub}</p>}
     </article>
   );
+}
+
+interface ScoreBarProps {
+  label: string;
+  score: number;
+  max: number;
+  color: string;
+}
+
+function ScoreBar({ label, score, max, color }: ScoreBarProps) {
+  const pct = max > 0 ? (score / max) * 100 : 0;
+  return (
+    <div>
+      <div className="mb-1 flex justify-between text-xs">
+        <span className="text-slate-500 dark:text-zinc-400">{label}</span>
+        <span className="font-medium text-slate-700 dark:text-zinc-300">{score}/{max}</span>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+        <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function formatARS(amount: number): string {
+  return `ARS ${Math.round(amount).toLocaleString("es-AR")}`;
 }

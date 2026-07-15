@@ -193,7 +193,9 @@ Split code when limits are exceeded.
 
 -   PostgreSQL (Supabase)
 -   UUID primary keys
--   RLS enabled
+-   No Supabase Auth in v1
+-   Supabase used only for persistence
+-   Do not use `auth.uid()` in v1 policies
 -   Soft delete
 -   Referential integrity
 -   No duplicated data

@@ -101,8 +101,8 @@ Every table must include:
 -   created_at
 -   updated_at
 -   deleted_at
--   created_by
--   updated_by
+-   created_by_profile_id
+-   updated_by_profile_id
 
 Use foreign keys everywhere appropriate.
 
@@ -227,15 +227,19 @@ Views should avoid unnecessary joins.
 
 # 009_rls.sql
 
-Enable Row Level Security on every table.
+Generate security policies for the no-auth persistence model.
 
 Policies:
 
-Users can only access their own profile.
+Do not use Supabase Auth.
 
-Support future shared household profiles.
+Do not use `auth.uid()`.
 
-No anonymous write access.
+Anonymous client read/write access is required for browser-based Supabase persistence.
+
+Document clearly that `profile_id` filtering is an application-level filter, not a security boundary.
+
+Keep the SQL easy to replace if authenticated household profiles are introduced later.
 
 Document every policy.
 
@@ -334,7 +338,9 @@ Target dashboard queries below 100ms.
 
 # Security
 
-Enable RLS.
+Do not assume authenticated RLS.
+
+Document the no-auth persistence tradeoff in SQL comments.
 
 Validate every input.
 

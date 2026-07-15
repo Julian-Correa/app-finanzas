@@ -497,17 +497,19 @@ priority
 
 ------------------------------------------------------------------------
 
-# Row Level Security
+# Security Model
 
-Enable RLS on every table.
+FinOS v1 does not use authentication.
 
-Policies:
+Supabase is used as a remote persistence database only.
 
-Only authenticated users.
+Policies must not depend on `auth.uid()`.
 
-Profiles can only access their own data.
+The app-level profile selector filters data by `profile_id`, but this is not a security boundary.
 
-Future-ready for shared household accounts.
+If RLS is enabled, policies must explicitly allow the anonymous persistence model required by the client app and document that this is suitable only for trusted/private deployment.
+
+Future authenticated or shared household accounts require a new migration and updated policies.
 
 ------------------------------------------------------------------------
 
@@ -529,9 +531,9 @@ created_at
 
 updated_at
 
-created_by
+created_by_profile_id
 
-updated_by
+updated_by_profile_id
 
 ------------------------------------------------------------------------
 

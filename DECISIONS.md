@@ -16,12 +16,14 @@ Decision: Supabase client configuration lives under `src/supabase`; UI component
 
 Reason: Preserves Clean Architecture and keeps UI presentation-only.
 
-## ADR-003 - Authentication/RLS Blocker
+## ADR-003 - No Authentication Persistence Model
 
-Status: Pending
+Status: Accepted
 
-Decision: No final decision yet.
+Decision: FinOS will not use Supabase Auth. Supabase is used only as a remote persistence database for the app data.
 
-Problem: PRD says no authentication, while database documentation requires authenticated RLS and no anonymous write access.
+Implication: Database access from the client must use the public anon key, so SQL policies cannot depend on `auth.uid()` and cannot provide per-user isolation.
 
-Recommendation: Resolve before generating SQL or implementing data services.
+Risk: This model is appropriate only for a trusted/private deployment. If the app is publicly deployed, anyone with access to the anon key and allowed policies could read or write persisted data.
+
+Implementation: Phase 2 SQL must avoid authenticated RLS assumptions. If RLS is enabled, policies must explicitly support the anonymous persistence model and document the tradeoff.

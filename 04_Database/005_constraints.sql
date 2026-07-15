@@ -1,0 +1,38 @@
+-- Data integrity constraints.
+alter table profiles add constraint profiles_name_not_blank check (btrim(name) <> '');
+alter table accounts add constraint accounts_name_not_blank check (btrim(name) <> '');
+alter table accounts add constraint accounts_currency_ars check (currency = 'ARS');
+alter table accounts add constraint accounts_balance_non_negative_unless_overdraft check (allow_overdraft or current_balance >= 0);
+alter table categories add constraint categories_name_not_blank check (btrim(name) <> '');
+alter table categories add constraint categories_not_self_parent check (parent_id is null or parent_id <> id);
+alter table transactions add constraint transactions_amount_positive check (amount > 0);
+alter table transactions add constraint transactions_description_not_blank check (btrim(description) <> '');
+alter table transactions add constraint transactions_future_date_requires_recurring check (date <= current_date or is_recurring is true);
+alter table debts add constraint debts_original_amount_positive check (original_amount > 0);
+alter table debts add constraint debts_remaining_amount_non_negative check (remaining_amount >= 0);
+alter table debts add constraint debts_installment_amount_non_negative check (installment_amount >= 0);
+alter table debts add constraint debts_installments_total_non_negative check (installments_total >= 0);
+alter table debts add constraint debts_installments_left_non_negative check (installments_left >= 0);
+alter table debts add constraint debts_interest_rate_non_negative check (interest_rate >= 0);
+alter table debts add constraint debts_due_day_valid check (due_day is null or due_day between 1 and 31);
+alter table debt_payments add constraint debt_payments_amount_positive check (amount > 0);
+alter table budgets add constraint budgets_month_valid check (month between 1 and 12);
+alter table budgets add constraint budgets_year_valid check (year between 2000 and 2100);
+alter table budgets add constraint budgets_limit_amount_positive check (limit_amount > 0);
+alter table budgets add constraint budgets_spent_amount_non_negative check (spent_amount >= 0);
+alter table goals add constraint goals_target_amount_positive check (target_amount > 0);
+alter table goals add constraint goals_current_amount_non_negative check (current_amount >= 0);
+alter table goals add constraint goals_current_amount_within_target check (current_amount <= target_amount);
+alter table goals add constraint goals_monthly_target_non_negative check (monthly_target >= 0);
+alter table goal_contributions add constraint goal_contributions_amount_positive check (amount > 0);
+alter table monthly_snapshots add constraint monthly_snapshots_month_valid check (month between 1 and 12);
+alter table monthly_snapshots add constraint monthly_snapshots_year_valid check (year between 2000 and 2100);
+alter table monthly_snapshots add constraint monthly_snapshots_score_valid check (financial_score between 0 and 100);
+alter table settings add constraint settings_currency_ars check (currency = 'ARS');
+alter table settings add constraint settings_language_not_blank check (btrim(language) <> '');
+
+create unique index if not exists uq_profiles_active_name on profiles(lower(name)) where deleted_at is null;
+create unique index if not exists uq_accounts_profile_name on accounts(profile_id, lower(name)) where deleted_at is null;
+create unique index if not exists uq_categories_parent_name_type on categories(coalesce(parent_id, '00000000-0000-0000-0000-000000000000'::uuid), lower(name), type) where deleted_at is null;
+create unique index if not exists uq_budgets_profile_category_period on budgets(profile_id, category_id, month, year) where deleted_at is null;
+create unique index if not exists uq_monthly_snapshots_profile_period on monthly_snapshots(profile_id, month, year) where deleted_at is null;
