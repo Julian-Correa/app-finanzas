@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phase 3 — Deterministic financial engine implemented. Dashboard connected. Pending remaining feature pages and Chart.js visualizations.
+All 12 feature pages implemented. Application feature-complete for v0.1.0.
 
 ## Completed
 
@@ -34,16 +34,20 @@ Phase 3 — Deterministic financial engine implemented. Dashboard connected. Pen
 -   Updated `DashboardPage.tsx` — live KPIs, score breakdown, alerts.
 -   Verified typecheck and build pass.
 
-## Immediate TODO
+### Phase 4-8 - Feature Pages
+-   TransactionsPage: list, search, filters, create/edit/delete with modal forms.
+-   BudgetsPage: per-category cards with progress bars, totals, add/edit.
+-   DebtsPage: expandable cards, payment tracking, register payments.
+-   GoalsPage: expandable cards, contributions, ETA, progress bars.
+-   ReportsPage: Chart.js bar, doughnut, line charts; period selector; summary table.
+-   SimulatorPage: scenario-based what-if engine with sliders (never writes to DB).
+-   PurchaseAdvisorPage: price/installment evaluation with decision matrix.
+-   TimelinePage: vertical monthly timeline with income/expenses/debts.
+-   CalendarPage: monthly grid with financial events per day.
 
--   Add `.env` file with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.
--   Implement remaining feature pages with real hooks/services:
-    -   Transactions page (list, create, edit)
-    -   Budgets page (progress, management)
-    -   Debts page (tracking, payments)
-    -   Goals page (progress, contributions)
-    -   Reports page (Chart.js visualizations)
--   Add Chart.js visualizations to dashboard.
--   Implement simulator engine (scenario-based, never writes to DB).
--   Implement purchase advisor UI.
--   Add Timeline and Calendar views.
+## Future / Optional
+-   Code-split large JS bundle (~850 kB) with dynamic imports or rollup manual chunks.
+-   Add unit tests for engine functions (pure, deterministic).
+-   Add integration tests for services.
+-   Polish UI animations and transitions.
+-   Review and optimize dashboard query performance.

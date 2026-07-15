@@ -16,7 +16,7 @@
 
 **Version:** 0.1.0
 
-**Current Phase:** Phase 2 generated locally - pending Supabase SQL execution before Phase 3
+**Current Phase:** Phase 4-8 complete — All feature pages implemented. Application feature-complete for v0.1.0.
 
 ------------------------------------------------------------------------
 
@@ -162,16 +162,21 @@ Tasks:
 
 ------------------------------------------------------------------------
 
-## Phase 4 --- Core Engine
+## Phase 4 --- Feature Pages
 
-Status: ⏳ Pending
+Status: ✅ Complete
 
 Tasks:
 
--   Financial calculations
--   Dashboard services
--   Prediction engine
--   Alerts
+-   Transactions page (list, create, edit, delete) ✅
+-   Budgets page (progress, management) ✅
+-   Debts page (tracking, payments) ✅
+-   Goals page (progress, contributions) ✅
+-   Reports page (Chart.js visualizations) ✅
+-   Simulator page (scenario engine, never writes to DB) ✅
+-   Purchase Advisor page (purchase evaluation UI) ✅
+-   Timeline page (monthly financial flow) ✅
+-   Calendar page (monthly event grid) ✅
 
 ------------------------------------------------------------------------
 
@@ -360,6 +365,52 @@ Notes:
 
 Phase 3 engine is pure TypeScript, deterministic, no external dependencies beyond database types. All calculations mirror the SQL-side engine but operate on in-memory data fetched from Supabase.
 
+---
+
+## Session 007
+
+Date: 2026-07-14
+
+Completed:
+
+-   Implemented TransactionsPage with full CRUD (list, search, filter, create/edit modal).
+-   Implemented BudgetsPage with progress bars, per-category cards, total summary.
+-   Implemented DebtsPage with expandable cards, payment tracking, payment form.
+-   Implemented GoalsPage with expandable cards, contributions, ETA, progress.
+-   Implemented ReportsPage with Chart.js visualizations (bar, doughnut, line charts).
+-   Added mutation queries to `src/supabase/queries.ts` for all entities (create, update, soft-delete).
+-   Created typed services (`transactionsService`, `budgetsService`, `debtsService`, `goalsService`, `reportsService`).
+-   Created TanStack Query hooks for each feature.
+-   Updated PROJECT_MEMORY.md, TODO.md, CHANGELOG.md.
+-   Verified `npm.cmd run typecheck` and `npm.cmd run build` pass.
+
+Pending:
+-   Implement SimulatorPage, PurchaseAdvisorPage, TimelinePage, CalendarPage.
+
+---
+
+## Session 008
+
+Date: 2026-07-14
+
+Completed:
+
+-   Implemented SimulatorPage with scenario-based what-if engine (sliders for income, expenses, liquidity, debt; baseline vs projected comparison; score breakdown).
+-   Implemented PurchaseAdvisorPage with price input, installment selector, engine-based evaluation (decision yes/wait/no, risk level, financial impact breakdown, reasons).
+-   Implemented TimelinePage with vertical monthly timeline of transactions, budgets, and debt due dates (month navigation).
+-   Implemented CalendarPage with monthly grid calendar displaying income, expenses, debt due dates, and goal deadlines per day.
+-   Created services (`simulatorService`, `purchaseAdvisorService`) and TanStack Query hooks.
+-   Simulator explicitly never writes to database (in-memory projections only).
+-   Verified `npm.cmd run typecheck` and `npm.cmd run build` pass.
+
+Pending:
+-   No pending feature pages. All core FinOS modules are implemented.
+-   Optional: code-split large bundles, add tests, polish UI animations.
+
+Notes:
+
+All 12 FinOS feature pages are now implemented with real hooks, services, and UI. The application is feature-complete for v0.1.0.
+
 ------------------------------------------------------------------------
 
 # Pending Decisions
@@ -380,11 +431,12 @@ None.
 
 # Next Recommended Task
 
-1.  Install/configure `psql` or Supabase CLI, or open the Supabase SQL Editor.
-2.  Execute the Phase 2 SQL package against a fresh Supabase project.
-3.  Fix any SQL runtime issues reported by Supabase.
-4.  Get approval before starting Phase 3.
-5.  Start deterministic financial engine implementation.
+1.  Code-split large JS bundle (~850 kB) with dynamic imports or rollup manual chunks.
+2.  Add unit tests for engine functions (pure, deterministic).
+3.  Add integration tests for services.
+4.  Polish UI animations and transitions.
+5.  Review and optimize dashboard query performance.
+6.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
 
 ------------------------------------------------------------------------
 
