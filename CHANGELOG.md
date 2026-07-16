@@ -4,6 +4,9 @@
 
 ### Added
 
+-   Reusable shimmer loading skeletons via `Skeleton` and `SkeletonCard` components.
+-   Scroll-triggered reveal animations with `whileInView` support in shared motion components.
+-   Dashboard KPI count-up animations and animated financial score bars.
 -   UI animations: Framer Motion integration with `PageTransition`, `MotionCard`, `StaggerContainer`, and `ModalWrapper` components.
 -   Route transitions via `AnimatePresence` in `AppLayout` — fade+slide between pages.
 -   Entrance animations (fade-in-up + stagger) on all 12 feature pages: cards, lists, metrics.
@@ -32,12 +35,15 @@
 
 ### Fixed
 
+-   Dashboard loading now uses the aggregated Supabase RPC `generate_dashboard` instead of composing multiple raw data fetches on the client.
+-   Dashboard debt ratio source was corrected as part of the RPC-backed load path.
 -   Timezone-dependent date parsing in engine: replaced `new Date(t.date).getMonth()` with manual string split to avoid UTC-to-local timezone shift that caused incorrect month matching in GMT-3 (Argentina). Affected `calculateCashflow`, `calculateDebtRatio`, and `calculateMonthlyPrediction`.
 
 ### Verified
 
 -   `npm.cmd run typecheck` passes.
 -   `npm.cmd run build` passes.
+-   `npm.cmd test -- --run` passes (`110` tests).
 
 ### Notes
 
