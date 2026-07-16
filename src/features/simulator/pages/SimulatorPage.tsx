@@ -2,6 +2,7 @@ import { Beaker, TrendingUp, TrendingDown, Wallet, Gauge, PiggyBank, BarChart3, 
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
+import { SkeletonCard } from "@/components/common/Skeleton";
 import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { useSimulator, useSimulation } from "@/features/simulator/hooks/useSimulator";
@@ -37,7 +38,7 @@ export function SimulatorPage() {
       <PageShell eyebrow="Simulador" title="Cargando..." description="Preparando simulador..." icon={Beaker}>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-card animate-pulse border border-slate-200/70 bg-white/75 p-6 dark:border-white/10 dark:bg-white/[0.04]" />
+            <SkeletonCard key={i} className="p-6" />
           ))}
         </div>
       </PageShell>

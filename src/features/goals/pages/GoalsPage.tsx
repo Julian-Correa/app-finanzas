@@ -3,6 +3,7 @@ import { Target, Plus, X, PiggyBank, ChevronDown, ChevronUp } from "lucide-react
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
+import { SkeletonCard } from "@/components/common/Skeleton";
 import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { ModalWrapper } from "@/components/common/ModalWrapper";
@@ -49,7 +50,7 @@ export function GoalsPage() {
       <PageShell eyebrow="Metas" title="Cargando..." description="Obteniendo tus metas..." icon={Target}>
         <div className="space-y-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-card animate-pulse border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]" />
+            <SkeletonCard key={i} />
           ))}
         </div>
       </PageShell>

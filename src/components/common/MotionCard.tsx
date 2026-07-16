@@ -21,6 +21,8 @@ interface MotionCardProps {
   children: ReactNode;
   className?: string;
   hover?: "lift" | "glow" | "none";
+  reveal?: "inherit" | "scroll";
+  viewportAmount?: number;
   [key: string]: unknown;
 }
 
@@ -29,6 +31,8 @@ export function MotionCard({
   children,
   className,
   hover = "lift",
+  reveal = "inherit",
+  viewportAmount = 0.15,
   ...props
 }: MotionCardProps) {
   const hoverAnimation =
@@ -41,6 +45,9 @@ export function MotionCard({
   return (
     <motion.div
       variants={cardVariants}
+      initial={reveal === "scroll" ? "hidden" : undefined}
+      whileInView={reveal === "scroll" ? "visible" : undefined}
+      viewport={reveal === "scroll" ? { once: true, amount: viewportAmount } : undefined}
       whileHover={hoverAnimation}
       transition={{ type: "spring" as const, stiffness: 400, damping: 25 }}
       className={className}

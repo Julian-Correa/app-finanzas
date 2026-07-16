@@ -121,13 +121,19 @@ export async function fetchGoals(profileId: string): Promise<Tables<"goals">[]> 
   return data;
 }
 
-export async function fetchAlerts(profileId: string): Promise<Tables<"alerts">[]> {
-  const { data, error } = await getSupabaseClient()
+export async function fetchAlerts(profileId: string, limit?: number): Promise<Tables<"alerts">[]> {
+  let query = getSupabaseClient()
     .from("alerts")
     .select("*")
     .eq("profile_id", profileId)
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
+
+  if (limit !== undefined) {
+    query = query.limit(limit);
+  }
+
+  const { data, error } = await query;
 
   if (error) throw error;
   return data;

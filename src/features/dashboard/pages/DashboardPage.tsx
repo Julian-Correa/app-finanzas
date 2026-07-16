@@ -1,7 +1,10 @@
-import { AlertTriangle, Banknote, CalendarClock, LineChart, ShieldCheck, Wallet, TrendingUp, TrendingDown, PiggyBank, Gauge, Bell, BarChart3 } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { AlertTriangle, Banknote, CalendarClock, LineChart, Wallet, TrendingUp, TrendingDown, PiggyBank, Gauge, Bell, BarChart3 } from "lucide-react";
+import { motion, useInView, useMotionValue, useMotionValueEvent, useSpring } from "framer-motion";
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
+import { SkeletonCard } from "@/components/common/Skeleton";
 import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { useDashboard } from "../hooks/useDashboard";
@@ -19,7 +22,7 @@ export function DashboardPage() {
       <PageShell eyebrow="Dashboard" title="Cargando..." description="Obteniendo datos financieros..." icon={LineChart}>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-card animate-pulse border border-slate-200/70 bg-white/75 p-6 dark:border-white/10 dark:bg-white/[0.04]" />
+            <SkeletonCard key={i} className="p-6" />
           ))}
         </div>
       </PageShell>
@@ -37,6 +40,7 @@ export function DashboardPage() {
   }
 
   const { cashflow, liquidity, debtRatio, financialScore, burnRate, savingsRate, alerts } = data;
+  const liquidityLevel = calculateLiquidityLevel(cashflow.expenses <= 0 ? 999 : liquidity / cashflow.expenses);
 
   return (
     <PageTransition>
@@ -51,7 +55,7 @@ export function DashboardPage() {
             <MetricPreview
               icon={TrendingUp}
               label="Ingresos"
-              value={formatARS(cashflow.income)}
+              value={<CountUpNumber value={cashflow.income} prefix="ARS " />}
               sub={`${cashflow.expenses > 0 ? `${((cashflow.income / (cashflow.income + cashflow.expenses)) * 100).toFixed(0)}%` : ""}`}
             />
           </MotionCard>
@@ -59,7 +63,7 @@ export function DashboardPage() {
             <MetricPreview
               icon={TrendingDown}
               label="Gastos"
-              value={formatARS(cashflow.expenses)}
+              value={<CountUpNumber value={cashflow.expenses} prefix="ARS " />}
               sub={cashflow.expenses > 0 ? `${((cashflow.expenses / cashflow.income) * 100).toFixed(0)}% de ingresos` : ""}
             />
           </MotionCard>
@@ -67,7 +71,7 @@ export function DashboardPage() {
             <MetricPreview
               icon={Wallet}
               label="Flujo de caja"
-              value={formatARS(cashflow.cashflow)}
+              value={<CountUpNumber value={cashflow.cashflow} prefix="ARS " />}
               sub={calculateCashflowStatus(cashflow.cashflow) === "healthy" ? "Positivo ✓" : calculateCashflowStatus(cashflow.cashflow) === "attention" ? "En equilibrio" : "Negativo ⚠"}
               variant={cashflow.cashflow >= 0 ? "positive" : "negative"}
             />
@@ -76,8 +80,8 @@ export function DashboardPage() {
             <MetricPreview
               icon={Banknote}
               label="Efectivo disponible"
-              value={formatARS(liquidity)}
-              sub={calculateLiquidityLevel(1).replace("_", " ")}
+              value={<CountUpNumber value={liquidity} prefix="ARS " />}
+              sub={liquidityLevel.replace("_", " ")}
             />
           </MotionCard>
         </StaggerContainer>
@@ -87,7 +91,7 @@ export function DashboardPage() {
             <MetricPreview
               icon={Gauge}
               label="Score financiero"
-              value={`${financialScore.total} / 100`}
+              value={<><CountUpNumber value={financialScore.total} /> / 100</>}
               sub={calculateScoreLevel(financialScore.total).replace("_", " ")}
               variant={financialScore.total >= 70 ? "positive" : financialScore.total >= 40 ? "warning" : "negative"}
             />
@@ -96,7 +100,7 @@ export function DashboardPage() {
             <MetricPreview
               icon={PiggyBank}
               label="Tasa de ahorro"
-              value={`${savingsRate.toFixed(1)}%`}
+              value={<CountUpNumber value={savingsRate} decimals={1} suffix="%" />}
               sub={calculateSavingsRateLevel(savingsRate).replace("_", " ")}
             />
           </MotionCard>
@@ -104,7 +108,7 @@ export function DashboardPage() {
             <MetricPreview
               icon={BarChart3}
               label="Endeudamiento"
-              value={`${debtRatio.toFixed(1)}%`}
+              value={<CountUpNumber value={debtRatio} decimals={1} suffix="%" />}
               sub={calculateDebtRatioLevel(debtRatio).replace("_", " ")}
               variant={debtRatio <= 35 ? "positive" : debtRatio <= 50 ? "warning" : "negative"}
             />
@@ -113,13 +117,13 @@ export function DashboardPage() {
             <MetricPreview
               icon={CalendarClock}
               label="Burn rate"
-              value={formatARS(burnRate)}
+              value={<CountUpNumber value={burnRate} prefix="ARS " />}
               sub="/ día"
             />
           </MotionCard>
         </StaggerContainer>
 
-        <MotionCard hover="none">
+        <MotionCard hover="none" reveal="scroll">
           <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
               <BarChart3 className="h-4 w-4" />
@@ -137,7 +141,7 @@ export function DashboardPage() {
         </MotionCard>
 
         {alerts.length > 0 && (
-          <MotionCard hover="none">
+          <MotionCard hover="none" reveal="scroll">
             <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
               <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
                 <Bell className="h-4 w-4" />
@@ -178,7 +182,7 @@ export function DashboardPage() {
 interface MetricPreviewProps {
   icon: typeof Banknote;
   label: string;
-  value: string;
+  value: ReactNode;
   sub?: string;
   variant?: "default" | "positive" | "warning" | "negative";
 }
@@ -217,12 +221,52 @@ function ScoreBar({ label, score, max, color }: ScoreBarProps) {
         <span className="font-medium text-slate-700 dark:text-zinc-300">{score}/{max}</span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
-        <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
+        <motion.div
+          className={`h-full rounded-full ${color}`}
+          initial={{ width: 0 }}
+          whileInView={{ width: `${pct}%` }}
+          viewport={{ once: true, amount: 0.8 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        />
       </div>
     </div>
   );
 }
 
-function formatARS(amount: number): string {
-  return `ARS ${Math.round(amount).toLocaleString("es-AR")}`;
+interface CountUpNumberProps {
+  value: number;
+  decimals?: number;
+  prefix?: string;
+  suffix?: string;
+}
+
+function CountUpNumber({ value, decimals = 0, prefix = "", suffix = "" }: CountUpNumberProps) {
+  const ref = useRef<HTMLSpanElement | null>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.6 });
+  const motionValue = useMotionValue(0);
+  const springValue = useSpring(motionValue, {
+    stiffness: 110,
+    damping: 24,
+    mass: 0.9,
+  });
+  const [display, setDisplay] = useState(() => formatCountUp(0, decimals, prefix, suffix));
+
+  useEffect(() => {
+    if (!isInView) return;
+    motionValue.set(value);
+  }, [isInView, motionValue, value]);
+
+  useMotionValueEvent(springValue, "change", (latest) => {
+    setDisplay(formatCountUp(latest, decimals, prefix, suffix));
+  });
+
+  return <span ref={ref}>{display}</span>;
+}
+
+function formatCountUp(value: number, decimals: number, prefix: string, suffix: string) {
+  const rounded = decimals > 0 ? Number(value.toFixed(decimals)) : Math.round(value);
+  return `${prefix}${rounded.toLocaleString("es-AR", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  })}${suffix}`;
 }

@@ -1,46 +1,68 @@
 import {
-  fetchAccounts,
-  fetchTransactions,
+  fetchDashboardOverview,
   fetchBudgets,
-  fetchDebts,
-  fetchDebtPayments,
   fetchGoals,
   fetchAlerts,
 } from "@/supabase/queries";
 import {
-  calculateCashflow,
-  calculateLiquidity,
-  calculateLiquidityRatio,
-  calculateDebtRatio,
   calculateBudgetDiscipline,
   calculateGoalScore,
   calculateFinancialScore,
   calculateBurnRate,
   calculateSavingsRate,
   calculateMonthlyPrediction,
+  calculateLiquidityRatio,
 } from "@/engine";
 import type { DashboardData } from "@/engine/types";
+import type { Json } from "@/types/database";
+
+interface DashboardOverviewPayload {
+  cashflow?: {
+    income?: number;
+    expenses?: number;
+    cashflow?: number;
+  } | null;
+  liquidity?: number | string | null;
+  debt_ratio?: number | string | null;
+}
+
+function parseDashboardOverview(overview: Json): {
+  cashflow: Required<DashboardData>["cashflow"];
+  liquidity: number;
+  debtRatio: number;
+} {
+  const payload =
+    overview && typeof overview === "object" && !Array.isArray(overview)
+      ? (overview as DashboardOverviewPayload)
+      : {};
+
+  return {
+    cashflow: {
+      income: Number(payload.cashflow?.income ?? 0),
+      expenses: Number(payload.cashflow?.expenses ?? 0),
+      cashflow: Number(payload.cashflow?.cashflow ?? 0),
+    },
+    liquidity: Number(payload.liquidity ?? 0),
+    debtRatio: Number(payload.debt_ratio ?? 0),
+  };
+}
 
 export async function getDashboardData(
   profileId: string,
   month: number,
   year: number
 ): Promise<DashboardData> {
-  const [accounts, transactions, budgets, debts, debtPayments, goals, alerts] =
+  const [overview, budgets, goals, alerts] =
     await Promise.all([
-      fetchAccounts(profileId),
-      fetchTransactions(profileId, month, year),
+      fetchDashboardOverview(profileId, month, year),
       fetchBudgets(profileId, month, year),
-      fetchDebts(profileId),
-      fetchDebtPayments(""),
       fetchGoals(profileId),
-      fetchAlerts(profileId),
+      fetchAlerts(profileId, 3),
     ]);
 
-  const cashflow = calculateCashflow(transactions, month, year);
-  const liquidity = calculateLiquidity(accounts);
+  const { cashflow, liquidity, debtRatio } = parseDashboardOverview(overview);
+
   const liquidityRatio = calculateLiquidityRatio(liquidity, cashflow.expenses);
-  const debtRatio = calculateDebtRatio(debtPayments, cashflow.income, month, year);
   const budgetDiscipline = calculateBudgetDiscipline(budgets);
   const goalProgressScore = calculateGoalScore(goals);
 
@@ -149,7 +171,7 @@ export async function getDashboardData(
     burnRate,
     savingsRate,
     budgetUsage: avgBudgetUsage,
-    alerts: [...evalAlerts, ...alerts.slice(0, 3).map((a) => ({
+    alerts: [...evalAlerts, ...alerts.map((a) => ({
       severity: a.severity as DashboardData["alerts"][number]["severity"],
       type: a.type as DashboardData["alerts"][number]["type"],
       title: a.title,

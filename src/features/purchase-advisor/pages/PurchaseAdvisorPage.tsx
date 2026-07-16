@@ -3,6 +3,7 @@ import { ShoppingCart, TrendingUp, TrendingDown, Wallet, Gauge, AlertTriangle, C
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
 import { PageTransition } from "@/components/common/PageTransition";
+import { SkeletonCard } from "@/components/common/Skeleton";
 import { usePurchaseAdvisor, useEvaluation } from "@/features/purchase-advisor/hooks/usePurchaseAdvisor";
 import { cn } from "@/lib/utils";
 
@@ -34,7 +35,7 @@ export function PurchaseAdvisorPage() {
   if (isLoading) {
     return (
       <PageShell eyebrow="Purchase Advisor" title="Cargando..." description="Analizando tus finanzas..." icon={ShoppingCart}>
-        <div className="rounded-card animate-pulse border border-slate-200/70 bg-white/75 p-8 dark:border-white/10 dark:bg-white/[0.04]" style={{ height: "300px" }} />
+        <SkeletonCard className="h-[300px] p-8" />
       </PageShell>
     );
   }

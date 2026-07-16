@@ -3,6 +3,7 @@ import { ReceiptText, Plus, ArrowUpRight, ArrowDownRight, X, Search } from "luci
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
+import { SkeletonCard } from "@/components/common/Skeleton";
 import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { ModalWrapper } from "@/components/common/ModalWrapper";
@@ -27,7 +28,7 @@ export function TransactionsPage() {
       <PageShell eyebrow="Transacciones" title="Cargando..." description="Obteniendo movimientos..." icon={ReceiptText}>
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="rounded-card animate-pulse border border-slate-200/70 bg-white/75 p-4 dark:border-white/10 dark:bg-white/[0.04]" />
+            <SkeletonCard key={i} className="p-4" />
           ))}
         </div>
       </PageShell>

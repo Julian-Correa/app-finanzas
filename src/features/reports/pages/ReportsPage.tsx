@@ -6,6 +6,7 @@ import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
 import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
+import { SkeletonCard } from "@/components/common/Skeleton";
 import { useReports } from "@/features/reports/hooks/useReports";
 
 Chart.register(...registerables);
@@ -216,7 +217,7 @@ export function ReportsPage() {
       <PageShell eyebrow="Reportes" title="Cargando..." description="Generando reportes..." icon={BarChart3}>
         <div className="grid gap-6 lg:grid-cols-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="rounded-card animate-pulse border border-slate-200/70 bg-white/75 p-6 dark:border-white/10 dark:bg-white/[0.04]" style={{ height: "300px" }} />
+            <SkeletonCard key={i} className="h-[300px] p-6" />
           ))}
         </div>
       </PageShell>

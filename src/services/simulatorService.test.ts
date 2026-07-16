@@ -1,22 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { mockProfileId, mockAccounts, mockTransactions, mockBudgets, mockDebts, mockDebtPayments, mockGoals, mockAlerts } from "./__mocks__/data";
+import { mockProfileId, mockBudgets, mockGoals, mockAlerts } from "./__mocks__/data";
+
+const mockOverview = {
+  cashflow: {
+    income: 150000,
+    expenses: 3700,
+    cashflow: 146300,
+  },
+  liquidity: 65000,
+  debt_ratio: 3.33,
+};
 
 const mocks = vi.hoisted(() => ({
-  mockFetchAccounts: vi.fn(),
-  mockFetchTransactions: vi.fn(),
+  mockFetchDashboardOverview: vi.fn(),
   mockFetchBudgets: vi.fn(),
-  mockFetchDebts: vi.fn(),
-  mockFetchDebtPayments: vi.fn(),
   mockFetchGoals: vi.fn(),
   mockFetchAlerts: vi.fn(),
 }));
 
 vi.mock("@/supabase/queries", () => ({
-  fetchAccounts: mocks.mockFetchAccounts,
-  fetchTransactions: mocks.mockFetchTransactions,
+  fetchDashboardOverview: mocks.mockFetchDashboardOverview,
   fetchBudgets: mocks.mockFetchBudgets,
-  fetchDebts: mocks.mockFetchDebts,
-  fetchDebtPayments: mocks.mockFetchDebtPayments,
   fetchGoals: mocks.mockFetchGoals,
   fetchAlerts: mocks.mockFetchAlerts,
 }));
@@ -27,11 +31,8 @@ const { getDashboardData } = await import("./dashboardService");
 describe("simulatorService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.mockFetchAccounts.mockResolvedValue(mockAccounts);
-    mocks.mockFetchTransactions.mockResolvedValue(mockTransactions);
+    mocks.mockFetchDashboardOverview.mockResolvedValue(mockOverview);
     mocks.mockFetchBudgets.mockResolvedValue(mockBudgets);
-    mocks.mockFetchDebts.mockResolvedValue(mockDebts);
-    mocks.mockFetchDebtPayments.mockResolvedValue(mockDebtPayments);
     mocks.mockFetchGoals.mockResolvedValue(mockGoals);
     mocks.mockFetchAlerts.mockResolvedValue(mockAlerts);
   });

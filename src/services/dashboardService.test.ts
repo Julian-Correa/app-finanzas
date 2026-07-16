@@ -2,25 +2,19 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const mockProfileId = "profile-001";
 
-const mockAccounts = [
-  { id: "acc-1", current_balance: 50000, is_archived: false },
-  { id: "acc-2", current_balance: 15000, is_archived: false },
-];
-
-const mockTransactions = [
-  { amount: 2500, transaction_type: "expense" as const, date: "2026-07-10" },
-  { amount: 150000, transaction_type: "income" as const, date: "2026-07-01" },
-  { amount: 1200, transaction_type: "expense" as const, date: "2026-07-15" },
-];
+const mockOverview = {
+  cashflow: {
+    income: 150000,
+    expenses: 3700,
+    cashflow: 146300,
+  },
+  liquidity: 65000,
+  debt_ratio: 3.33,
+};
 
 const mockBudgets = [
   { spent_amount: 12000, limit_amount: 30000, status: "on_track" as const },
   { spent_amount: 14000, limit_amount: 15000, status: "critical" as const },
-];
-
-const mockDebtPayments = [
-  { amount: 5000, date: "2026-07-10" },
-  { amount: 5000, date: "2026-06-10" },
 ];
 
 const mockGoals = [
@@ -33,21 +27,15 @@ const mockAlerts = [
 ];
 
 const mocks = vi.hoisted(() => ({
-  mockFetchAccounts: vi.fn(),
-  mockFetchTransactions: vi.fn(),
+  mockFetchDashboardOverview: vi.fn(),
   mockFetchBudgets: vi.fn(),
-  mockFetchDebts: vi.fn(),
-  mockFetchDebtPayments: vi.fn(),
   mockFetchGoals: vi.fn(),
   mockFetchAlerts: vi.fn(),
 }));
 
 vi.mock("@/supabase/queries", () => ({
-  fetchAccounts: mocks.mockFetchAccounts,
-  fetchTransactions: mocks.mockFetchTransactions,
+  fetchDashboardOverview: mocks.mockFetchDashboardOverview,
   fetchBudgets: mocks.mockFetchBudgets,
-  fetchDebts: mocks.mockFetchDebts,
-  fetchDebtPayments: mocks.mockFetchDebtPayments,
   fetchGoals: mocks.mockFetchGoals,
   fetchAlerts: mocks.mockFetchAlerts,
 }));
@@ -57,11 +45,8 @@ import { getDashboardData } from "./dashboardService";
 describe("dashboardService", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.mockFetchAccounts.mockResolvedValue(mockAccounts);
-    mocks.mockFetchTransactions.mockResolvedValue(mockTransactions);
+    mocks.mockFetchDashboardOverview.mockResolvedValue(mockOverview);
     mocks.mockFetchBudgets.mockResolvedValue(mockBudgets);
-    mocks.mockFetchDebts.mockResolvedValue([]);
-    mocks.mockFetchDebtPayments.mockResolvedValue(mockDebtPayments);
     mocks.mockFetchGoals.mockResolvedValue(mockGoals);
     mocks.mockFetchAlerts.mockResolvedValue(mockAlerts);
   });
@@ -69,21 +54,24 @@ describe("dashboardService", () => {
   it("should compute full dashboard data", async () => {
     const result = await getDashboardData(mockProfileId, 7, 2026);
 
-    expect(mocks.mockFetchTransactions).toHaveBeenCalledWith(mockProfileId, 7, 2026);
+    expect(mocks.mockFetchDashboardOverview).toHaveBeenCalledWith(mockProfileId, 7, 2026);
+    expect(mocks.mockFetchAlerts).toHaveBeenCalledWith(mockProfileId, 3);
     expect(result.cashflow.income).toBe(150000);
     expect(result.cashflow.expenses).toBe(3700);
     expect(result.cashflow.cashflow).toBe(146300);
     expect(result.liquidity).toBe(65000);
+    expect(result.debtRatio).toBe(3.33);
     expect(result.financialScore.total).toBeGreaterThan(0);
     expect(result.alerts.length).toBeGreaterThan(0);
   });
 
   it("should handle empty data", async () => {
-    mocks.mockFetchAccounts.mockResolvedValue([{ current_balance: 100, is_archived: false }]);
-    mocks.mockFetchTransactions.mockResolvedValue([]);
+    mocks.mockFetchDashboardOverview.mockResolvedValue({
+      cashflow: { income: 0, expenses: 0, cashflow: 0 },
+      liquidity: 100,
+      debt_ratio: 0,
+    });
     mocks.mockFetchBudgets.mockResolvedValue([]);
-    mocks.mockFetchDebts.mockResolvedValue([]);
-    mocks.mockFetchDebtPayments.mockResolvedValue([]);
     mocks.mockFetchGoals.mockResolvedValue([]);
     mocks.mockFetchAlerts.mockResolvedValue([]);
 

@@ -4,6 +4,7 @@ import { CalendarDays, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, Cred
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
 import { PageTransition } from "@/components/common/PageTransition";
+import { SkeletonCard } from "@/components/common/Skeleton";
 import { useCalendar, type CalendarEvent } from "@/features/calendar/hooks/useCalendar";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +60,7 @@ export function CalendarPage() {
   if (isLoading) {
     return (
       <PageShell eyebrow="Calendario" title="Cargando..." description="Preparando calendario financiero..." icon={CalendarDays}>
-        <div className="rounded-card animate-pulse border border-slate-200/70 bg-white/75 p-6 dark:border-white/10 dark:bg-white/[0.04]" style={{ height: "500px" }} />
+        <SkeletonCard className="h-[500px] p-6" />
       </PageShell>
     );
   }

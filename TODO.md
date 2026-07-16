@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-UI animations and transitions polished. Application feature-complete for v0.1.0.
+UI polished, dashboard loading optimized, and loading/scroll/count-up animations completed. Application feature-complete for v0.1.0.
 
 ## Completed
 
@@ -43,6 +43,10 @@ UI animations and transitions polished. Application feature-complete for v0.1.0.
 -   Added CSS theme transition for smooth dark/light mode switching.
 -   Added custom TailwindCSS keyframes for CSS-based animations.
 -   Added `vendor-motion` chunk (127 kB) for optimal code-splitting.
+-   Reduced dashboard loading from multiple raw table queries to a smaller RPC-backed aggregated load.
+-   Added scroll-triggered reveal behavior for staggered content blocks and key standalone panels.
+-   Added count-up animations on dashboard KPI values and animated score bars.
+-   Added reusable shimmer skeletons and replaced previous pulse placeholders across data-heavy pages.
 
 ### Phase 4-8 - Feature Pages
 -   TransactionsPage: list, search, filters, create/edit/delete with modal forms.
@@ -56,7 +60,4 @@ UI animations and transitions polished. Application feature-complete for v0.1.0.
 -   CalendarPage: monthly grid with financial events per day.
 
 ## Future / Optional
--   Review and optimize dashboard query performance.
--   Add scroll-triggered animations (`whileInView`).
--   Add number count-up animations on dashboard KPIs.
--   Add skeleton loading shimmer animations.
+-   Consider extending shimmer skeletons to forms and modal loading states if async form hydration is added later.

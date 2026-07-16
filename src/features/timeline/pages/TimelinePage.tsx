@@ -3,6 +3,7 @@ import { ListTodo, TrendingUp, TrendingDown, DollarSign, CalendarDays, ChevronLe
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
+import { Skeleton, SkeletonCard } from "@/components/common/Skeleton";
 import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { useTimeline } from "@/features/timeline/hooks/useTimeline";
@@ -31,13 +32,15 @@ export function TimelinePage() {
       <PageShell eyebrow="Línea de tiempo" title="Cargando..." description="Organizando eventos financieros..." icon={ListTodo}>
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex gap-4">
-              <div className="h-12 w-12 animate-pulse rounded-full bg-slate-200 dark:bg-white/10" />
-              <div className="flex-1 space-y-2">
-                <div className="h-4 w-3/4 animate-pulse rounded bg-slate-200 dark:bg-white/10" />
-                <div className="h-3 w-1/2 animate-pulse rounded bg-slate-200 dark:bg-white/10" />
+            <SkeletonCard key={i} className="p-4">
+              <div className="flex gap-4">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
               </div>
-            </div>
+            </SkeletonCard>
           ))}
         </div>
       </PageShell>

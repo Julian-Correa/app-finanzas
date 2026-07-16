@@ -14,14 +14,20 @@ const containerVariants: Variants = {
 interface StaggerContainerProps {
   children: ReactNode;
   className?: string;
+  viewportAmount?: number;
 }
 
-export function StaggerContainer({ children, className }: StaggerContainerProps) {
+export function StaggerContainer({
+  children,
+  className,
+  viewportAmount = 0.15,
+}: StaggerContainerProps) {
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
-      animate="visible"
+      whileInView="visible"
+      viewport={{ once: true, amount: viewportAmount }}
       className={className}
     >
       {children}
