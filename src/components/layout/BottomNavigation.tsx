@@ -1,12 +1,15 @@
 import { NavLink } from "react-router-dom";
 
+import { useLanguage } from "@/app/providers/LanguageProvider";
 import { mobileNavigation } from "@/constants/navigation";
 import { cn } from "@/lib/utils";
 
 export function BottomNavigation() {
+  const { language } = useLanguage();
+
   return (
     <nav
-      aria-label="Mobile navigation"
+      aria-label={language === "es" ? "Navegación móvil" : "Mobile navigation"}
       className="fixed inset-x-3 bottom-3 z-30 rounded-panel border border-slate-200/80 bg-white/90 px-2 py-2 shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-950/85 lg:hidden"
     >
       <div className="grid grid-cols-5 gap-1">
@@ -27,7 +30,7 @@ export function BottomNavigation() {
               }
             >
               <Icon className="h-5 w-5" aria-hidden="true" />
-              {item.label}
+              {item.labels[language]}
             </NavLink>
           );
         })}

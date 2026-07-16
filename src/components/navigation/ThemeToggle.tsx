@@ -1,5 +1,6 @@
 import { Laptop, Moon, Sun } from "lucide-react";
 
+import { useLanguage } from "@/app/providers/LanguageProvider";
 import { type ThemeMode, useTheme } from "@/app/providers/ThemeProvider";
 import { cn } from "@/lib/utils";
 
@@ -15,18 +16,28 @@ const themeOptions: Array<{ value: ThemeMode; label: string; icon: typeof Sun }>
 
 export function ThemeToggle({ compact = false }: ThemeToggleProps) {
   const { theme, setTheme } = useTheme();
+  const { language } = useLanguage();
+
+  const labels = {
+    selector: language === "es" ? "Selector de tema" : "Theme selector",
+    light: language === "es" ? "Claro" : "Light",
+    dark: language === "es" ? "Oscuro" : "Dark",
+    system: language === "es" ? "Sistema" : "System",
+    switchTo: language === "es" ? "Cambiar tema a" : "Switch theme to",
+  };
 
   if (compact) {
     const currentIndex = themeOptions.findIndex((option) => option.value === theme);
     const nextTheme = themeOptions[(currentIndex + 1) % themeOptions.length];
     const CurrentIcon = themeOptions[currentIndex]?.icon ?? Laptop;
+    const nextLabel = nextTheme.value === "light" ? labels.light : nextTheme.value === "dark" ? labels.dark : labels.system;
 
     return (
       <button
         type="button"
         onClick={() => setTheme(nextTheme.value)}
         className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200/70 bg-white/80 text-slate-600 transition hover:text-slate-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:border-white/10 dark:bg-white/[0.06] dark:text-zinc-300 dark:hover:text-white"
-        aria-label={`Switch theme to ${nextTheme.label}`}
+        aria-label={`${labels.switchTo} ${nextLabel}`}
       >
         <CurrentIcon className="h-5 w-5" aria-hidden="true" />
       </button>
@@ -34,10 +45,11 @@ export function ThemeToggle({ compact = false }: ThemeToggleProps) {
   }
 
   return (
-    <div className="grid grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-white/10" aria-label="Theme selector">
+    <div className="grid grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1 dark:bg-white/10" aria-label={labels.selector}>
       {themeOptions.map((option) => {
         const Icon = option.icon;
         const isActive = option.value === theme;
+        const optionLabel = option.value === "light" ? labels.light : option.value === "dark" ? labels.dark : labels.system;
 
         return (
           <button
@@ -52,7 +64,7 @@ export function ThemeToggle({ compact = false }: ThemeToggleProps) {
             )}
           >
             <Icon className="h-4 w-4" aria-hidden="true" />
-            <span className="sr-only xl:not-sr-only">{option.label}</span>
+            <span className="sr-only xl:not-sr-only">{optionLabel}</span>
           </button>
         );
       })}

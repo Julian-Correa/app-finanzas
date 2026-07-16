@@ -1,3 +1,4 @@
+import { useLanguage } from "@/app/providers/LanguageProvider";
 import { useProfile, type ProfileScope } from "@/app/providers/ProfileProvider";
 import { cn } from "@/lib/utils";
 
@@ -9,11 +10,12 @@ const profileTone: Record<ProfileScope, string> = {
 
 export function ProfileSwitcher() {
   const { currentProfile, profileOptions, setCurrentProfile } = useProfile();
+  const { language } = useLanguage();
 
   return (
-    <section className="rounded-card border border-slate-200/70 bg-slate-50/90 p-2 dark:border-white/10 dark:bg-white/[0.04]" aria-label="Profile selector">
+    <section className="rounded-card border border-slate-200/70 bg-slate-50/90 p-2 dark:border-white/10 dark:bg-white/[0.04]" aria-label={language === "es" ? "Selector de perfil" : "Profile selector"}>
       <p className="px-2 pb-2 text-xs font-medium uppercase tracking-[0.16em] text-slate-500 dark:text-zinc-400">
-        Profile
+        {language === "es" ? "Perfil" : "Profile"}
       </p>
       <div className="grid grid-cols-3 gap-1">
         {profileOptions.map((profile) => {

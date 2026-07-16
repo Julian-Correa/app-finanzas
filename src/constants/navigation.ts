@@ -15,34 +15,36 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+import type { AppLanguage } from "@/app/providers/LanguageProvider";
+
 export interface NavigationItem {
-  label: string;
+  labels: Record<AppLanguage, string>;
   path: string;
   icon: LucideIcon;
 }
 
 export const primaryNavigation: NavigationItem[] = [
-  { label: "Dashboard", path: "/", icon: LayoutDashboard },
-  { label: "Transactions", path: "/transactions", icon: ReceiptText },
-  { label: "Budgets", path: "/budgets", icon: WalletCards },
-  { label: "Debts", path: "/debts", icon: CreditCard },
-  { label: "Goals", path: "/goals", icon: Target },
-  { label: "Reports", path: "/reports", icon: BarChart3 },
+  { labels: { es: "Panel", en: "Dashboard" }, path: "/", icon: LayoutDashboard },
+  { labels: { es: "Transacciones", en: "Transactions" }, path: "/transactions", icon: ReceiptText },
+  { labels: { es: "Presupuestos", en: "Budgets" }, path: "/budgets", icon: WalletCards },
+  { labels: { es: "Deudas", en: "Debts" }, path: "/debts", icon: CreditCard },
+  { labels: { es: "Metas", en: "Goals" }, path: "/goals", icon: Target },
+  { labels: { es: "Reportes", en: "Reports" }, path: "/reports", icon: BarChart3 },
 ];
 
 export const secondaryNavigation: NavigationItem[] = [
-  { label: "Timeline", path: "/timeline", icon: Gauge },
-  { label: "Calendar", path: "/calendar", icon: CalendarDays },
-  { label: "Simulator", path: "/simulator", icon: PiggyBank },
-  { label: "Can I Buy This?", path: "/purchase-advisor", icon: ShieldQuestion },
-  { label: "History", path: "/history", icon: History },
-  { label: "Settings", path: "/settings", icon: Settings },
+  { labels: { es: "Timeline", en: "Timeline" }, path: "/timeline", icon: Gauge },
+  { labels: { es: "Calendario", en: "Calendar" }, path: "/calendar", icon: CalendarDays },
+  { labels: { es: "Simulador", en: "Simulator" }, path: "/simulator", icon: PiggyBank },
+  { labels: { es: "¿Puedo comprarlo?", en: "Can I Buy This?" }, path: "/purchase-advisor", icon: ShieldQuestion },
+  { labels: { es: "Historial", en: "History" }, path: "/history", icon: History },
+  { labels: { es: "Ajustes", en: "Settings" }, path: "/settings", icon: Settings },
 ];
 
 export const mobileNavigation: NavigationItem[] = [
-  { label: "Home", path: "/", icon: LayoutDashboard },
-  { label: "Txns", path: "/transactions", icon: ReceiptText },
-  { label: "Goals", path: "/goals", icon: Target },
-  { label: "Reports", path: "/reports", icon: BarChart3 },
-  { label: "More", path: "/settings", icon: BadgeDollarSign },
+  { labels: { es: "Inicio", en: "Home" }, path: "/", icon: LayoutDashboard },
+  { labels: { es: "Movs", en: "Txns" }, path: "/transactions", icon: ReceiptText },
+  { labels: { es: "Metas", en: "Goals" }, path: "/goals", icon: Target },
+  { labels: { es: "Reportes", en: "Reports" }, path: "/reports", icon: BarChart3 },
+  { labels: { es: "Más", en: "More" }, path: "/settings", icon: BadgeDollarSign },
 ];

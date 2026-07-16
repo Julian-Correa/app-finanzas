@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { type ReactNode, useState } from "react";
 
+import { LanguageProvider } from "@/app/providers/LanguageProvider";
 import { ProfileProvider } from "@/app/providers/ProfileProvider";
 import { ThemeProvider } from "@/app/providers/ThemeProvider";
 
@@ -23,9 +24,11 @@ export function AppProviders({ children }: AppProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <ProfileProvider>{children}</ProfileProvider>
-      </ThemeProvider>
+      <LanguageProvider>
+        <ThemeProvider>
+          <ProfileProvider>{children}</ProfileProvider>
+        </ThemeProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
