@@ -413,6 +413,55 @@ All 12 FinOS feature pages are now implemented with real hooks, services, and UI
 
 ------------------------------------------------------------------------
 
+## Session 009
+
+Date: 2026-07-15
+
+Completed:
+
+-   Added Vitest as test runner with `npm run test` script.
+-   Created 80 unit tests across 10 test files covering all 9 engine modules.
+-   Verified `npm run typecheck` and `npm run build` pass.
+
+Pending:
+
+-   Code-split large JS bundle (~850 kB) with dynamic imports or rollup manual chunks.
+-   Add integration tests for services.
+-   Polish UI animations and transitions.
+-   Review and optimize dashboard query performance.
+
+Notes:
+
+All engine tests pass (80/80).
+
+---
+
+## Session 010
+
+Date: 2026-07-15
+
+Completed:
+
+-   Code-split all 12 feature pages using `React.lazy()` + `Suspense` — each page loads on demand.
+-   Added Vite `manualChunks` to split vendor libraries: react (202 kB), chart.js (206 kB), supabase (211 kB), tanstack-query (35 kB).
+-   Initial bundle reduced from 852 kB to ~284 kB (entry + react), remaining chunks loaded lazily.
+-   Created 30 integration tests across 8 test files for all 7 services (`src/services/`), using `vi.hoisted()` mock pattern.
+-   Fixed timezone-dependent date parsing bug in engine: `cashflow.ts`, `debtRatio.ts`, `predictions.ts` now parse `YYYY-MM-DD` strings manually instead of using `new Date()` to avoid UTC-to-local timezone shift that caused incorrect month matching in Argentina (GMT-3).
+-   All 110 tests pass (80 engine unit + 30 service integration).
+-   Verified `npm run typecheck` and `npm run build`.
+-   Updated PROJECT_MEMORY.md, TODO.md, CHANGELOG.md.
+
+Pending:
+
+-   Polish UI animations and transitions.
+-   Review and optimize dashboard query performance.
+
+Notes:
+
+The timezone bug was discovered during service integration test debugging. Dates on the 1st of the month (like `"2026-07-01"`) were being parsed as UTC midnight, which in GMT-3 becomes 9 PM of the previous month's last day, causing `getMonth()` to return the wrong month. Fixed all 3 engine functions that filtered by date.
+
+---
+
 # Pending Decisions
 
 -   Final SQL implementation.

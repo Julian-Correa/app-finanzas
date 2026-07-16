@@ -8,8 +8,8 @@ export function calculateDebtRatio(
 ): number {
   const monthlyPayments = debtPayments
     .filter((dp) => {
-      const d = new Date(dp.date);
-      return d.getMonth() + 1 === month && d.getFullYear() === year;
+      const [y, m] = dp.date.split("-").map(Number);
+      return m === month && y === year;
     })
     .reduce((sum, dp) => sum + Number(dp.amount), 0);
 

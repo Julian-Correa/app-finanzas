@@ -46,8 +46,7 @@ All 12 feature pages implemented. Application feature-complete for v0.1.0.
 -   CalendarPage: monthly grid with financial events per day.
 
 ## Future / Optional
--   Code-split large JS bundle (~850 kB) with dynamic imports or rollup manual chunks.
--   Add unit tests for engine functions (pure, deterministic).
 -   Add integration tests for services.
+-   Polish UI animations and transitions.
 -   Polish UI animations and transitions.
 -   Review and optimize dashboard query performance.

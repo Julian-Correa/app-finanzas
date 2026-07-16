@@ -7,8 +7,8 @@ export function calculateCashflow(
   year: number
 ): CashflowResult {
   const filtered = transactions.filter((t) => {
-    const d = new Date(t.date);
-    return d.getMonth() + 1 === month && d.getFullYear() === year;
+    const [y, m] = t.date.split("-").map(Number);
+    return m === month && y === year;
   });
 
   const income = filtered

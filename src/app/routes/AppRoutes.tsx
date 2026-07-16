@@ -1,18 +1,44 @@
+import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import { AppLayout } from "@/components/layout/AppLayout";
-import { BudgetsPage } from "@/features/budgets/pages/BudgetsPage";
-import { CalendarPage } from "@/features/calendar/pages/CalendarPage";
-import { DashboardPage } from "@/features/dashboard/pages/DashboardPage";
-import { DebtsPage } from "@/features/debts/pages/DebtsPage";
-import { GoalsPage } from "@/features/goals/pages/GoalsPage";
-import { HistoryPage } from "@/features/history/pages/HistoryPage";
-import { PurchaseAdvisorPage } from "@/features/purchase-advisor/pages/PurchaseAdvisorPage";
-import { ReportsPage } from "@/features/reports/pages/ReportsPage";
-import { SettingsPage } from "@/features/settings/pages/SettingsPage";
-import { SimulatorPage } from "@/features/simulator/pages/SimulatorPage";
-import { TimelinePage } from "@/features/timeline/pages/TimelinePage";
-import { TransactionsPage } from "@/features/transactions/pages/TransactionsPage";
+
+const DashboardPage = lazy(() =>
+  import("@/features/dashboard/pages/DashboardPage").then((m) => ({ default: m.DashboardPage }))
+);
+const TransactionsPage = lazy(() =>
+  import("@/features/transactions/pages/TransactionsPage").then((m) => ({ default: m.TransactionsPage }))
+);
+const BudgetsPage = lazy(() =>
+  import("@/features/budgets/pages/BudgetsPage").then((m) => ({ default: m.BudgetsPage }))
+);
+const DebtsPage = lazy(() =>
+  import("@/features/debts/pages/DebtsPage").then((m) => ({ default: m.DebtsPage }))
+);
+const GoalsPage = lazy(() =>
+  import("@/features/goals/pages/GoalsPage").then((m) => ({ default: m.GoalsPage }))
+);
+const TimelinePage = lazy(() =>
+  import("@/features/timeline/pages/TimelinePage").then((m) => ({ default: m.TimelinePage }))
+);
+const CalendarPage = lazy(() =>
+  import("@/features/calendar/pages/CalendarPage").then((m) => ({ default: m.CalendarPage }))
+);
+const ReportsPage = lazy(() =>
+  import("@/features/reports/pages/ReportsPage").then((m) => ({ default: m.ReportsPage }))
+);
+const SimulatorPage = lazy(() =>
+  import("@/features/simulator/pages/SimulatorPage").then((m) => ({ default: m.SimulatorPage }))
+);
+const PurchaseAdvisorPage = lazy(() =>
+  import("@/features/purchase-advisor/pages/PurchaseAdvisorPage").then((m) => ({ default: m.PurchaseAdvisorPage }))
+);
+const HistoryPage = lazy(() =>
+  import("@/features/history/pages/HistoryPage").then((m) => ({ default: m.HistoryPage }))
+);
+const SettingsPage = lazy(() =>
+  import("@/features/settings/pages/SettingsPage").then((m) => ({ default: m.SettingsPage }))
+);
 
 export function AppRoutes() {
   return (
