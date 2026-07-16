@@ -1,6 +1,9 @@
 import { Beaker, TrendingUp, TrendingDown, Wallet, Gauge, PiggyBank, BarChart3, CalendarClock } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { StaggerContainer } from "@/components/common/StaggerContainer";
+import { PageTransition } from "@/components/common/PageTransition";
 import { useSimulator, useSimulation } from "@/features/simulator/hooks/useSimulator";
 import { cn } from "@/lib/utils";
 
@@ -129,19 +132,23 @@ export function SimulatorPage() {
   ];
 
   return (
-    <PageShell
-      eyebrow="Simulador"
-      title="Simulador financiero"
-      description="Proyectá escenarios hipotéticos sin afectar tus datos reales"
-      icon={Beaker}
-    >
-      <div className="rounded-card border border-amber-400/30 bg-amber-50 p-4 text-xs text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/30 dark:text-amber-400">
-        <strong>⚠ Modo simulación</strong> — Los cambios solo afectan esta pantalla. Nunca se guardan en la base de datos.
-      </div>
+    <PageTransition>
+      <PageShell
+        eyebrow="Simulador"
+        title="Simulador financiero"
+        description="Proyectá escenarios hipotéticos sin afectar tus datos reales"
+        icon={Beaker}
+      >
+        <MotionCard hover="none">
+          <div className="rounded-card border border-amber-400/30 bg-amber-50 p-4 text-xs text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/30 dark:text-amber-400">
+            <strong>⚠ Modo simulación</strong> — Los cambios solo afectan esta pantalla. Nunca se guardan en la base de datos.
+          </div>
+        </MotionCard>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <h3 className="mb-5 text-sm font-medium text-slate-700 dark:text-zinc-300">Ajustar escenario</h3>
+        <div className="grid gap-6 lg:grid-cols-2">
+          <MotionCard hover="none">
+            <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <h3 className="mb-5 text-sm font-medium text-slate-700 dark:text-zinc-300">Ajustar escenario</h3>
           <div className="space-y-5">
             <SliderField
               label="Cambio en ingresos"
@@ -193,38 +200,40 @@ export function SimulatorPage() {
             />
           </div>
         </div>
+            </MotionCard>
 
         <div className="space-y-4">
           <p className="text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-zinc-500">
             Actual <span className="mx-2">→</span> Proyectado
           </p>
-          {metrics.map((m) => (
-            <div
-              key={m.label}
-              className="rounded-card border border-slate-200/70 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                  <m.icon className="h-4 w-4 text-slate-400" aria-hidden="true" />
-                  <span className="text-sm text-slate-600 dark:text-zinc-300">{m.label}</span>
+          <StaggerContainer className="space-y-3">
+            {metrics.map((m) => (
+              <MotionCard key={m.label} hover="none">
+                <div className="rounded-card border border-slate-200/70 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <m.icon className="h-4 w-4 text-slate-400" aria-hidden="true" />
+                      <span className="text-sm text-slate-600 dark:text-zinc-300">{m.label}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <span className="text-slate-400 dark:text-zinc-500">{m.baseline}</span>
+                      <span className="text-slate-300 dark:text-zinc-600">→</span>
+                      <span className={cn("font-semibold", m.color ?? "text-slate-800 dark:text-zinc-100")}>{m.projected}</span>
+                      <span className={cn("text-xs", getDeltaColor(m.delta, m.invert))}>
+                        {m.delta >= 0 ? "↑" : "↓"} {formatARS(Math.abs(Math.round(m.delta)))}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <span className="text-slate-400 dark:text-zinc-500">{m.baseline}</span>
-                  <span className="text-slate-300 dark:text-zinc-600">→</span>
-                  <span className={cn("font-semibold", m.color ?? "text-slate-800 dark:text-zinc-100")}>{m.projected}</span>
-                  <span className={cn("text-xs", getDeltaColor(m.delta, m.invert))}>
-                    {m.delta >= 0 ? "↑" : "↓"} {formatARS(Math.abs(Math.round(m.delta)))}
-                    {m.label === "Endeudamiento" || m.label === "Tasa de ahorro" || m.label === "Burn rate" ? "" : ""}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))}
+              </MotionCard>
+            ))}
+          </StaggerContainer>
         </div>
       </div>
 
-      <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-        <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Proyección del score financiero</h3>
+      <MotionCard hover="none">
+        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+          <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Proyección del score financiero</h3>
         <div className="flex items-center gap-6">
           <div className="flex-1">
             <div className="mb-2 flex justify-between text-xs">
@@ -262,8 +271,10 @@ export function SimulatorPage() {
             </div>
           ))}
         </div>
-      </div>
+        </div>
+      </MotionCard>
     </PageShell>
+    </PageTransition>
   );
 }
 

@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-All 12 feature pages implemented. Application feature-complete for v0.1.0.
+UI animations and transitions polished. Application feature-complete for v0.1.0.
 
 ## Completed
 
@@ -34,6 +34,16 @@ All 12 feature pages implemented. Application feature-complete for v0.1.0.
 -   Updated `DashboardPage.tsx` — live KPIs, score breakdown, alerts.
 -   Verified typecheck and build pass.
 
+### Polish - UI Animations
+-   Added Framer Motion as active dependency with 4 shared components (`PageTransition`, `MotionCard`, `StaggerContainer`, `ModalWrapper`).
+-   Added route transitions (`AnimatePresence` in `AppLayout`) and page entrance animations.
+-   Added staggered list reveals on all pages with card items.
+-   Added modal enter/exit animations (spring scale + fade).
+-   Added hover lift effect on all data cards.
+-   Added CSS theme transition for smooth dark/light mode switching.
+-   Added custom TailwindCSS keyframes for CSS-based animations.
+-   Added `vendor-motion` chunk (127 kB) for optimal code-splitting.
+
 ### Phase 4-8 - Feature Pages
 -   TransactionsPage: list, search, filters, create/edit/delete with modal forms.
 -   BudgetsPage: per-category cards with progress bars, totals, add/edit.
@@ -46,7 +56,7 @@ All 12 feature pages implemented. Application feature-complete for v0.1.0.
 -   CalendarPage: monthly grid with financial events per day.
 
 ## Future / Optional
--   Add integration tests for services.
--   Polish UI animations and transitions.
--   Polish UI animations and transitions.
 -   Review and optimize dashboard query performance.
+-   Add scroll-triggered animations (`whileInView`).
+-   Add number count-up animations on dashboard KPIs.
+-   Add skeleton loading shimmer animations.

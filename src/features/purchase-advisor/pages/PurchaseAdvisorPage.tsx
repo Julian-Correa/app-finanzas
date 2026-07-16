@@ -1,6 +1,8 @@
 import { ShoppingCart, TrendingUp, TrendingDown, Wallet, Gauge, AlertTriangle, CheckCircle, HelpCircle } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { PageTransition } from "@/components/common/PageTransition";
 import { usePurchaseAdvisor, useEvaluation } from "@/features/purchase-advisor/hooks/usePurchaseAdvisor";
 import { cn } from "@/lib/utils";
 
@@ -48,15 +50,17 @@ export function PurchaseAdvisorPage() {
   }
 
   return (
-    <PageShell
-      eyebrow="Purchase Advisor"
-      title="¿Puedo comprar esto?"
-      description="Evaluá una compra antes de hacerla"
-      icon={ShoppingCart}
-    >
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <h3 className="mb-5 text-sm font-medium text-slate-700 dark:text-zinc-300">Detalles de la compra</h3>
+    <PageTransition>
+      <PageShell
+        eyebrow="Purchase Advisor"
+        title="¿Puedo comprar esto?"
+        description="Evaluá una compra antes de hacerla"
+        icon={ShoppingCart}
+      >
+        <div className="grid gap-6 lg:grid-cols-2">
+          <MotionCard hover="none">
+            <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <h3 className="mb-5 text-sm font-medium text-slate-700 dark:text-zinc-300">Detalles de la compra</h3>
           <div className="space-y-5">
             <div>
               <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Precio ($)</label>
@@ -115,33 +119,39 @@ export function PurchaseAdvisorPage() {
             </div>
           )}
         </div>
+            </MotionCard>
 
         <div className="space-y-4">
           {!evaluation ? (
-            <div className="rounded-card border border-slate-200/70 bg-white/70 p-8 text-center backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-              <ShoppingCart className="mx-auto h-10 w-10 text-slate-300 dark:text-zinc-600" aria-hidden="true" />
-              <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Ingresá un precio para evaluar la compra</p>
-            </div>
+            <MotionCard hover="none">
+              <div className="rounded-card border border-slate-200/70 bg-white/70 p-8 text-center backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+                <ShoppingCart className="mx-auto h-10 w-10 text-slate-300 dark:text-zinc-600" aria-hidden="true" />
+                <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Ingresá un precio para evaluar la compra</p>
+              </div>
+            </MotionCard>
           ) : (() => {
             const DecisionIcon = decisionConfig[evaluation.decision].icon;
             return (
             <>
-              <div className={cn("rounded-card border p-6", decisionConfig[evaluation.decision].bg)}>
-                <div className="flex items-center gap-3">
-                  <DecisionIcon className={cn("h-8 w-8", decisionConfig[evaluation.decision].color)} aria-hidden="true" />
-                  <div>
-                    <p className={cn("text-lg font-semibold", decisionConfig[evaluation.decision].color)}>
-                      {decisionConfig[evaluation.decision].label}
-                    </p>
-                    <p className={cn("text-sm", riskConfig[evaluation.risk].color)}>
-                      {riskConfig[evaluation.risk].label}
-                    </p>
+              <MotionCard hover="none">
+                <div className={cn("rounded-card border p-6", decisionConfig[evaluation.decision].bg)}>
+                  <div className="flex items-center gap-3">
+                    <DecisionIcon className={cn("h-8 w-8", decisionConfig[evaluation.decision].color)} aria-hidden="true" />
+                    <div>
+                      <p className={cn("text-lg font-semibold", decisionConfig[evaluation.decision].color)}>
+                        {decisionConfig[evaluation.decision].label}
+                      </p>
+                      <p className={cn("text-sm", riskConfig[evaluation.risk].color)}>
+                        {riskConfig[evaluation.risk].label}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </MotionCard>
 
-              <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-                <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Impacto financiero</h3>
+              <MotionCard hover="none">
+                <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+                  <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Impacto financiero</h3>
                 <div className="space-y-3">
                   <ImpactRow
                     icon={TrendingUp}
@@ -188,9 +198,11 @@ export function PurchaseAdvisorPage() {
                   )}
                 </div>
               </div>
+              </MotionCard>
 
-              <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-                <h3 className="mb-3 text-sm font-medium text-slate-700 dark:text-zinc-300">Razones</h3>
+              <MotionCard hover="none">
+                <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+                  <h3 className="mb-3 text-sm font-medium text-slate-700 dark:text-zinc-300">Razones</h3>
                 <ul className="space-y-2">
                   {evaluation.reasons.map((reason, i) => (
                     <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-zinc-300">
@@ -200,12 +212,14 @@ export function PurchaseAdvisorPage() {
                   ))}
                 </ul>
               </div>
+              </MotionCard>
             </>
             );
           })()}
         </div>
       </div>
     </PageShell>
+    </PageTransition>
   );
 }
 

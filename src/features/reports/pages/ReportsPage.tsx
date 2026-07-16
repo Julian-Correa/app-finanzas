@@ -3,6 +3,9 @@ import { BarChart3, TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import { Chart, registerables } from "chart.js";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { StaggerContainer } from "@/components/common/StaggerContainer";
+import { PageTransition } from "@/components/common/PageTransition";
 import { useReports } from "@/features/reports/hooks/useReports";
 
 Chart.register(...registerables);
@@ -238,15 +241,15 @@ export function ReportsPage() {
     : 0;
 
   return (
-    <PageShell
-      eyebrow="Reportes"
-      title="Reportes financieros"
-      description="Visualizá tus finanzas en el tiempo"
-      icon={BarChart3}
-    >
-      <div className="flex items-center gap-2">
-        <span className="text-xs text-slate-500 dark:text-zinc-400">Período:</span>
-        {[3, 6, 12].map((p) => (
+    <PageTransition>
+      <PageShell
+        eyebrow="Reportes"
+        title="Reportes financieros"
+        description="Visualizá ingresos, gastos y tendencias"
+        icon={BarChart3}
+      >
+        <div className="flex items-center gap-2">
+          {[3, 6, 12].map((p) => (
           <button
             key={p}
             onClick={() => setChartPeriods(p)}
@@ -261,55 +264,68 @@ export function ReportsPage() {
         ))}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <TrendingUp className="h-5 w-5 text-emerald-500" aria-hidden="true" />
-          <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Último mes - Ingresos</p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(lastMonth.income)}</p>
-        </div>
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <TrendingDown className="h-5 w-5 text-red-500" aria-hidden="true" />
-          <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Último mes - Gastos</p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(Math.abs(lastMonth.expenses))}</p>
-        </div>
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <Wallet className={`h-5 w-5 ${lastMonth.cashflow >= 0 ? "text-emerald-500" : "text-red-500"}`} aria-hidden="true" />
-          <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Flujo de caja</p>
-          <p className={`mt-1 text-2xl font-semibold tracking-tight ${lastMonth.cashflow >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
-            {formatARS(lastMonth.cashflow)}
-          </p>
-          {prevMonth && (
-            <p className={`mt-0.5 text-xs ${cashflowTrend >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-              {cashflowTrend >= 0 ? "↑" : "↓"} {Math.abs(cashflowTrend).toFixed(1)}% vs mes anterior
+      <StaggerContainer className="grid gap-4 sm:grid-cols-3">
+        <MotionCard>
+          <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+            <TrendingUp className="h-5 w-5 text-emerald-500" aria-hidden="true" />
+            <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Último mes - Ingresos</p>
+            <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(lastMonth.income)}</p>
+          </div>
+        </MotionCard>
+        <MotionCard>
+          <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+            <TrendingDown className="h-5 w-5 text-red-500" aria-hidden="true" />
+            <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Último mes - Gastos</p>
+            <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(Math.abs(lastMonth.expenses))}</p>
+          </div>
+        </MotionCard>
+        <MotionCard>
+          <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+            <Wallet className={`h-5 w-5 ${lastMonth.cashflow >= 0 ? "text-emerald-500" : "text-red-500"}`} aria-hidden="true" />
+            <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Flujo de caja</p>
+            <p className={`mt-1 text-2xl font-semibold tracking-tight ${lastMonth.cashflow >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+              {formatARS(lastMonth.cashflow)}
             </p>
-          )}
-        </div>
-      </div>
+            {prevMonth && (
+              <p className={`mt-0.5 text-xs ${cashflowTrend >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+                {cashflowTrend >= 0 ? "↑" : "↓"} {Math.abs(cashflowTrend).toFixed(1)}% vs mes anterior
+              </p>
+            )}
+          </div>
+        </MotionCard>
+      </StaggerContainer>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Ingresos vs Gastos</h3>
-          <div style={{ height: "280px" }}>
-            <canvas ref={barCanvasRef} />
+        <MotionCard hover="none">
+          <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+            <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Ingresos vs Gastos</h3>
+            <div style={{ height: "280px" }}>
+              <canvas ref={barCanvasRef} />
+            </div>
           </div>
-        </div>
+        </MotionCard>
 
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Gastos por categoría</h3>
-          <div style={{ height: "280px" }}>
-            <canvas ref={doughnutCanvasRef} />
+        <MotionCard hover="none">
+          <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+            <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Gastos por categoría</h3>
+            <div style={{ height: "280px" }}>
+              <canvas ref={doughnutCanvasRef} />
+            </div>
           </div>
-        </div>
+        </MotionCard>
       </div>
 
-      <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-        <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Evolución del flujo de caja</h3>
-        <div style={{ height: "280px" }}>
-          <canvas ref={lineCanvasRef} />
+      <MotionCard hover="none">
+        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+          <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Evolución del flujo de caja</h3>
+          <div style={{ height: "280px" }}>
+            <canvas ref={lineCanvasRef} />
+          </div>
         </div>
-      </div>
+      </MotionCard>
 
-      <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+      <MotionCard hover="none">
+        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
         <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Resumen mensual</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -335,7 +351,9 @@ export function ReportsPage() {
             </tbody>
           </table>
         </div>
-      </div>
+        </div>
+      </MotionCard>
     </PageShell>
+    </PageTransition>
   );
 }

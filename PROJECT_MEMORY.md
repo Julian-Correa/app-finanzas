@@ -16,7 +16,7 @@
 
 **Version:** 0.1.0
 
-**Current Phase:** Phase 4-8 complete — All feature pages implemented. Application feature-complete for v0.1.0.
+**Current Phase:** Polish complete — UI animations and transitions implemented. Application feature-complete for v0.1.0.
 
 ------------------------------------------------------------------------
 
@@ -462,6 +462,40 @@ The timezone bug was discovered during service integration test debugging. Dates
 
 ---
 
+---
+ 
+## Session 011
+
+Date: 2026-07-16
+
+Completed:
+
+-   Added custom TailwindCSS keyframes and animations (`fade-in`, `fade-in-up`, `scale-in`, `slide-up`).
+-   Created 4 shared animation components:
+    -   `PageTransition` — fade+slide entrance/exit for page routes.
+    -   `MotionCard` — staggered card entrance with hover lift effect.
+    -   `StaggerContainer` — staggered children reveal container.
+    -   `ModalWrapper` — animated modal backdrop + content with spring physics.
+-   Wired `AnimatePresence` in `AppLayout` for route transitions (`mode="wait"` with `location.pathname` key).
+-   Updated `PageShell` with fade-in hero banner animation.
+-   Updated all 12 feature pages with `PageTransition` wrapper, staggered card grids, and animated modals.
+-   Replaced all 5 modal overlays (Transaction, Budget, Debt, Goal, Contribution/Payment) with `ModalWrapper`.
+-   Added CSS smooth transitions for dark/light mode theme switching (background-color, border-color, color).
+-   Verified `npm run typecheck`, `npm run build`, and `npm run test` (110/110 pass).
+
+Pending:
+
+-   Review and optimize dashboard query performance.
+-   Add scroll-triggered animations (`whileInView`).
+-   Add number count-up animations on dashboard KPIs.
+-   Add skeleton loading shimmer animations.
+
+Notes:
+
+Framer Motion was already installed as a dependency but completely unused until this session. The vendor chunk `vendor-motion` (127 kB) is now properly code-split alongside the existing vendor chunks.
+
+---
+
 # Pending Decisions
 
 -   Final SQL implementation.
@@ -480,12 +514,11 @@ None.
 
 # Next Recommended Task
 
-1.  Code-split large JS bundle (~850 kB) with dynamic imports or rollup manual chunks.
-2.  Add unit tests for engine functions (pure, deterministic).
-3.  Add integration tests for services.
-4.  Polish UI animations and transitions.
-5.  Review and optimize dashboard query performance.
-6.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
+1.  Review and optimize dashboard query performance.
+2.  Add scroll-triggered animations (`whileInView`).
+3.  Add number count-up animations on dashboard KPIs.
+4.  Add skeleton loading shimmer animations.
+5.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
 
 ------------------------------------------------------------------------
 

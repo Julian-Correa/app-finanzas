@@ -2,6 +2,8 @@ import { useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight, TrendingUp, TrendingDown, CreditCard, Target } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { PageTransition } from "@/components/common/PageTransition";
 import { useCalendar, type CalendarEvent } from "@/features/calendar/hooks/useCalendar";
 import { cn } from "@/lib/utils";
 
@@ -73,23 +75,25 @@ export function CalendarPage() {
   }
 
   return (
-    <PageShell
-      eyebrow={`${monthNames[month - 1]} ${year}`}
-      title="Calendario financiero"
-      description="Vencimientos, cuotas y eventos del mes"
-      icon={CalendarDays}
-    >
-      <div className="flex items-center justify-center gap-4">
-        <button onClick={goBack} className="rounded-xl border border-slate-200/70 p-2 text-slate-500 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.04]">
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <span className="text-lg font-semibold">{monthNames[month - 1]} {year}</span>
-        <button onClick={goForward} disabled={offset >= 0} className="rounded-xl border border-slate-200/70 p-2 text-slate-500 transition-colors hover:bg-slate-50 disabled:opacity-30 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.04]">
-          <ChevronRight className="h-5 w-5" />
-        </button>
-      </div>
+    <PageTransition>
+      <PageShell
+        eyebrow={`${monthNames[month - 1]} ${year}`}
+        title="Calendario financiero"
+        description="Vencimientos, cuotas y eventos del mes"
+        icon={CalendarDays}
+      >
+        <div className="flex items-center justify-center gap-4">
+          <button onClick={goBack} className="rounded-xl border border-slate-200/70 p-2 text-slate-500 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.04]">
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <span className="text-lg font-semibold">{monthNames[month - 1]} {year}</span>
+          <button onClick={goForward} disabled={offset >= 0} className="rounded-xl border border-slate-200/70 p-2 text-slate-500 transition-colors hover:bg-slate-50 disabled:opacity-30 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.04]">
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
 
-      <div className="rounded-card border border-slate-200/70 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+        <MotionCard hover="none">
+          <div className="rounded-card border border-slate-200/70 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
         <div className="grid grid-cols-7 gap-px">
           {dayNames.map((d) => (
             <div key={d} className="p-2 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
@@ -151,7 +155,8 @@ export function CalendarPage() {
             );
           })}
         </div>
-      </div>
+        </div>
+        </MotionCard>
 
       <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-zinc-400">
         <span className="flex items-center gap-1.5">
@@ -168,8 +173,9 @@ export function CalendarPage() {
         </span>
       </div>
 
-      <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-        <h3 className="mb-3 text-sm font-medium text-slate-700 dark:text-zinc-300">Eventos del mes</h3>
+      <MotionCard hover="none">
+        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+          <h3 className="mb-3 text-sm font-medium text-slate-700 dark:text-zinc-300">Eventos del mes</h3>
         {data && data.events.length === 0 ? (
           <p className="text-xs text-slate-400 dark:text-zinc-500">No hay eventos este mes.</p>
         ) : (
@@ -196,7 +202,9 @@ export function CalendarPage() {
             })}
           </div>
         )}
-      </div>
+        </div>
+        </MotionCard>
     </PageShell>
+    </PageTransition>
   );
 }

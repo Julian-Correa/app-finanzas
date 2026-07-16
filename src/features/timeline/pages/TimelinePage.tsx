@@ -2,6 +2,9 @@ import { useState } from "react";
 import { ListTodo, TrendingUp, TrendingDown, DollarSign, CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { StaggerContainer } from "@/components/common/StaggerContainer";
+import { PageTransition } from "@/components/common/PageTransition";
 import { useTimeline } from "@/features/timeline/hooks/useTimeline";
 import { cn } from "@/lib/utils";
 
@@ -91,73 +94,79 @@ export function TimelinePage() {
   events.sort((a, b) => a.date.localeCompare(b.date));
 
   return (
-    <PageShell
-      eyebrow={`${monthNames[month - 1]} ${year}`}
-      title="Línea de tiempo"
-      description="Flujo financiero mensual"
-      icon={ListTodo}
-    >
-      <div className="flex items-center justify-center gap-4">
-        <button onClick={goBack} className="rounded-xl border border-slate-200/70 p-2 text-slate-500 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.04]">
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <span className="text-lg font-semibold">{monthNames[month - 1]} {year}</span>
-        <button onClick={goForward} disabled={offset >= 0} className="rounded-xl border border-slate-200/70 p-2 text-slate-500 transition-colors hover:bg-slate-50 disabled:opacity-30 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.04]">
-          <ChevronRight className="h-5 w-5" />
-        </button>
-      </div>
-
-      {events.length === 0 ? (
-        <div className="rounded-card border border-slate-200/70 bg-white/70 p-8 text-center backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <CalendarDays className="mx-auto h-8 w-8 text-slate-300 dark:text-zinc-600" aria-hidden="true" />
-          <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">No hay eventos financieros este mes.</p>
+    <PageTransition>
+      <PageShell
+        eyebrow={`${monthNames[month - 1]} ${year}`}
+        title="Línea de tiempo"
+        description="Flujo financiero mensual"
+        icon={ListTodo}
+      >
+        <div className="flex items-center justify-center gap-4">
+          <button onClick={goBack} className="rounded-xl border border-slate-200/70 p-2 text-slate-500 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.04]">
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <span className="text-lg font-semibold">{monthNames[month - 1]} {year}</span>
+          <button onClick={goForward} disabled={offset >= 0} className="rounded-xl border border-slate-200/70 p-2 text-slate-500 transition-colors hover:bg-slate-50 disabled:opacity-30 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.04]">
+            <ChevronRight className="h-5 w-5" />
+          </button>
         </div>
-      ) : (
-        <div className="relative">
-          <div className="absolute left-6 top-0 h-full w-px bg-slate-200 dark:bg-white/10" aria-hidden="true" />
-          <div className="space-y-4">
-            {events.map((ev, i) => {
-              const day = new Date(ev.date).getDate();
-              const isIncome = ev.type === "income";
-              const isExpense = ev.type === "expense";
-              const isBudget = ev.type === "budget";
-              const isDebt = ev.type === "debt";
 
-              return (
-                <div key={i} className="relative flex gap-4 pl-14">
-                  <div
-                    className={cn(
-                      "absolute left-3.5 flex h-5 w-5 items-center justify-center rounded-full border-2 bg-white dark:bg-zinc-900",
-                      isIncome ? "border-emerald-500" : isExpense ? "border-red-500" : isBudget ? "border-blue-500" : "border-amber-500"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "h-2 w-2 rounded-full",
-                        isIncome ? "bg-emerald-500" : isExpense ? "bg-red-500" : isBudget ? "bg-blue-500" : "bg-amber-500"
-                      )}
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1 rounded-card border border-slate-200/70 bg-white/70 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium">{ev.label}</p>
-                        <p className="text-xs text-slate-400 dark:text-zinc-500">{ev.detail}</p>
+        {events.length === 0 ? (
+          <MotionCard hover="none">
+            <div className="rounded-card border border-slate-200/70 bg-white/70 p-8 text-center backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <CalendarDays className="mx-auto h-8 w-8 text-slate-300 dark:text-zinc-600" aria-hidden="true" />
+              <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">No hay eventos financieros este mes.</p>
+            </div>
+          </MotionCard>
+        ) : (
+          <div className="relative">
+            <div className="absolute left-6 top-0 h-full w-px bg-slate-200 dark:bg-white/10" aria-hidden="true" />
+            <StaggerContainer className="space-y-4">
+              {events.map((ev, i) => {
+                const day = new Date(ev.date).getDate();
+                const isIncome = ev.type === "income";
+                const isExpense = ev.type === "expense";
+                const isBudget = ev.type === "budget";
+                const isDebt = ev.type === "debt";
+
+                return (
+                  <MotionCard key={i} hover="none">
+                    <div className="relative flex gap-4 pl-14">
+                      <div
+                        className={cn(
+                          "absolute left-3.5 flex h-5 w-5 items-center justify-center rounded-full border-2 bg-white dark:bg-zinc-900",
+                          isIncome ? "border-emerald-500" : isExpense ? "border-red-500" : isBudget ? "border-blue-500" : "border-amber-500"
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "h-2 w-2 rounded-full",
+                            isIncome ? "bg-emerald-500" : isExpense ? "bg-red-500" : isBudget ? "bg-blue-500" : "bg-amber-500"
+                          )}
+                        />
                       </div>
-                      <div className="shrink-0 text-right">
-                        <p className={cn("text-sm font-semibold", isIncome ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400")}>
-                          {isIncome ? "+" : "-"}{formatARS(Math.abs(ev.amount))}
-                        </p>
-                        <p className="text-xs text-slate-400 dark:text-zinc-500">Día {day}</p>
+                      <div className="min-w-0 flex-1 rounded-card border border-slate-200/70 bg-white/70 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-medium">{ev.label}</p>
+                            <p className="text-xs text-slate-400 dark:text-zinc-500">{ev.detail}</p>
+                          </div>
+                          <div className="shrink-0 text-right">
+                            <p className={cn("text-sm font-semibold", isIncome ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400")}>
+                              {isIncome ? "+" : "-"}{formatARS(Math.abs(ev.amount))}
+                            </p>
+                            <p className="text-xs text-slate-400 dark:text-zinc-500">Día {day}</p>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
+                  </MotionCard>
+                );
+              })}
+            </StaggerContainer>
           </div>
-        </div>
-      )}
-    </PageShell>
+        )}
+      </PageShell>
+    </PageTransition>
   );
 }

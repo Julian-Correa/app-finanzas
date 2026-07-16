@@ -1,6 +1,9 @@
 import { AlertTriangle, Banknote, CalendarClock, LineChart, ShieldCheck, Wallet, TrendingUp, TrendingDown, PiggyBank, Gauge, Bell, BarChart3 } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { StaggerContainer } from "@/components/common/StaggerContainer";
+import { PageTransition } from "@/components/common/PageTransition";
 import { useDashboard } from "../hooks/useDashboard";
 import { calculateCashflowStatus, calculateLiquidityLevel, calculateDebtRatioLevel, calculateSavingsRateLevel, calculateScoreLevel } from "@/engine";
 
@@ -36,117 +39,139 @@ export function DashboardPage() {
   const { cashflow, liquidity, debtRatio, financialScore, burnRate, savingsRate, alerts } = data;
 
   return (
-    <PageShell
-      eyebrow={`${monthName} ${now.getFullYear()}`}
-      title="Panel financiero"
-      description="Resumen de tu salud financiera"
-      icon={LineChart}
-    >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricPreview
-          icon={TrendingUp}
-          label="Ingresos"
-          value={formatARS(cashflow.income)}
-          sub={`${cashflow.expenses > 0 ? `${((cashflow.income / (cashflow.income + cashflow.expenses)) * 100).toFixed(0)}%` : ""}`}
-        />
-        <MetricPreview
-          icon={TrendingDown}
-          label="Gastos"
-          value={formatARS(cashflow.expenses)}
-          sub={cashflow.expenses > 0 ? `${((cashflow.expenses / cashflow.income) * 100).toFixed(0)}% de ingresos` : ""}
-        />
-        <MetricPreview
-          icon={Wallet}
-          label="Flujo de caja"
-          value={formatARS(cashflow.cashflow)}
-          sub={calculateCashflowStatus(cashflow.cashflow) === "healthy" ? "Positivo ✓" : calculateCashflowStatus(cashflow.cashflow) === "attention" ? "En equilibrio" : "Negativo ⚠"}
-          variant={cashflow.cashflow >= 0 ? "positive" : "negative"}
-        />
-        <MetricPreview
-          icon={Banknote}
-          label="Efectivo disponible"
-          value={formatARS(liquidity)}
-          sub={calculateLiquidityLevel(1).replace("_", " ")}
-        />
-      </div>
+    <PageTransition>
+      <PageShell
+        eyebrow={`${monthName} ${now.getFullYear()}`}
+        title="Panel financiero"
+        description="Resumen de tu salud financiera"
+        icon={LineChart}
+      >
+        <StaggerContainer className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <MotionCard>
+            <MetricPreview
+              icon={TrendingUp}
+              label="Ingresos"
+              value={formatARS(cashflow.income)}
+              sub={`${cashflow.expenses > 0 ? `${((cashflow.income / (cashflow.income + cashflow.expenses)) * 100).toFixed(0)}%` : ""}`}
+            />
+          </MotionCard>
+          <MotionCard>
+            <MetricPreview
+              icon={TrendingDown}
+              label="Gastos"
+              value={formatARS(cashflow.expenses)}
+              sub={cashflow.expenses > 0 ? `${((cashflow.expenses / cashflow.income) * 100).toFixed(0)}% de ingresos` : ""}
+            />
+          </MotionCard>
+          <MotionCard>
+            <MetricPreview
+              icon={Wallet}
+              label="Flujo de caja"
+              value={formatARS(cashflow.cashflow)}
+              sub={calculateCashflowStatus(cashflow.cashflow) === "healthy" ? "Positivo ✓" : calculateCashflowStatus(cashflow.cashflow) === "attention" ? "En equilibrio" : "Negativo ⚠"}
+              variant={cashflow.cashflow >= 0 ? "positive" : "negative"}
+            />
+          </MotionCard>
+          <MotionCard>
+            <MetricPreview
+              icon={Banknote}
+              label="Efectivo disponible"
+              value={formatARS(liquidity)}
+              sub={calculateLiquidityLevel(1).replace("_", " ")}
+            />
+          </MotionCard>
+        </StaggerContainer>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricPreview
-          icon={Gauge}
-          label="Score financiero"
-          value={`${financialScore.total} / 100`}
-          sub={calculateScoreLevel(financialScore.total).replace("_", " ")}
-          variant={financialScore.total >= 70 ? "positive" : financialScore.total >= 40 ? "warning" : "negative"}
-        />
-        <MetricPreview
-          icon={PiggyBank}
-          label="Tasa de ahorro"
-          value={`${savingsRate.toFixed(1)}%`}
-          sub={calculateSavingsRateLevel(savingsRate).replace("_", " ")}
-        />
-        <MetricPreview
-          icon={BarChart3}
-          label="Endeudamiento"
-          value={`${debtRatio.toFixed(1)}%`}
-          sub={calculateDebtRatioLevel(debtRatio).replace("_", " ")}
-          variant={debtRatio <= 35 ? "positive" : debtRatio <= 50 ? "warning" : "negative"}
-        />
-        <MetricPreview
-          icon={CalendarClock}
-          label="Burn rate"
-          value={formatARS(burnRate)}
-          sub="/ día"
-        />
-      </div>
+        <StaggerContainer className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <MotionCard>
+            <MetricPreview
+              icon={Gauge}
+              label="Score financiero"
+              value={`${financialScore.total} / 100`}
+              sub={calculateScoreLevel(financialScore.total).replace("_", " ")}
+              variant={financialScore.total >= 70 ? "positive" : financialScore.total >= 40 ? "warning" : "negative"}
+            />
+          </MotionCard>
+          <MotionCard>
+            <MetricPreview
+              icon={PiggyBank}
+              label="Tasa de ahorro"
+              value={`${savingsRate.toFixed(1)}%`}
+              sub={calculateSavingsRateLevel(savingsRate).replace("_", " ")}
+            />
+          </MotionCard>
+          <MotionCard>
+            <MetricPreview
+              icon={BarChart3}
+              label="Endeudamiento"
+              value={`${debtRatio.toFixed(1)}%`}
+              sub={calculateDebtRatioLevel(debtRatio).replace("_", " ")}
+              variant={debtRatio <= 35 ? "positive" : debtRatio <= 50 ? "warning" : "negative"}
+            />
+          </MotionCard>
+          <MotionCard>
+            <MetricPreview
+              icon={CalendarClock}
+              label="Burn rate"
+              value={formatARS(burnRate)}
+              sub="/ día"
+            />
+          </MotionCard>
+        </StaggerContainer>
 
-      <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
-        <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
-          <BarChart3 className="h-4 w-4" />
-          Desglose del score ({financialScore.total}/100)
-        </h3>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <ScoreBar label="Flujo de caja" score={financialScore.cashflowScore} max={25} color="bg-emerald-500" />
-          <ScoreBar label="Liquidez" score={financialScore.liquidityScore} max={20} color="bg-blue-500" />
-          <ScoreBar label="Endeudamiento" score={financialScore.debtScore} max={20} color="bg-violet-500" />
-          <ScoreBar label="Ahorro" score={financialScore.savingsScore} max={15} color="bg-amber-500" />
-          <ScoreBar label="Metas" score={financialScore.goalScore} max={10} color="bg-rose-500" />
-          <ScoreBar label="Presupuesto" score={financialScore.budgetScore} max={10} color="bg-cyan-500" />
-        </div>
-      </div>
-
-      {alerts.length > 0 && (
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
-          <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
-            <Bell className="h-4 w-4" />
-            Alertas ({alerts.length})
-          </h3>
-          <div className="space-y-3">
-            {alerts.slice(0, 5).map((alert, i) => (
-              <div
-                key={i}
-                className={`flex gap-3 rounded-lg border p-3 text-sm ${
-                  alert.severity === "critical"
-                    ? "border-red-400/30 bg-red-50 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400"
-                    : alert.severity === "high" || alert.severity === "warning"
-                      ? "border-amber-400/30 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/30 dark:text-amber-400"
-                      : "border-blue-400/30 bg-blue-50 text-blue-700 dark:border-blue-400/20 dark:bg-blue-950/30 dark:text-blue-400"
-                }`}
-              >
-                <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                <div>
-                  <p className="font-medium">{alert.title}</p>
-                  {alert.description && <p className="mt-0.5 opacity-80">{alert.description}</p>}
-                </div>
-              </div>
-            ))}
+        <MotionCard hover="none">
+          <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
+            <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
+              <BarChart3 className="h-4 w-4" />
+              Desglose del score ({financialScore.total}/100)
+            </h3>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <ScoreBar label="Flujo de caja" score={financialScore.cashflowScore} max={25} color="bg-emerald-500" />
+              <ScoreBar label="Liquidez" score={financialScore.liquidityScore} max={20} color="bg-blue-500" />
+              <ScoreBar label="Endeudamiento" score={financialScore.debtScore} max={20} color="bg-violet-500" />
+              <ScoreBar label="Ahorro" score={financialScore.savingsScore} max={15} color="bg-amber-500" />
+              <ScoreBar label="Metas" score={financialScore.goalScore} max={10} color="bg-rose-500" />
+              <ScoreBar label="Presupuesto" score={financialScore.budgetScore} max={10} color="bg-cyan-500" />
+            </div>
           </div>
-        </div>
-      )}
+        </MotionCard>
 
-      <p className="text-xs text-slate-400 dark:text-zinc-500">
-        Los datos se actualizan cada 30 segundos. Configurá VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en .env para conectar con Supabase.
-      </p>
-    </PageShell>
+        {alerts.length > 0 && (
+          <MotionCard hover="none">
+            <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
+              <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
+                <Bell className="h-4 w-4" />
+                Alertas ({alerts.length})
+              </h3>
+              <div className="space-y-3">
+                {alerts.slice(0, 5).map((alert, i) => (
+                  <div
+                    key={i}
+                    className={`flex gap-3 rounded-lg border p-3 text-sm ${
+                      alert.severity === "critical"
+                        ? "border-red-400/30 bg-red-50 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400"
+                        : alert.severity === "high" || alert.severity === "warning"
+                          ? "border-amber-400/30 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/30 dark:text-amber-400"
+                          : "border-blue-400/30 bg-blue-50 text-blue-700 dark:border-blue-400/20 dark:bg-blue-950/30 dark:text-blue-400"
+                    }`}
+                  >
+                    <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                    <div>
+                      <p className="font-medium">{alert.title}</p>
+                      {alert.description && <p className="mt-0.5 opacity-80">{alert.description}</p>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </MotionCard>
+        )}
+
+        <p className="text-xs text-slate-400 dark:text-zinc-500">
+          Los datos se actualizan cada 30 segundos. Configurá VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en .env para conectar con Supabase.
+        </p>
+      </PageShell>
+    </PageTransition>
   );
 }
 

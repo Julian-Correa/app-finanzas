@@ -1,10 +1,12 @@
 import { History } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { PageTransition } from "@/components/common/PageTransition";
 import { PlaceholderCard } from "@/components/common/PlaceholderCard";
 
 export function HistoryPage() {
   return (
+    <PageTransition>
     <PageShell
       eyebrow="History"
       title="Immutable monthly snapshots"
@@ -13,5 +15,6 @@ export function HistoryPage() {
     >
       <PlaceholderCard title="Snapshot browser" description="Snapshot generation depends on the database and financial engine phases." />
     </PageShell>
+    </PageTransition>
   );
 }

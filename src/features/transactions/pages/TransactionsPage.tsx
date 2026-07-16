@@ -1,7 +1,11 @@
 import { useState } from "react";
-import { ReceiptText, Plus, ArrowUpRight, ArrowDownRight, X, Search, Filter } from "lucide-react";
+import { ReceiptText, Plus, ArrowUpRight, ArrowDownRight, X, Search } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { StaggerContainer } from "@/components/common/StaggerContainer";
+import { PageTransition } from "@/components/common/PageTransition";
+import { ModalWrapper } from "@/components/common/ModalWrapper";
 import { useTransactions, useTransactionMutations } from "@/features/transactions/hooks/useTransactions";
 import type { TransactionInput } from "@/services/transactionsService";
 import type { Tables } from "@/types/database";
@@ -73,12 +77,13 @@ export function TransactionsPage() {
     : null;
 
   return (
-    <PageShell
-      eyebrow={`${monthNames[month - 1]} ${year}`}
-      title="Transacciones"
-      description="Tus ingresos y gastos mensuales"
-      icon={ReceiptText}
-    >
+    <PageTransition>
+      <PageShell
+        eyebrow={`${monthNames[month - 1]} ${year}`}
+        title="Transacciones"
+        description="Tus ingresos y gastos mensuales"
+        icon={ReceiptText}
+      >
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
@@ -125,66 +130,65 @@ export function TransactionsPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <StaggerContainer className="space-y-2">
           {filtered.map((tx) => (
-            <article
-              key={tx.id}
-              className="rounded-card border border-slate-200/70 bg-white/70 p-4 backdrop-blur-xl transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.08]"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div
-                    className={cn(
-                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-                      tx.transaction_type === "income"
-                        ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400"
-                        : "bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400"
-                    )}
-                  >
-                    {tx.transaction_type === "income" ? (
-                      <ArrowUpRight className="h-5 w-5" aria-hidden="true" />
-                    ) : (
-                      <ArrowDownRight className="h-5 w-5" aria-hidden="true" />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{tx.description}</p>
-                    <p className="text-xs text-slate-400 dark:text-zinc-500">
-                      {tx.category?.name ?? "Sin categoría"}
-                      {tx.account ? ` · ${tx.account.name}` : ""}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="text-right">
-                    <p
+            <MotionCard key={tx.id} hover="none">
+              <article className="rounded-card border border-slate-200/70 bg-white/70 p-4 backdrop-blur-xl transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.08]">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
                       className={cn(
-                        "text-sm font-semibold",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
                         tx.transaction_type === "income"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-red-600 dark:text-red-400"
+                          ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400"
+                          : "bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400"
                       )}
                     >
-                      {tx.transaction_type === "income" ? "+" : "-"}${Math.abs(tx.amount).toLocaleString("es-AR")}
-                    </p>
-                    <p className="text-xs text-slate-400 dark:text-zinc-500">
-                      {new Date(tx.date).toLocaleDateString("es-AR", { day: "numeric", month: "short" })}
-                    </p>
+                      {tx.transaction_type === "income" ? (
+                        <ArrowUpRight className="h-5 w-5" aria-hidden="true" />
+                      ) : (
+                        <ArrowDownRight className="h-5 w-5" aria-hidden="true" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium">{tx.description}</p>
+                      <p className="text-xs text-slate-400 dark:text-zinc-500">
+                        {tx.category?.name ?? "Sin categoría"}
+                        {tx.account ? ` · ${tx.account.name}` : ""}
+                      </p>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => setEditingId(tx.id)}
-                    className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300"
-                    aria-label="Editar transacción"
-                  >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                    </svg>
-                  </button>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <div className="text-right">
+                      <p
+                        className={cn(
+                          "text-sm font-semibold",
+                          tx.transaction_type === "income"
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : "text-red-600 dark:text-red-400"
+                        )}
+                      >
+                        {tx.transaction_type === "income" ? "+" : "-"}${Math.abs(tx.amount).toLocaleString("es-AR")}
+                      </p>
+                      <p className="text-xs text-slate-400 dark:text-zinc-500">
+                        {new Date(tx.date).toLocaleDateString("es-AR", { day: "numeric", month: "short" })}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setEditingId(tx.id)}
+                      className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300"
+                      aria-label="Editar transacción"
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </article>
+              </article>
+            </MotionCard>
           ))}
-        </div>
+        </StaggerContainer>
       )}
 
       {filtered.length > 0 && (
@@ -193,7 +197,13 @@ export function TransactionsPage() {
         </p>
       )}
 
-      {(showForm || formInitial) && (
+      <ModalWrapper
+        open={showForm || !!formInitial}
+        onClose={() => {
+          setShowForm(false);
+          setEditingId(null);
+        }}
+      >
         <TransactionFormModal
           initial={formInitial}
           categories={categories}
@@ -206,8 +216,9 @@ export function TransactionsPage() {
             setEditingId(null);
           }}
         />
-      )}
+      </ModalWrapper>
     </PageShell>
+    </PageTransition>
   );
 }
 
@@ -285,19 +296,15 @@ function TransactionFormModal({
   const isPending = mutations.create.isPending || mutations.update.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center" onClick={onClose}>
-      <div
-        className="w-full max-w-lg rounded-t-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-900/95 sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">{isEditing ? "Editar transacción" : "Nueva transacción"}</h3>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <>
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold">{isEditing ? "Editar transacción" : "Nueva transacción"}</h3>
+        <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex gap-1 rounded-xl border border-slate-200/70 bg-slate-50 p-1 dark:border-white/10 dark:bg-zinc-800/50">
             {(["expense", "income"] as const).map((opt) => (
               <button
@@ -413,8 +420,7 @@ function TransactionFormModal({
               {isPending ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear transacción"}
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </>
   );
 }

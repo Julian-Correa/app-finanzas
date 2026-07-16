@@ -1,6 +1,7 @@
+import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { Suspense } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { Header } from "@/components/layout/Header";
@@ -8,13 +9,20 @@ import { Sidebar } from "@/components/layout/Sidebar";
 
 function PageLoader() {
   return (
-    <div className="flex h-[60vh] items-center justify-center">
+    <motion.div
+      className="flex h-[60vh] items-center justify-center"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/30 border-t-primary" />
-    </div>
+    </motion.div>
   );
 }
 
 export function AppLayout() {
+  const location = useLocation();
+
   return (
     <div className="min-h-screen bg-surface-light text-slate-950 antialiased dark:bg-surface-dark dark:text-white">
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
@@ -28,9 +36,11 @@ export function AppLayout() {
         <div className="flex min-w-0 flex-1 flex-col pb-24 lg:pb-0 lg:pl-[280px]">
           <Header />
           <main className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
-            <Suspense fallback={<PageLoader />}>
-              <Outlet />
-            </Suspense>
+            <AnimatePresence mode="wait">
+              <Suspense fallback={<PageLoader />}>
+                <Outlet key={location.pathname} />
+              </Suspense>
+            </AnimatePresence>
           </main>
         </div>
       </div>

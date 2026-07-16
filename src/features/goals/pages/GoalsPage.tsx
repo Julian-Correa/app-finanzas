@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Target, Plus, X, PiggyBank, ChevronDown, ChevronUp } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { StaggerContainer } from "@/components/common/StaggerContainer";
+import { PageTransition } from "@/components/common/PageTransition";
+import { ModalWrapper } from "@/components/common/ModalWrapper";
 import { useGoals, useGoalMutations } from "@/features/goals/hooks/useGoals";
 import type { GoalInput, GoalContributionInput } from "@/services/goalsService";
 import { cn } from "@/lib/utils";
@@ -84,26 +88,33 @@ export function GoalsPage() {
   const overallProgress = totalTarget > 0 ? (totalCurrent / totalTarget) * 100 : 0;
 
   return (
-    <PageShell
-      eyebrow="Metas"
-      title="Metas financieras"
-      description="Seguí el progreso de tus objetivos"
-      icon={Target}
-    >
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <p className="text-sm text-slate-500 dark:text-zinc-400">Meta total</p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(totalTarget)}</p>
-        </div>
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <p className="text-sm text-slate-500 dark:text-zinc-400">Ahorrado</p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight text-emerald-500">{formatARS(totalCurrent)}</p>
-        </div>
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <p className="text-sm text-slate-500 dark:text-zinc-400">Progreso global</p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight">{overallProgress.toFixed(0)}%</p>
-        </div>
-      </div>
+    <PageTransition>
+      <PageShell
+        eyebrow="Metas"
+        title="Metas financieras"
+        description="Seguí el progreso de tus objetivos"
+        icon={Target}
+      >
+        <StaggerContainer className="grid gap-4 sm:grid-cols-3">
+          <MotionCard>
+            <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <p className="text-sm text-slate-500 dark:text-zinc-400">Meta total</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(totalTarget)}</p>
+            </div>
+          </MotionCard>
+          <MotionCard>
+            <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <p className="text-sm text-slate-500 dark:text-zinc-400">Ahorrado</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight text-emerald-500">{formatARS(totalCurrent)}</p>
+            </div>
+          </MotionCard>
+          <MotionCard>
+            <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <p className="text-sm text-slate-500 dark:text-zinc-400">Progreso global</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight">{overallProgress.toFixed(0)}%</p>
+            </div>
+          </MotionCard>
+        </StaggerContainer>
 
       <div className="flex justify-end">
         <button
@@ -121,13 +132,14 @@ export function GoalsPage() {
           <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">No hay metas financieras. ¡Creá una!</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <StaggerContainer className="space-y-3">
           {goals.map((g) => {
             const progress = g.progress;
             const isExpanded = expandedId === g.id;
 
             return (
-              <div key={g.id} className="rounded-card border border-slate-200/70 bg-white/75 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <MotionCard key={g.id} hover="none">
+                <div className="rounded-card border border-slate-200/70 bg-white/75 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : g.id)}
                   className="flex w-full items-center justify-between gap-4 p-5 text-left"
@@ -203,12 +215,19 @@ export function GoalsPage() {
                   </div>
                 )}
               </div>
+              </MotionCard>
             );
           })}
-        </div>
+        </StaggerContainer>
       )}
 
-      {(showForm || formInitial) && (
+      <ModalWrapper
+        open={showForm || !!formInitial}
+        onClose={() => {
+          setShowForm(false);
+          setEditingId(null);
+        }}
+      >
         <GoalFormModal
           initial={formInitial}
           profileId={profileId ?? ""}
@@ -219,16 +238,20 @@ export function GoalsPage() {
             setEditingId(null);
           }}
         />
-      )}
+      </ModalWrapper>
 
-      {contributeGoalId && (
+      <ModalWrapper
+        open={!!contributeGoalId}
+        onClose={() => setContributeGoalId(null)}
+      >
         <ContributionFormModal
-          goalId={contributeGoalId}
+          goalId={contributeGoalId ?? ""}
           mutations={mutations}
           onClose={() => setContributeGoalId(null)}
         />
-      )}
+      </ModalWrapper>
     </PageShell>
+    </PageTransition>
   );
 }
 
@@ -291,19 +314,15 @@ function GoalFormModal({ initial, profileId, mutations, editId, onClose }: GoalF
   const isPending = mutations.create.isPending || mutations.update.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center" onClick={onClose}>
-      <div
-        className="w-full max-w-lg rounded-t-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-900/95 sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">{isEditing ? "Editar meta" : "Nueva meta"}</h3>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <>
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold">{isEditing ? "Editar meta" : "Nueva meta"}</h3>
+        <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Nombre</label>
             <input
@@ -384,9 +403,8 @@ function GoalFormModal({ initial, profileId, mutations, editId, onClose }: GoalF
               {isPending ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear meta"}
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </>
   );
 }
 
@@ -417,19 +435,15 @@ function ContributionFormModal({ goalId, mutations, onClose }: ContributionFormM
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center" onClick={onClose}>
-      <div
-        className="w-full max-w-sm rounded-t-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-900/95 sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Aportar a meta</h3>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <>
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Aportar a meta</h3>
+        <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Monto ($)</label>
             <input
@@ -471,8 +485,7 @@ function ContributionFormModal({ goalId, mutations, onClose }: ContributionFormM
               {mutations.addContribution.isPending ? "Guardando..." : "Aportar"}
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </>
   );
 }

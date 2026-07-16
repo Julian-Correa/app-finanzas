@@ -2,6 +2,10 @@ import { useState } from "react";
 import { WalletCards, Plus, X, AlertTriangle } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { StaggerContainer } from "@/components/common/StaggerContainer";
+import { PageTransition } from "@/components/common/PageTransition";
+import { ModalWrapper } from "@/components/common/ModalWrapper";
 import { useBudgets, useBudgetMutations } from "@/features/budgets/hooks/useBudgets";
 import type { BudgetInput } from "@/services/budgetsService";
 import type { Tables } from "@/types/database";
@@ -73,37 +77,40 @@ export function BudgetsPage() {
   const overallUsage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
 
   return (
-    <PageShell
-      eyebrow={`${monthNames[month - 1]} ${year}`}
-      title="Presupuestos"
-      description="Control mensual de gastos por categoría"
-      icon={WalletCards}
-    >
-      <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm text-slate-500 dark:text-zinc-400">Presupuesto total</p>
-            <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(totalBudget)}</p>
+    <PageTransition>
+      <PageShell
+        eyebrow={`${monthNames[month - 1]} ${year}`}
+        title="Presupuestos"
+        description="Control mensual de gastos por categoría"
+        icon={WalletCards}
+      >
+        <MotionCard hover="none">
+          <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-sm text-slate-500 dark:text-zinc-400">Presupuesto total</p>
+                <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(totalBudget)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-slate-500 dark:text-zinc-400">Gastado</p>
+                <p className="mt-1 text-2xl font-semibold tracking-tight text-red-500">{formatARS(totalSpent)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-slate-500 dark:text-zinc-400">Disponible</p>
+                <p className={cn("mt-1 text-2xl font-semibold tracking-tight", totalBudget - totalSpent >= 0 ? "text-emerald-500" : "text-red-500")}>
+                  {formatARS(totalBudget - totalSpent)}
+                </p>
+              </div>
+            </div>
+            <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+              <div
+                className={cn("h-full rounded-full transition-all", getUsageColor(overallUsage))}
+                style={{ width: `${Math.min(overallUsage, 100)}%` }}
+              />
+            </div>
+            <p className="mt-2 text-xs text-slate-400 dark:text-zinc-500">{overallUsage.toFixed(1)}% utilizado</p>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-slate-500 dark:text-zinc-400">Gastado</p>
-            <p className="mt-1 text-2xl font-semibold tracking-tight text-red-500">{formatARS(totalSpent)}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-slate-500 dark:text-zinc-400">Disponible</p>
-            <p className={cn("mt-1 text-2xl font-semibold tracking-tight", totalBudget - totalSpent >= 0 ? "text-emerald-500" : "text-red-500")}>
-              {formatARS(totalBudget - totalSpent)}
-            </p>
-          </div>
-        </div>
-        <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
-          <div
-            className={cn("h-full rounded-full transition-all", getUsageColor(overallUsage))}
-            style={{ width: `${Math.min(overallUsage, 100)}%` }}
-          />
-        </div>
-        <p className="mt-2 text-xs text-slate-400 dark:text-zinc-500">{overallUsage.toFixed(1)}% utilizado</p>
-      </div>
+        </MotionCard>
 
       <div className="flex justify-end">
         <button
@@ -121,14 +128,12 @@ export function BudgetsPage() {
           <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">No hay presupuestos para este mes. ¡Creá uno!</p>
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <StaggerContainer className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {budgets.map((b) => {
             const pct = b.usagePercent;
             return (
-              <article
-                key={b.id}
-                className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]"
-              >
+              <MotionCard key={b.id}>
+                <article className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{b.category?.name ?? "Sin categoría"}</p>
@@ -175,12 +180,19 @@ export function BudgetsPage() {
                   </span>
                 </div>
               </article>
+              </MotionCard>
             );
           })}
-        </div>
+        </StaggerContainer>
       )}
 
-      {(showForm || editingInitial) && (
+      <ModalWrapper
+        open={showForm || !!editingInitial}
+        onClose={() => {
+          setShowForm(false);
+          setEditingId(null);
+        }}
+      >
         <BudgetFormModal
           initial={editingInitial}
           categories={categories.filter((c) => !budgets.some((b) => b.category_id === c.id) || (editingInitial && c.id === editingInitial.category_id))}
@@ -194,8 +206,9 @@ export function BudgetsPage() {
             setEditingId(null);
           }}
         />
-      )}
+      </ModalWrapper>
     </PageShell>
+    </PageTransition>
   );
 }
 
@@ -250,19 +263,15 @@ function BudgetFormModal({
   const isPending = mutations.create.isPending || mutations.update.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center" onClick={onClose}>
-      <div
-        className="w-full max-w-lg rounded-t-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-900/95 sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">{isEditing ? "Editar presupuesto" : "Nuevo presupuesto"}</h3>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <>
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold">{isEditing ? "Editar presupuesto" : "Nuevo presupuesto"}</h3>
+        <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Categoría</label>
             <select
@@ -308,8 +317,7 @@ function BudgetFormModal({
               {isPending ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear presupuesto"}
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </>
   );
 }

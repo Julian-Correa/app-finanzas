@@ -2,6 +2,10 @@ import { useState } from "react";
 import { CreditCard, Plus, X, DollarSign, ChevronDown, ChevronUp } from "lucide-react";
 
 import { PageShell } from "@/components/common/PageShell";
+import { MotionCard } from "@/components/common/MotionCard";
+import { StaggerContainer } from "@/components/common/StaggerContainer";
+import { PageTransition } from "@/components/common/PageTransition";
+import { ModalWrapper } from "@/components/common/ModalWrapper";
 import { useDebts, useDebtMutations } from "@/features/debts/hooks/useDebts";
 import type { DebtInput, DebtPaymentInput } from "@/services/debtsService";
 import type { Tables } from "@/types/database";
@@ -83,26 +87,33 @@ export function DebtsPage() {
   const totalOriginal = activeDebts.reduce((s, d) => s + Number(d.original_amount), 0);
 
   return (
-    <PageShell
-      eyebrow="Deudas"
-      title="Seguimiento de deudas"
-      description="Controlá tus deudas y registrá pagos"
-      icon={CreditCard}
-    >
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <p className="text-sm text-slate-500 dark:text-zinc-400">Deuda total</p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight text-red-500">{formatARS(totalRemaining)}</p>
-        </div>
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <p className="text-sm text-slate-500 dark:text-zinc-400">Original</p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(totalOriginal)}</p>
-        </div>
-        <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <p className="text-sm text-slate-500 dark:text-zinc-400">Pagado</p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight text-emerald-500">{formatARS(totalOriginal - totalRemaining)}</p>
-        </div>
-      </div>
+    <PageTransition>
+      <PageShell
+        eyebrow="Deudas"
+        title="Seguimiento de deudas"
+        description="Controlá tus deudas y registrá pagos"
+        icon={CreditCard}
+      >
+        <StaggerContainer className="grid gap-4 sm:grid-cols-3">
+          <MotionCard>
+            <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <p className="text-sm text-slate-500 dark:text-zinc-400">Deuda total</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight text-red-500">{formatARS(totalRemaining)}</p>
+            </div>
+          </MotionCard>
+          <MotionCard>
+            <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <p className="text-sm text-slate-500 dark:text-zinc-400">Original</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(totalOriginal)}</p>
+            </div>
+          </MotionCard>
+          <MotionCard>
+            <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <p className="text-sm text-slate-500 dark:text-zinc-400">Pagado</p>
+              <p className="mt-1 text-2xl font-semibold tracking-tight text-emerald-500">{formatARS(totalOriginal - totalRemaining)}</p>
+            </div>
+          </MotionCard>
+        </StaggerContainer>
 
       <div className="flex justify-end">
         <button
@@ -120,7 +131,7 @@ export function DebtsPage() {
           <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">No hay deudas registradas.</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <StaggerContainer className="space-y-3">
           {debts.map((d) => {
             const progress = Number(d.original_amount) > 0
               ? ((Number(d.original_amount) - Number(d.remaining_amount)) / Number(d.original_amount)) * 100
@@ -128,7 +139,8 @@ export function DebtsPage() {
             const isExpanded = expandedId === d.id;
 
             return (
-              <div key={d.id} className="rounded-card border border-slate-200/70 bg-white/75 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
+              <MotionCard key={d.id} hover="none">
+                <div className="rounded-card border border-slate-200/70 bg-white/75 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : d.id)}
                   className="flex w-full items-center justify-between gap-4 p-5 text-left"
@@ -203,12 +215,19 @@ export function DebtsPage() {
                   </div>
                 )}
               </div>
+              </MotionCard>
             );
           })}
-        </div>
+        </StaggerContainer>
       )}
 
-      {(showForm || formInitial) && (
+      <ModalWrapper
+        open={showForm || !!formInitial}
+        onClose={() => {
+          setShowForm(false);
+          setEditingId(null);
+        }}
+      >
         <DebtFormModal
           initial={formInitial}
           profileId={profileId ?? ""}
@@ -219,17 +238,21 @@ export function DebtsPage() {
             setEditingId(null);
           }}
         />
-      )}
+      </ModalWrapper>
 
-      {payDebtId && (
+      <ModalWrapper
+        open={!!payDebtId}
+        onClose={() => setPayDebtId(null)}
+      >
         <PaymentFormModal
-          debtId={payDebtId}
+          debtId={payDebtId ?? ""}
           profileId={profileId ?? ""}
           mutations={mutations}
           onClose={() => setPayDebtId(null)}
         />
-      )}
+      </ModalWrapper>
     </PageShell>
+    </PageTransition>
   );
 }
 
@@ -300,17 +323,13 @@ function DebtFormModal({ initial, profileId, mutations, editId, onClose }: DebtF
   const isPending = mutations.create.isPending || mutations.update.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center" onClick={onClose}>
-      <div
-        className="w-full max-w-lg rounded-t-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-900/95 sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">{isEditing ? "Editar deuda" : "Nueva deuda"}</h3>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <>
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold">{isEditing ? "Editar deuda" : "Nueva deuda"}</h3>
+        <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -444,8 +463,7 @@ function DebtFormModal({ initial, profileId, mutations, editId, onClose }: DebtF
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -480,19 +498,15 @@ function PaymentFormModal({ debtId, profileId, mutations, onClose }: PaymentForm
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center" onClick={onClose}>
-      <div
-        className="w-full max-w-sm rounded-t-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-900/95 sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-lg font-semibold">Registrar pago</h3>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
+    <>
+      <div className="mb-6 flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Registrar pago</h3>
+        <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Monto ($)</label>
             <input
@@ -534,8 +548,7 @@ function PaymentFormModal({ debtId, profileId, mutations, onClose }: PaymentForm
               {mutations.addPayment.isPending ? "Guardando..." : "Registrar pago"}
             </button>
           </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </>
   );
 }

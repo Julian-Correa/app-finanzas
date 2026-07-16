@@ -4,6 +4,14 @@
 
 ### Added
 
+-   UI animations: Framer Motion integration with `PageTransition`, `MotionCard`, `StaggerContainer`, and `ModalWrapper` components.
+-   Route transitions via `AnimatePresence` in `AppLayout` — fade+slide between pages.
+-   Entrance animations (fade-in-up + stagger) on all 12 feature pages: cards, lists, metrics.
+-   Modal open/close animations (spring scale + fade) across all 5 modal forms.
+-   Custom TailwindCSS keyframes: `fade-in`, `fade-in-up`, `fade-in-down`, `scale-in`, `slide-up`.
+-   Dark/light mode smooth CSS transitions on background and border colors.
+-   Hover lift effect on cards (`MotionCard` with `whileHover`).
+-   Vendor chunk `vendor-motion` (127 kB) for Framer Motion code-splitting.
 -   Integration tests for all 7 services (`src/services/`) — 30 tests across 8 test files, using `vi.hoisted()` mock pattern.
 -   Unit tests for all 9 financial engine modules — 80 tests across 10 test files.
 -   Vitest as test runner (`npm run test`).
