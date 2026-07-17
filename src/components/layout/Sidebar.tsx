@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 
 import { useLanguage } from "@/app/providers/LanguageProvider";
+import { useTranslation } from "@/lib/translations";
 import { ProfileSwitcher } from "@/components/navigation/ProfileSwitcher";
 import { LanguageToggle } from "@/components/navigation/LanguageToggle";
 import { ThemeToggle } from "@/components/navigation/ThemeToggle";
@@ -8,7 +9,7 @@ import { primaryNavigation, secondaryNavigation } from "@/constants/navigation";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
-  const { language } = useLanguage();
+  const { t, language } = useTranslation();
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-[280px] overflow-hidden border-r border-slate-200/70 bg-white/80 p-5 shadow-soft backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-950/75 lg:flex lg:flex-col">
@@ -18,7 +19,7 @@ export function Sidebar() {
         </div>
         <div>
           <p className="text-lg font-semibold tracking-tight">FinOS</p>
-          <p className="text-xs text-slate-500 dark:text-zinc-400">{language === "es" ? "Sistema de finanzas personales" : "Personal finance OS"}</p>
+          <p className="text-xs text-slate-500 dark:text-zinc-400">{t("app.tagline")}</p>
         </div>
       </div>
 
@@ -42,11 +43,9 @@ export function Sidebar() {
 
       <div className="mt-5 shrink-0 space-y-4 rounded-card border border-slate-200/70 bg-slate-50/90 p-4 dark:border-white/10 dark:bg-white/[0.04]">
         <div>
-          <p className="text-sm font-medium">{language === "es" ? "Preferencias" : "Preferences"}</p>
+          <p className="text-sm font-medium">{t("sidebar.preferences")}</p>
           <p className="mt-1 text-xs leading-5 text-slate-500 dark:text-zinc-400">
-            {language === "es"
-              ? "Ajustá idioma, tema y la navegación base desde el shell principal."
-              : "Adjust language, theme, and core navigation from the main shell."}
+{t("sidebar.preferencesDesc")}
           </p>
         </div>
         <LanguageToggle />

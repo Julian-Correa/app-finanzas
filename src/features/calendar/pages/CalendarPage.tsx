@@ -6,14 +6,14 @@ import { MotionCard } from "@/components/common/MotionCard";
 import { PageTransition } from "@/components/common/PageTransition";
 import { SkeletonCard } from "@/components/common/Skeleton";
 import { useCalendar, type CalendarEvent } from "@/features/calendar/hooks/useCalendar";
+import { useTranslation } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
-function formatARS(amount: number): string {
-  return `$${Math.round(Math.abs(amount)).toLocaleString("es-AR")}`;
+function formatARS(amount: number, locale: string): string {
+  return `$${Math.round(Math.abs(amount)).toLocaleString(locale)}`;
 }
 
 const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-const dayNames = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
 
 const eventIcons: Record<CalendarEvent["type"], typeof TrendingUp> = {
   transaction_income: TrendingUp,
@@ -30,6 +30,8 @@ const eventColors: Record<CalendarEvent["type"], string> = {
 };
 
 export function CalendarPage() {
+  const { t, language } = useTranslation();
+  const locale = language === "en" ? "en-US" : "es-AR";
   const now = new Date();
   const [offset, setOffset] = useState(0);
   const m = now.getMonth() + 1 + offset;
@@ -59,7 +61,7 @@ export function CalendarPage() {
 
   if (isLoading) {
     return (
-      <PageShell eyebrow="Calendario" title="Cargando..." description="Preparando calendario financiero..." icon={CalendarDays}>
+      <PageShell eyebrow={t("calendar.eyebrow")} title={t("dashboard.loading")} description={t("calendar.loadingDesc")} icon={CalendarDays}>
         <SkeletonCard className="h-[500px] p-6" />
       </PageShell>
     );
@@ -67,9 +69,9 @@ export function CalendarPage() {
 
   if (error) {
     return (
-      <PageShell eyebrow="Calendario" title="Error" description="No se pudieron cargar los eventos." icon={CalendarDays}>
+      <PageShell eyebrow={t("calendar.eyebrow")} title={t("calendar.errorUnknown")} description={t("calendar.errorDesc")} icon={CalendarDays}>
         <div className="rounded-card border border-red-400/30 bg-red-50 p-5 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400">
-          <p>{(error as Error)?.message ?? "Error desconocido"}</p>
+          <p>{(error as Error)?.message ?? t("calendar.errorUnknown")}</p>
         </div>
       </PageShell>
     );
@@ -79,8 +81,8 @@ export function CalendarPage() {
     <PageTransition>
       <PageShell
         eyebrow={`${monthNames[month - 1]} ${year}`}
-        title="Calendario financiero"
-        description="Vencimientos, cuotas y eventos del mes"
+        title={t("calendar.title")}
+        description={t("calendar.description")}
         icon={CalendarDays}
       >
         <div className="flex items-center justify-center gap-4">
@@ -96,7 +98,7 @@ export function CalendarPage() {
         <MotionCard hover="none">
           <div className="rounded-card border border-slate-200/70 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
         <div className="grid grid-cols-7 gap-px">
-          {dayNames.map((d) => (
+          {[t("calendar.dayNamesSun"), t("calendar.dayNamesMon"), t("calendar.dayNamesTue"), t("calendar.dayNamesWed"), t("calendar.dayNamesThu"), t("calendar.dayNamesFri"), t("calendar.dayNamesSat")].map((d) => (
             <div key={d} className="p-2 text-center text-xs font-medium text-slate-400 dark:text-zinc-500">
               {d}
             </div>
@@ -135,7 +137,7 @@ export function CalendarPage() {
                           "flex items-center gap-1 rounded px-1 py-0.5",
                           eventColors[ev.type]
                         )}
-                        title={`${ev.label}: ${formatARS(ev.amount)}`}
+                        title={`${ev.label}: ${formatARS(ev.amount, locale)}`}
                       >
                         <Icon className="h-2.5 w-2.5 shrink-0" aria-hidden="true" />
                         <span className="truncate text-[10px] leading-tight">{ev.label}</span>
@@ -143,7 +145,7 @@ export function CalendarPage() {
                     );
                   })}
                   {dayEvents.length > 3 && (
-                    <p className="px-1 text-[10px] text-slate-400 dark:text-zinc-500">+{dayEvents.length - 3} más</p>
+                    <p className="px-1 text-[10px] text-slate-400 dark:text-zinc-500">+{dayEvents.length - 3} {t("calendar.more")}</p>
                   )}
                 </div>
                 {hasIncome && hasExpense && (
@@ -161,24 +163,24 @@ export function CalendarPage() {
 
       <div className="flex flex-wrap gap-4 text-xs text-slate-500 dark:text-zinc-400">
         <span className="flex items-center gap-1.5">
-          <TrendingUp className="h-3.5 w-3.5 text-emerald-500" /> Ingreso
+          <TrendingUp className="h-3.5 w-3.5 text-emerald-500" /> {t("calendar.legendIncome")}
         </span>
         <span className="flex items-center gap-1.5">
-          <TrendingDown className="h-3.5 w-3.5 text-red-500" /> Gasto
+          <TrendingDown className="h-3.5 w-3.5 text-red-500" /> {t("calendar.legendExpense")}
         </span>
         <span className="flex items-center gap-1.5">
-          <CreditCard className="h-3.5 w-3.5 text-amber-500" /> Vencimiento
+          <CreditCard className="h-3.5 w-3.5 text-amber-500" /> {t("calendar.legendDue")}
         </span>
         <span className="flex items-center gap-1.5">
-          <Target className="h-3.5 w-3.5 text-blue-500" /> Meta
+          <Target className="h-3.5 w-3.5 text-blue-500" /> {t("calendar.legendGoal")}
         </span>
       </div>
 
       <MotionCard hover="none">
         <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <h3 className="mb-3 text-sm font-medium text-slate-700 dark:text-zinc-300">Eventos del mes</h3>
+          <h3 className="mb-3 text-sm font-medium text-slate-700 dark:text-zinc-300">{t("calendar.monthEvents")}</h3>
         {data && data.events.length === 0 ? (
-          <p className="text-xs text-slate-400 dark:text-zinc-500">No hay eventos este mes.</p>
+          <p className="text-xs text-slate-400 dark:text-zinc-500">{t("calendar.noEvents")}</p>
         ) : (
           <div className="space-y-2">
             {data?.events.map((ev, i) => {
@@ -196,7 +198,7 @@ export function CalendarPage() {
                     "shrink-0 text-xs font-semibold",
                     ev.type === "transaction_income" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
                   )}>
-                    {ev.type === "transaction_income" ? "+" : "-"}{formatARS(ev.amount)}
+                    {ev.type === "transaction_income" ? "+" : "-"}{formatARS(ev.amount, locale)}
                   </span>
                 </div>
               );

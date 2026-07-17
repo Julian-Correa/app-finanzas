@@ -6,35 +6,38 @@ import { PageTransition } from "@/components/common/PageTransition";
 import { SkeletonCard } from "@/components/common/Skeleton";
 import { usePurchaseAdvisor, useEvaluation } from "@/features/purchase-advisor/hooks/usePurchaseAdvisor";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/translations";
 
-function formatARS(amount: number): string {
-  return `$${Math.round(amount).toLocaleString("es-AR")}`;
+function formatARS(amount: number, locale = "es-AR"): string {
+  return `$${Math.round(amount).toLocaleString(locale)}`;
 }
 
-const decisionConfig = {
-  yes: { icon: CheckCircle, label: "Compra recomendada", color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 border-emerald-400/30 dark:bg-emerald-950/30 dark:border-emerald-400/20" },
-  wait: { icon: HelpCircle, label: "Esperá un poco", color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 border-amber-400/30 dark:bg-amber-950/30 dark:border-amber-400/20" },
-  no: { icon: AlertTriangle, label: "No es recomendable", color: "text-red-600 dark:text-red-400", bg: "bg-red-50 border-red-400/30 dark:bg-red-950/30 dark:border-red-400/20" },
-};
-
-const riskConfig = {
-  low: { label: "Bajo riesgo", color: "text-emerald-600 dark:text-emerald-400" },
-  medium: { label: "Riesgo medio", color: "text-amber-600 dark:text-amber-400" },
-  high: { label: "Alto riesgo", color: "text-red-600 dark:text-red-400" },
-};
-
-function formatSigned(value: number): string {
+function formatSigned(value: number, locale = "es-AR"): string {
   const sign = value >= 0 ? "+" : "";
-  return `${sign}${formatARS(Math.abs(value))}`;
+  return `${sign}${formatARS(Math.abs(value), locale)}`;
 }
 
 export function PurchaseAdvisorPage() {
   const { data: dashboard, isLoading, error } = usePurchaseAdvisor();
+  const { t, language } = useTranslation();
+  const locale = language === "en" ? "en-US" : "es-AR";
   const { price, setPrice, installments, setInstallments, evaluation } = useEvaluation(dashboard);
+
+  const decisionConfig = {
+    yes: { icon: CheckCircle, label: t("advisor.decisionYes"), color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 border-emerald-400/30 dark:bg-emerald-950/30 dark:border-emerald-400/20" },
+    wait: { icon: HelpCircle, label: t("advisor.decisionWait"), color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 border-amber-400/30 dark:bg-amber-950/30 dark:border-amber-400/20" },
+    no: { icon: AlertTriangle, label: t("advisor.decisionNo"), color: "text-red-600 dark:text-red-400", bg: "bg-red-50 border-red-400/30 dark:bg-red-950/30 dark:border-red-400/20" },
+  };
+
+  const riskConfig = {
+    low: { label: t("advisor.riskLow"), color: "text-emerald-600 dark:text-emerald-400" },
+    medium: { label: t("advisor.riskMedium"), color: "text-amber-600 dark:text-amber-400" },
+    high: { label: t("advisor.riskHigh"), color: "text-red-600 dark:text-red-400" },
+  };
 
   if (isLoading) {
     return (
-      <PageShell eyebrow="Purchase Advisor" title="Cargando..." description="Analizando tus finanzas..." icon={ShoppingCart}>
+      <PageShell eyebrow={t("advisor.eyebrow")} title={t("dashboard.loading")} description={t("advisor.loadingDesc")} icon={ShoppingCart}>
         <SkeletonCard className="h-[300px] p-8" />
       </PageShell>
     );
@@ -42,7 +45,7 @@ export function PurchaseAdvisorPage() {
 
   if (error || !dashboard) {
     return (
-      <PageShell eyebrow="Purchase Advisor" title="Error" description="No se pudieron cargar los datos financieros." icon={ShoppingCart}>
+      <PageShell eyebrow={t("advisor.eyebrow")} title={t("dashboard.error")} description={t("advisor.errorDesc")} icon={ShoppingCart}>
         <div className="rounded-card border border-red-400/30 bg-red-50 p-5 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400">
           <p>{(error as Error)?.message ?? "Error desconocido"}</p>
         </div>
@@ -53,18 +56,18 @@ export function PurchaseAdvisorPage() {
   return (
     <PageTransition>
       <PageShell
-        eyebrow="Purchase Advisor"
-        title="¿Puedo comprar esto?"
-        description="Evaluá una compra antes de hacerla"
+        eyebrow={t("advisor.eyebrow")}
+        title={t("advisor.title")}
+        description={t("advisor.description")}
         icon={ShoppingCart}
       >
         <div className="grid gap-6 lg:grid-cols-2">
           <MotionCard hover="none">
             <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-              <h3 className="mb-5 text-sm font-medium text-slate-700 dark:text-zinc-300">Detalles de la compra</h3>
+              <h3 className="mb-5 text-sm font-medium text-slate-700 dark:text-zinc-300">{t("advisor.purchaseDetails")}</h3>
           <div className="space-y-5">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Precio ($)</label>
+              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("advisor.price")}</label>
               <input
                 type="number"
                 min="0"
@@ -76,7 +79,7 @@ export function PurchaseAdvisorPage() {
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Cuotas</label>
+              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("advisor.installments")}</label>
               <div className="flex gap-1 rounded-xl border border-slate-200/70 bg-slate-50 p-1 dark:border-white/10 dark:bg-zinc-800/50">
                 {[1, 3, 6, 12, 18, 24].map((n) => (
                   <button
@@ -98,23 +101,23 @@ export function PurchaseAdvisorPage() {
 
           {dashboard && (
             <div className="mt-6 space-y-2 border-t border-slate-200/50 pt-4 dark:border-white/5">
-              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-zinc-500">Finanzas actuales</p>
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400 dark:text-zinc-500">{t("advisor.currentFinances")}</p>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 dark:text-zinc-400">Efectivo disponible</span>
-                <span className="font-medium">{formatARS(dashboard.liquidity)}</span>
+                <span className="text-slate-500 dark:text-zinc-400">{t("advisor.availableCash")}</span>
+                <span className="font-medium">{formatARS(dashboard.liquidity, locale)}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 dark:text-zinc-400">Flujo de caja</span>
+<span className="text-slate-500 dark:text-zinc-400">{t("advisor.cashflow")}</span>
                 <span className={cn("font-medium", dashboard.cashflow.cashflow >= 0 ? "text-emerald-600" : "text-red-600")}>
-                  {formatARS(dashboard.cashflow.cashflow)}
+                  {formatARS(dashboard.cashflow.cashflow, locale)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 dark:text-zinc-400">Score financiero</span>
+<span className="text-slate-500 dark:text-zinc-400">{t("advisor.financialScore")}</span>
                 <span className="font-medium">{dashboard.financialScore.total}/100</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 dark:text-zinc-400">Endeudamiento</span>
+<span className="text-slate-500 dark:text-zinc-400">{t("advisor.debtRatio")}</span>
                 <span className="font-medium">{dashboard.debtRatio.toFixed(1)}%</span>
               </div>
             </div>
@@ -127,7 +130,7 @@ export function PurchaseAdvisorPage() {
             <MotionCard hover="none">
               <div className="rounded-card border border-slate-200/70 bg-white/70 p-8 text-center backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
                 <ShoppingCart className="mx-auto h-10 w-10 text-slate-300 dark:text-zinc-600" aria-hidden="true" />
-                <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Ingresá un precio para evaluar la compra</p>
+                <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">{t("advisor.enterPrice")}</p>
               </div>
             </MotionCard>
           ) : (() => {
@@ -152,30 +155,30 @@ export function PurchaseAdvisorPage() {
 
               <MotionCard hover="none">
                 <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-                  <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Impacto financiero</h3>
+                  <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">{t("advisor.financialImpact")}</h3>
                 <div className="space-y-3">
                   <ImpactRow
                     icon={TrendingUp}
-                    label="Flujo de caja"
-                    value={formatSigned(evaluation.cashflowImpact)}
+                    label={t("advisor.impactCashflow")}
+                    value={formatSigned(evaluation.cashflowImpact, locale)}
                     positive={evaluation.cashflowImpact >= 0}
                   />
                   <ImpactRow
                     icon={Gauge}
-                    label="Score financiero"
-                    value={`${evaluation.financialScoreImpact >= 0 ? "+" : ""}${evaluation.financialScoreImpact.toFixed(1)} pts`}
+                    label={t("advisor.impactScore")}
+                    value={`${evaluation.financialScoreImpact >= 0 ? "+" : ""}${evaluation.financialScoreImpact.toFixed(1)} ${t("advisor.points")}`}
                     positive={evaluation.financialScoreImpact >= 0}
                   />
                   <ImpactRow
                     icon={Wallet}
-                    label="Impacto en presupuesto"
+                    label={t("advisor.impactBudget")}
                     value={`+${evaluation.budgetImpact.toFixed(1)}%`}
                     positive={false}
                     invert
                   />
                   <ImpactRow
                     icon={TrendingDown}
-                    label="Endeudamiento"
+                    label={t("advisor.impactDebt")}
                     value={`+${evaluation.debtImpact.toFixed(1)}%`}
                     positive={false}
                     invert
@@ -183,16 +186,16 @@ export function PurchaseAdvisorPage() {
                   {installments > 1 && (
                     <ImpactRow
                       icon={ShoppingCart}
-                      label="Cuota mensual"
-                      value={formatARS(price / installments)}
+                      label={t("advisor.monthlyInstallment")}
+                      value={formatARS(price / installments, locale)}
                       positive={false}
                     />
                   )}
                   {evaluation.goalDelay > 0 && (
                     <ImpactRow
                       icon={AlertTriangle}
-                      label="Retraso en metas"
-                      value={`~${evaluation.goalDelay} meses`}
+                      label={t("advisor.goalDelay")}
+                      value={`~${evaluation.goalDelay} ${t("advisor.months")}`}
                       positive={false}
                       invert
                     />
@@ -203,7 +206,7 @@ export function PurchaseAdvisorPage() {
 
               <MotionCard hover="none">
                 <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-                  <h3 className="mb-3 text-sm font-medium text-slate-700 dark:text-zinc-300">Razones</h3>
+                  <h3 className="mb-3 text-sm font-medium text-slate-700 dark:text-zinc-300">{t("advisor.reasons")}</h3>
                 <ul className="space-y-2">
                   {evaluation.reasons.map((reason, i) => (
                     <li key={i} className="flex gap-2 text-xs text-slate-600 dark:text-zinc-300">

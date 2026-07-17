@@ -8,6 +8,7 @@ import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { SkeletonCard } from "@/components/common/Skeleton";
 import { useReports } from "@/features/reports/hooks/useReports";
+import { useTranslation } from "@/lib/translations";
 
 Chart.register(...registerables);
 
@@ -20,6 +21,7 @@ function formatARS(amount: number): string {
 export function ReportsPage() {
   const { data, isLoading, error } = useReports(6);
   const [chartPeriods, setChartPeriods] = useState(6);
+  const { t, language } = useTranslation();
 
   const barCanvasRef = useRef<HTMLCanvasElement>(null);
   const doughnutCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -49,7 +51,7 @@ export function ReportsPage() {
         labels: months,
         datasets: [
           {
-            label: "Ingresos",
+            label: t("reports.tableIncome"),
             data: incomes,
             backgroundColor: "rgba(22, 163, 74, 0.7)",
             borderColor: "rgb(22, 163, 74)",
@@ -57,7 +59,7 @@ export function ReportsPage() {
             borderRadius: 6,
           },
           {
-            label: "Gastos",
+            label: t("reports.tableExpenses"),
             data: expenses,
             backgroundColor: "rgba(220, 38, 38, 0.7)",
             borderColor: "rgb(220, 38, 38)",
@@ -171,7 +173,7 @@ export function ReportsPage() {
         labels: months,
         datasets: [
           {
-            label: "Flujo de caja",
+            label: t("reports.cashflow"),
             data: cashflows,
             borderColor: "rgb(37, 99, 235)",
             backgroundColor: "rgba(37, 99, 235, 0.1)",
@@ -214,7 +216,7 @@ export function ReportsPage() {
 
   if (isLoading || reportQuery.isLoading) {
     return (
-      <PageShell eyebrow="Reportes" title="Cargando..." description="Generando reportes..." icon={BarChart3}>
+      <PageShell eyebrow={t("reports.eyebrow")} title={t("dashboard.loading")} description={t("reports.loadingDesc")} icon={BarChart3}>
         <div className="grid gap-6 lg:grid-cols-2">
           {Array.from({ length: 3 }).map((_, i) => (
             <SkeletonCard key={i} className="h-[300px] p-6" />
@@ -226,7 +228,7 @@ export function ReportsPage() {
 
   if (error || !data) {
     return (
-      <PageShell eyebrow="Reportes" title="Error" description="No se pudieron generar los reportes." icon={BarChart3}>
+      <PageShell eyebrow={t("reports.eyebrow")} title={t("dashboard.error")} description={t("reports.errorDesc")} icon={BarChart3}>
         <div className="rounded-card border border-red-400/30 bg-red-50 p-5 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400">
           <p>{(error as Error)?.message ?? "Error desconocido"}</p>
         </div>
@@ -244,9 +246,9 @@ export function ReportsPage() {
   return (
     <PageTransition>
       <PageShell
-        eyebrow="Reportes"
-        title="Reportes financieros"
-        description="Visualizá ingresos, gastos y tendencias"
+        eyebrow={t("reports.eyebrow")}
+        title={t("reports.title")}
+        description={t("reports.description")}
         icon={BarChart3}
       >
         <div className="flex items-center gap-2">
@@ -260,7 +262,7 @@ export function ReportsPage() {
                 : "border border-slate-200/70 text-slate-500 hover:bg-slate-50 dark:border-white/10 dark:text-zinc-400 dark:hover:bg-white/[0.04]"
             }`}
           >
-            {p} meses
+            {p} {t("reports.months")}
           </button>
         ))}
       </div>
@@ -269,27 +271,27 @@ export function ReportsPage() {
         <MotionCard>
           <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
             <TrendingUp className="h-5 w-5 text-emerald-500" aria-hidden="true" />
-            <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Último mes - Ingresos</p>
+            <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">{t("reports.lastMonthIncome")}</p>
             <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(lastMonth.income)}</p>
           </div>
         </MotionCard>
         <MotionCard>
           <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
             <TrendingDown className="h-5 w-5 text-red-500" aria-hidden="true" />
-            <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Último mes - Gastos</p>
+            <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">{t("reports.lastMonthExpenses")}</p>
             <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(Math.abs(lastMonth.expenses))}</p>
           </div>
         </MotionCard>
         <MotionCard>
           <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
             <Wallet className={`h-5 w-5 ${lastMonth.cashflow >= 0 ? "text-emerald-500" : "text-red-500"}`} aria-hidden="true" />
-            <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">Flujo de caja</p>
+            <p className="mt-4 text-sm text-slate-500 dark:text-zinc-400">{t("reports.cashflow")}</p>
             <p className={`mt-1 text-2xl font-semibold tracking-tight ${lastMonth.cashflow >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
               {formatARS(lastMonth.cashflow)}
             </p>
             {prevMonth && (
               <p className={`mt-0.5 text-xs ${cashflowTrend >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-                {cashflowTrend >= 0 ? "↑" : "↓"} {Math.abs(cashflowTrend).toFixed(1)}% vs mes anterior
+                {cashflowTrend >= 0 ? "↑" : "↓"} {Math.abs(cashflowTrend).toFixed(1)}% {t("reports.vsPreviousMonth")}
               </p>
             )}
           </div>
@@ -299,7 +301,7 @@ export function ReportsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <MotionCard hover="none">
           <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-            <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Ingresos vs Gastos</h3>
+            <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">{t("reports.chartIncomeVsExpenses")}</h3>
             <div style={{ height: "280px" }}>
               <canvas ref={barCanvasRef} />
             </div>
@@ -308,7 +310,7 @@ export function ReportsPage() {
 
         <MotionCard hover="none">
           <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-            <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Gastos por categoría</h3>
+            <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">{t("reports.chartExpensesByCategory")}</h3>
             <div style={{ height: "280px" }}>
               <canvas ref={doughnutCanvasRef} />
             </div>
@@ -318,7 +320,7 @@ export function ReportsPage() {
 
       <MotionCard hover="none">
         <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-          <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Evolución del flujo de caja</h3>
+          <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">{t("reports.chartCashflowTrend")}</h3>
           <div style={{ height: "280px" }}>
             <canvas ref={lineCanvasRef} />
           </div>
@@ -327,15 +329,15 @@ export function ReportsPage() {
 
       <MotionCard hover="none">
         <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-        <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">Resumen mensual</h3>
+        <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">{t("reports.monthlySummary")}</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200/70 text-left text-xs text-slate-500 dark:border-white/10 dark:text-zinc-400">
-                <th className="pb-2 pr-4 font-medium">Mes</th>
-                <th className="pb-2 pr-4 font-medium">Ingresos</th>
-                <th className="pb-2 pr-4 font-medium">Gastos</th>
-                <th className="pb-2 font-medium">Flujo de caja</th>
+                <th className="pb-2 pr-4 font-medium">{t("reports.tableMonth")}</th>
+                <th className="pb-2 pr-4 font-medium">{t("reports.tableIncome")}</th>
+                <th className="pb-2 pr-4 font-medium">{t("reports.tableExpenses")}</th>
+                <th className="pb-2 font-medium">{t("reports.tableCashflow")}</th>
               </tr>
             </thead>
             <tbody>

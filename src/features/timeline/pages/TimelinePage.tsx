@@ -7,15 +7,18 @@ import { Skeleton, SkeletonCard } from "@/components/common/Skeleton";
 import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { useTimeline } from "@/features/timeline/hooks/useTimeline";
+import { useTranslation } from "@/lib/translations";
 import { cn } from "@/lib/utils";
 
-function formatARS(amount: number): string {
-  return `$${Math.round(amount).toLocaleString("es-AR")}`;
+function formatARS(amount: number, locale: string): string {
+  return `$${Math.round(amount).toLocaleString(locale)}`;
 }
 
 const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
 export function TimelinePage() {
+  const { t, language } = useTranslation();
+  const locale = language === "en" ? "en-US" : "es-AR";
   const now = new Date();
   const [offset, setOffset] = useState(0);
   const m = now.getMonth() + 1 + offset;
@@ -29,7 +32,7 @@ export function TimelinePage() {
 
   if (isLoading) {
     return (
-      <PageShell eyebrow="Línea de tiempo" title="Cargando..." description="Organizando eventos financieros..." icon={ListTodo}>
+      <PageShell eyebrow={t("timeline.eyebrow")} title={t("dashboard.loading")} description={t("timeline.loadingDesc")} icon={ListTodo}>
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <SkeletonCard key={i} className="p-4">
@@ -49,9 +52,9 @@ export function TimelinePage() {
 
   if (error || !data) {
     return (
-      <PageShell eyebrow="Línea de tiempo" title="Error" description="No se pudieron cargar los eventos." icon={ListTodo}>
+      <PageShell eyebrow={t("timeline.eyebrow")} title={t("timeline.errorUnknown")} description={t("timeline.errorDesc")} icon={ListTodo}>
         <div className="rounded-card border border-red-400/30 bg-red-50 p-5 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400">
-          <p>{(error as Error)?.message ?? "Error desconocido"}</p>
+          <p>{(error as Error)?.message ?? t("timeline.errorUnknown")}</p>
         </div>
       </PageShell>
     );
@@ -75,9 +78,9 @@ export function TimelinePage() {
     events.push({
       date: `${year}-${String(month).padStart(2, "0")}-01`,
       type: "budget",
-      label: `Presupuesto: ${b.category?.name ?? ""}`,
+      label: `${t("timeline.budget")}${b.category?.name ?? ""}`,
       amount: Number(b.limit_amount),
-      detail: `${formatARS(b.spent_amount)} de ${formatARS(b.limit_amount)}`,
+      detail: `${formatARS(b.spent_amount, locale)} de ${formatARS(b.limit_amount, locale)}`,
     });
   }
 
@@ -87,9 +90,9 @@ export function TimelinePage() {
       events.push({
         date: `${year}-${String(month).padStart(2, "0")}-${day}`,
         type: "debt",
-        label: `Vence: ${d.name}`,
+        label: `${t("timeline.debtDue")}${d.name}`,
         amount: Number(d.installment_amount),
-        detail: `${d.creditor ?? ""} · ${formatARS(d.remaining_amount)} restantes`,
+        detail: `${d.creditor ?? ""} · ${formatARS(d.remaining_amount, locale)} ${t("timeline.remaining")}`,
       });
     }
   }
@@ -100,8 +103,8 @@ export function TimelinePage() {
     <PageTransition>
       <PageShell
         eyebrow={`${monthNames[month - 1]} ${year}`}
-        title="Línea de tiempo"
-        description="Flujo financiero mensual"
+        title={t("timeline.title")}
+        description={t("timeline.description")}
         icon={ListTodo}
       >
         <div className="flex items-center justify-center gap-4">
@@ -118,7 +121,7 @@ export function TimelinePage() {
           <MotionCard hover="none">
             <div className="rounded-card border border-slate-200/70 bg-white/70 p-8 text-center backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
               <CalendarDays className="mx-auto h-8 w-8 text-slate-300 dark:text-zinc-600" aria-hidden="true" />
-              <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">No hay eventos financieros este mes.</p>
+              <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">{t("timeline.empty")}</p>
             </div>
           </MotionCard>
         ) : (
@@ -156,9 +159,9 @@ export function TimelinePage() {
                           </div>
                           <div className="shrink-0 text-right">
                             <p className={cn("text-sm font-semibold", isIncome ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400")}>
-                              {isIncome ? "+" : "-"}{formatARS(Math.abs(ev.amount))}
+                              {isIncome ? "+" : "-"}{formatARS(Math.abs(ev.amount), locale)}
                             </p>
-                            <p className="text-xs text-slate-400 dark:text-zinc-500">Día {day}</p>
+                            <p className="text-xs text-slate-400 dark:text-zinc-500">{t("timeline.day")} {day}</p>
                           </div>
                         </div>
                       </div>

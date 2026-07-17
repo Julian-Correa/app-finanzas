@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { WalletCards, Plus, X, AlertTriangle } from "lucide-react";
+import { useTranslation } from "@/lib/translations";
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
@@ -38,6 +39,7 @@ function getUsageColor(percent: number): string {
 }
 
 export function BudgetsPage() {
+  const { t, language } = useTranslation();
   const { data, isLoading, error, month, year, profileId } = useBudgets();
   const mutations = useBudgetMutations(profileId ?? "", month, year);
 
@@ -46,7 +48,7 @@ export function BudgetsPage() {
 
   if (isLoading) {
     return (
-      <PageShell eyebrow={`${monthNames[month - 1]} ${year}`} title="Presupuestos" description="Cargando presupuestos..." icon={WalletCards}>
+        <PageShell eyebrow={`${monthNames[month - 1]} ${year}`} title={t("budgets.title")} description={t("budgets.loadingDesc")} icon={WalletCards}>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
             <SkeletonCard key={i} />
@@ -58,10 +60,10 @@ export function BudgetsPage() {
 
   if (error || !data) {
     return (
-      <PageShell eyebrow={`${monthNames[month - 1]} ${year}`} title="Presupuestos" description="No se pudieron cargar los presupuestos." icon={WalletCards}>
-        <div className="rounded-card border border-red-400/30 bg-red-50 p-5 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400">
-          <p>{(error as Error)?.message ?? "Error desconocido"}</p>
-        </div>
+        <PageShell eyebrow={`${monthNames[month - 1]} ${year}`} title={t("budgets.title")} description={t("budgets.errorDesc")} icon={WalletCards}>
+          <div className="rounded-card border border-red-400/30 bg-red-50 p-5 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400">
+            <p>{(error as Error)?.message ?? t("budgets.errorUnknown")}</p>
+          </div>
       </PageShell>
     );
   }
@@ -81,23 +83,23 @@ export function BudgetsPage() {
     <PageTransition>
       <PageShell
         eyebrow={`${monthNames[month - 1]} ${year}`}
-        title="Presupuestos"
-        description="Control mensual de gastos por categoría"
+        title={t("budgets.title")}
+        description={t("budgets.description")}
         icon={WalletCards}
       >
         <MotionCard hover="none">
           <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm text-slate-500 dark:text-zinc-400">Presupuesto total</p>
+                <p className="text-sm text-slate-500 dark:text-zinc-400">{t("budgets.totalBudget")}</p>
                 <p className="mt-1 text-2xl font-semibold tracking-tight">{formatARS(totalBudget)}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-slate-500 dark:text-zinc-400">Gastado</p>
+                <p className="text-sm text-slate-500 dark:text-zinc-400">{t("budgets.spent")}</p>
                 <p className="mt-1 text-2xl font-semibold tracking-tight text-red-500">{formatARS(totalSpent)}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-slate-500 dark:text-zinc-400">Disponible</p>
+                <p className="text-sm text-slate-500 dark:text-zinc-400">{t("budgets.available")}</p>
                 <p className={cn("mt-1 text-2xl font-semibold tracking-tight", totalBudget - totalSpent >= 0 ? "text-emerald-500" : "text-red-500")}>
                   {formatARS(totalBudget - totalSpent)}
                 </p>
@@ -109,7 +111,7 @@ export function BudgetsPage() {
                 style={{ width: `${Math.min(overallUsage, 100)}%` }}
               />
             </div>
-            <p className="mt-2 text-xs text-slate-400 dark:text-zinc-500">{overallUsage.toFixed(1)}% utilizado</p>
+            <p className="mt-2 text-xs text-slate-400 dark:text-zinc-500">{overallUsage.toFixed(1)}% {t("budgets.pctUsed")}</p>
           </div>
         </MotionCard>
 
@@ -119,14 +121,14 @@ export function BudgetsPage() {
           className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90"
         >
           <Plus className="h-4 w-4" />
-          Agregar presupuesto
+          {t("budgets.add")}
         </button>
       </div>
 
       {budgets.length === 0 ? (
         <div className="rounded-card border border-slate-200/70 bg-white/70 p-8 text-center backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
           <WalletCards className="mx-auto h-8 w-8 text-slate-300 dark:text-zinc-600" aria-hidden="true" />
-          <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">No hay presupuestos para este mes. ¡Creá uno!</p>
+          <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">{t("budgets.empty")}</p>
         </div>
       ) : (
         <StaggerContainer className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -137,14 +139,14 @@ export function BudgetsPage() {
                 <article className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{b.category?.name ?? "Sin categoría"}</p>
+                    <p className="truncate text-sm font-medium">{b.category?.name ?? t("budgets.uncategorized")}</p>
                     <p className="mt-0.5 text-xs text-slate-400 dark:text-zinc-500">
                       {formatARS(b.spent_amount)} / {formatARS(b.limit_amount)}
                     </p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {pct >= 90 && (
-                      <AlertTriangle className="h-4 w-4 text-red-500" aria-label="Alerta" />
+                      <AlertTriangle className="h-4 w-4 text-red-500" aria-label={t("budgets.alert")} />
                     )}
                     <span
                       className={cn(
@@ -157,7 +159,7 @@ export function BudgetsPage() {
                     <button
                       onClick={() => setEditingId(b.id)}
                       className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300"
-                      aria-label="Editar presupuesto"
+                      aria-label={t("budgets.editLabel")}
                     >
                       <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
@@ -177,7 +179,7 @@ export function BudgetsPage() {
                     b.status === "on_track" ? "bg-emerald-500" : b.status === "exceeded" ? "bg-red-500" : "bg-amber-500"
                   )} />
                   <span className="text-xs text-slate-400 dark:text-zinc-500">
-                    {b.status === "on_track" ? "En camino" : b.status === "exceeded" ? "Excedido" : b.status === "warning" ? "Advertencia" : b.status === "high" ? "Alto" : "Crítico"}
+                    {b.status === "on_track" ? t("budgetStatus.onTrack") : b.status === "exceeded" ? t("budgetStatus.exceeded") : b.status === "warning" ? t("budgetStatus.warning") : b.status === "high" ? t("budgetStatus.high") : t("budgetStatus.critical")}
                   </span>
                 </div>
               </article>
@@ -234,6 +236,7 @@ function BudgetFormModal({
   editId,
   onClose,
 }: BudgetFormModalProps) {
+  const { t, language } = useTranslation();
   const isEditing = !!initial && !!editId;
 
   const [categoryId, setCategoryId] = useState(initial?.category_id ?? "");
@@ -266,7 +269,7 @@ function BudgetFormModal({
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{isEditing ? "Editar presupuesto" : "Nuevo presupuesto"}</h3>
+        <h3 className="text-lg font-semibold">{isEditing ? t("budgets.form.editTitle") : t("budgets.form.newTitle")}</h3>
         <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
           <X className="h-5 w-5" />
         </button>
@@ -274,14 +277,14 @@ function BudgetFormModal({
 
       <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Categoría</label>
+            <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("budgets.form.category")}</label>
             <select
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               required
               className="w-full rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
             >
-              <option value="">Seleccionar</option>
+              <option value="">{t("budgets.form.select")}</option>
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -289,7 +292,7 @@ function BudgetFormModal({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Límite mensual ($)</label>
+            <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("budgets.form.monthlyLimit")}</label>
             <input
               type="number"
               step="0.01"
@@ -308,14 +311,14 @@ function BudgetFormModal({
               onClick={onClose}
               className="flex-1 rounded-xl border border-slate-200/70 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.04]"
             >
-              Cancelar
+              {t("budgets.form.cancel")}
             </button>
             <button
               type="submit"
               disabled={isPending}
               className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
-              {isPending ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear presupuesto"}
+              {isPending ? t("budgets.form.saving") : isEditing ? t("budgets.form.saveChanges") : t("budgets.form.create")}
             </button>
           </div>
       </form>

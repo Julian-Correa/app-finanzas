@@ -8,10 +8,12 @@ import { SkeletonCard } from "@/components/common/Skeleton";
 import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { useDashboard } from "../hooks/useDashboard";
+import { useTranslation } from "@/lib/translations";
 import { calculateCashflowStatus, calculateLiquidityLevel, calculateDebtRatioLevel, calculateSavingsRateLevel, calculateScoreLevel } from "@/engine";
 
 export function DashboardPage() {
   const { data, isLoading, error } = useDashboard();
+  const { t, language } = useTranslation();
 
   const now = new Date();
   const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -19,7 +21,7 @@ export function DashboardPage() {
 
   if (isLoading) {
     return (
-      <PageShell eyebrow="Dashboard" title="Cargando..." description="Obteniendo datos financieros..." icon={LineChart}>
+      <PageShell eyebrow={t("dashboard.eyebrow")} title={t("dashboard.loading")} description={t("dashboard.loadingDesc")} icon={LineChart}>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <SkeletonCard key={i} className="p-6" />
@@ -31,9 +33,9 @@ export function DashboardPage() {
 
   if (error || !data) {
     return (
-      <PageShell eyebrow="Dashboard" title="Error" description="No se pudieron cargar los datos. Verificá la conexión con Supabase." icon={LineChart}>
+      <PageShell eyebrow={t("dashboard.eyebrow")} title={t("dashboard.error")} description={t("dashboard.errorDesc")} icon={LineChart}>
         <div className="rounded-card border border-red-400/30 bg-red-50 p-5 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400">
-          <p>{(error as Error)?.message ?? "Error desconocido"}</p>
+          <p>{(error as Error)?.message ?? t("dashboard.errorUnknown")}</p>
         </div>
       </PageShell>
     );
@@ -46,15 +48,15 @@ export function DashboardPage() {
     <PageTransition>
       <PageShell
         eyebrow={`${monthName} ${now.getFullYear()}`}
-        title="Panel financiero"
-        description="Resumen de tu salud financiera"
+        title={t("dashboard.title")}
+        description={t("dashboard.description")}
         icon={LineChart}
       >
         <StaggerContainer className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <MotionCard>
             <MetricPreview
               icon={TrendingUp}
-              label="Ingresos"
+              label={t("dashboard.income")}
               value={<CountUpNumber value={cashflow.income} prefix="ARS " />}
               sub={`${cashflow.expenses > 0 ? `${((cashflow.income / (cashflow.income + cashflow.expenses)) * 100).toFixed(0)}%` : ""}`}
             />
@@ -62,24 +64,24 @@ export function DashboardPage() {
           <MotionCard>
             <MetricPreview
               icon={TrendingDown}
-              label="Gastos"
+              label={t("dashboard.expenses")}
               value={<CountUpNumber value={cashflow.expenses} prefix="ARS " />}
-              sub={cashflow.expenses > 0 ? `${((cashflow.expenses / cashflow.income) * 100).toFixed(0)}% de ingresos` : ""}
+              sub={cashflow.expenses > 0 ? `${((cashflow.expenses / cashflow.income) * 100).toFixed(0)}${t("dashboard.ofIncome")}` : ""}
             />
           </MotionCard>
           <MotionCard>
             <MetricPreview
               icon={Wallet}
-              label="Flujo de caja"
+              label={t("dashboard.cashflow")}
               value={<CountUpNumber value={cashflow.cashflow} prefix="ARS " />}
-              sub={calculateCashflowStatus(cashflow.cashflow) === "healthy" ? "Positivo ✓" : calculateCashflowStatus(cashflow.cashflow) === "attention" ? "En equilibrio" : "Negativo ⚠"}
+              sub={calculateCashflowStatus(cashflow.cashflow) === "healthy" ? t("engine.statusHealthy") : calculateCashflowStatus(cashflow.cashflow) === "attention" ? t("engine.statusAttention") : t("engine.statusNegative")}
               variant={cashflow.cashflow >= 0 ? "positive" : "negative"}
             />
           </MotionCard>
           <MotionCard>
             <MetricPreview
               icon={Banknote}
-              label="Efectivo disponible"
+              label={t("dashboard.liquidity")}
               value={<CountUpNumber value={liquidity} prefix="ARS " />}
               sub={liquidityLevel.replace("_", " ")}
             />
@@ -90,7 +92,7 @@ export function DashboardPage() {
           <MotionCard>
             <MetricPreview
               icon={Gauge}
-              label="Score financiero"
+              label={t("dashboard.financialScore")}
               value={<><CountUpNumber value={financialScore.total} /> / 100</>}
               sub={calculateScoreLevel(financialScore.total).replace("_", " ")}
               variant={financialScore.total >= 70 ? "positive" : financialScore.total >= 40 ? "warning" : "negative"}
@@ -99,7 +101,7 @@ export function DashboardPage() {
           <MotionCard>
             <MetricPreview
               icon={PiggyBank}
-              label="Tasa de ahorro"
+              label={t("dashboard.savingsRate")}
               value={<CountUpNumber value={savingsRate} decimals={1} suffix="%" />}
               sub={calculateSavingsRateLevel(savingsRate).replace("_", " ")}
             />
@@ -107,7 +109,7 @@ export function DashboardPage() {
           <MotionCard>
             <MetricPreview
               icon={BarChart3}
-              label="Endeudamiento"
+              label={t("dashboard.debtRatio")}
               value={<CountUpNumber value={debtRatio} decimals={1} suffix="%" />}
               sub={calculateDebtRatioLevel(debtRatio).replace("_", " ")}
               variant={debtRatio <= 35 ? "positive" : debtRatio <= 50 ? "warning" : "negative"}
@@ -116,9 +118,9 @@ export function DashboardPage() {
           <MotionCard>
             <MetricPreview
               icon={CalendarClock}
-              label="Burn rate"
+              label={t("dashboard.burnRate")}
               value={<CountUpNumber value={burnRate} prefix="ARS " />}
-              sub="/ día"
+              sub={t("dashboard.perDay")}
             />
           </MotionCard>
         </StaggerContainer>
@@ -127,15 +129,15 @@ export function DashboardPage() {
           <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
             <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
               <BarChart3 className="h-4 w-4" />
-              Desglose del score ({financialScore.total}/100)
+              {t("dashboard.scoreBreakdown")} ({financialScore.total}/100)
             </h3>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <ScoreBar label="Flujo de caja" score={financialScore.cashflowScore} max={25} color="bg-emerald-500" />
-              <ScoreBar label="Liquidez" score={financialScore.liquidityScore} max={20} color="bg-blue-500" />
-              <ScoreBar label="Endeudamiento" score={financialScore.debtScore} max={20} color="bg-violet-500" />
-              <ScoreBar label="Ahorro" score={financialScore.savingsScore} max={15} color="bg-amber-500" />
-              <ScoreBar label="Metas" score={financialScore.goalScore} max={10} color="bg-rose-500" />
-              <ScoreBar label="Presupuesto" score={financialScore.budgetScore} max={10} color="bg-cyan-500" />
+              <ScoreBar label={t("dashboard.scoreCashflow")} score={financialScore.cashflowScore} max={25} color="bg-emerald-500" />
+              <ScoreBar label={t("dashboard.scoreLiquidity")} score={financialScore.liquidityScore} max={20} color="bg-blue-500" />
+              <ScoreBar label={t("dashboard.scoreDebt")} score={financialScore.debtScore} max={20} color="bg-violet-500" />
+              <ScoreBar label={t("dashboard.scoreSavings")} score={financialScore.savingsScore} max={15} color="bg-amber-500" />
+              <ScoreBar label={t("dashboard.scoreGoals")} score={financialScore.goalScore} max={10} color="bg-rose-500" />
+              <ScoreBar label={t("dashboard.scoreBudget")} score={financialScore.budgetScore} max={10} color="bg-cyan-500" />
             </div>
           </div>
         </MotionCard>
@@ -145,7 +147,7 @@ export function DashboardPage() {
             <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 dark:border-white/10 dark:bg-white/[0.04]">
               <h3 className="mb-4 flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-zinc-300">
                 <Bell className="h-4 w-4" />
-                Alertas ({alerts.length})
+                {t("dashboard.alerts")} ({alerts.length})
               </h3>
               <div className="space-y-3">
                 {alerts.slice(0, 5).map((alert, i) => (
@@ -172,7 +174,7 @@ export function DashboardPage() {
         )}
 
         <p className="text-xs text-slate-400 dark:text-zinc-500">
-          Los datos se actualizan cada 30 segundos. Configurá VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en .env para conectar con Supabase.
+          {t("dashboard.footer")}
         </p>
       </PageShell>
     </PageTransition>
@@ -249,7 +251,8 @@ function CountUpNumber({ value, decimals = 0, prefix = "", suffix = "" }: CountU
     damping: 24,
     mass: 0.9,
   });
-  const [display, setDisplay] = useState(() => formatCountUp(0, decimals, prefix, suffix));
+  const { language } = useTranslation();
+  const [display, setDisplay] = useState(() => formatCountUp(0, decimals, prefix, suffix, language));
 
   useEffect(() => {
     if (!isInView) return;
@@ -257,15 +260,15 @@ function CountUpNumber({ value, decimals = 0, prefix = "", suffix = "" }: CountU
   }, [isInView, motionValue, value]);
 
   useMotionValueEvent(springValue, "change", (latest) => {
-    setDisplay(formatCountUp(latest, decimals, prefix, suffix));
+    setDisplay(formatCountUp(latest, decimals, prefix, suffix, language));
   });
 
   return <span ref={ref}>{display}</span>;
 }
 
-function formatCountUp(value: number, decimals: number, prefix: string, suffix: string) {
+function formatCountUp(value: number, decimals: number, prefix: string, suffix: string, locale: string) {
   const rounded = decimals > 0 ? Number(value.toFixed(decimals)) : Math.round(value);
-  return `${prefix}${rounded.toLocaleString("es-AR", {
+  return `${prefix}${rounded.toLocaleString(locale, {
     minimumFractionDigits: decimals,
     maximumFractionDigits: decimals,
   })}${suffix}`;

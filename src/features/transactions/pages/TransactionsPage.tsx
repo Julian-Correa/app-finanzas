@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ReceiptText, Plus, ArrowUpRight, ArrowDownRight, X, Search } from "lucide-react";
+import { useTranslation } from "@/lib/translations";
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils";
 const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
 export function TransactionsPage() {
+  const { t, language } = useTranslation();
   const { data, isLoading, error, month, year, profileId } = useTransactions();
   const mutations = useTransactionMutations(profileId ?? "", month, year);
 
@@ -25,7 +27,7 @@ export function TransactionsPage() {
 
   if (isLoading) {
     return (
-      <PageShell eyebrow="Transacciones" title="Cargando..." description="Obteniendo movimientos..." icon={ReceiptText}>
+      <PageShell eyebrow={t("transactions.eyebrow")} title={t("transactions.loading")} description={t("transactions.loadingDesc")} icon={ReceiptText}>
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
             <SkeletonCard key={i} className="p-4" />
@@ -37,9 +39,9 @@ export function TransactionsPage() {
 
   if (error || !data) {
     return (
-      <PageShell eyebrow="Transacciones" title="Error" description="No se pudieron cargar los movimientos." icon={ReceiptText}>
+      <PageShell eyebrow={t("transactions.eyebrow")} title={t("transactions.error")} description={t("transactions.errorDesc")} icon={ReceiptText}>
         <div className="rounded-card border border-red-400/30 bg-red-50 p-5 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400">
-          <p>{(error as Error)?.message ?? "Error desconocido"}</p>
+          <p>{(error as Error)?.message ?? t("transactions.errorUnknown")}</p>
         </div>
       </PageShell>
     );
@@ -81,8 +83,8 @@ export function TransactionsPage() {
     <PageTransition>
       <PageShell
         eyebrow={`${monthNames[month - 1]} ${year}`}
-        title="Transacciones"
-        description="Tus ingresos y gastos mensuales"
+        title={t("transactions.title")}
+        description={t("transactions.description")}
         icon={ReceiptText}
       >
       <div className="flex flex-wrap items-center gap-3">
@@ -90,7 +92,7 @@ export function TransactionsPage() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" />
           <input
             type="text"
-            placeholder="Buscar transacciones..."
+            placeholder={t("transactions.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-xl border border-slate-200/70 bg-white/75 py-2.5 pl-10 pr-4 text-sm placeholder-slate-400 backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04] dark:placeholder-zinc-500"
@@ -108,7 +110,7 @@ export function TransactionsPage() {
                   : "text-slate-500 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200"
               )}
             >
-              {opt === "all" ? "Todas" : opt === "income" ? "Ingresos" : "Gastos"}
+              {opt === "all" ? t("transactions.all") : opt === "income" ? t("transactions.income") : t("transactions.expense")}
             </button>
           ))}
         </div>
@@ -117,7 +119,7 @@ export function TransactionsPage() {
           className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90"
         >
           <Plus className="h-4 w-4" />
-          Nueva
+          {t("transactions.new")}
         </button>
       </div>
 
@@ -126,8 +128,8 @@ export function TransactionsPage() {
           <ReceiptText className="mx-auto h-8 w-8 text-slate-300 dark:text-zinc-600" aria-hidden="true" />
           <p className="mt-3 text-sm text-slate-500 dark:text-zinc-400">
             {search || typeFilter !== "all"
-              ? "No hay transacciones que coincidan con los filtros."
-              : "Todavía no hay transacciones este mes. ¡Creá la primera!"}
+              ? t("transactions.emptyFiltered")
+              : t("transactions.empty")}
           </p>
         </div>
       ) : (
@@ -154,7 +156,7 @@ export function TransactionsPage() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">{tx.description}</p>
                       <p className="text-xs text-slate-400 dark:text-zinc-500">
-                        {tx.category?.name ?? "Sin categoría"}
+                        {tx.category?.name ?? t("transactions.uncategorized")}
                         {tx.account ? ` · ${tx.account.name}` : ""}
                       </p>
                     </div>
@@ -169,16 +171,16 @@ export function TransactionsPage() {
                             : "text-red-600 dark:text-red-400"
                         )}
                       >
-                        {tx.transaction_type === "income" ? "+" : "-"}${Math.abs(tx.amount).toLocaleString("es-AR")}
+                        {tx.transaction_type === "income" ? "+" : "-"}${Math.abs(tx.amount).toLocaleString(language === "en" ? "en-US" : "es-AR")}
                       </p>
                       <p className="text-xs text-slate-400 dark:text-zinc-500">
-                        {new Date(tx.date).toLocaleDateString("es-AR", { day: "numeric", month: "short" })}
+                        {new Date(tx.date).toLocaleDateString(language === "en" ? "en-US" : "es-AR", { day: "numeric", month: "short" })}
                       </p>
                     </div>
                     <button
                       onClick={() => setEditingId(tx.id)}
                       className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300"
-                      aria-label="Editar transacción"
+                      aria-label={t("transactions.editLabel")}
                     >
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
@@ -194,7 +196,7 @@ export function TransactionsPage() {
 
       {filtered.length > 0 && (
         <p className="text-xs text-slate-400 dark:text-zinc-500">
-          {filtered.length} de {transactions.length} transacciones
+          {t("transactions.count", { count: filtered.length, total: transactions.length })}
         </p>
       )}
 
@@ -253,6 +255,7 @@ function TransactionFormModal({
   editId,
   onClose,
 }: TransactionFormModalProps) {
+  const { t, language } = useTranslation();
   const isEditing = !!initial && !!editId;
   const incomeCats = categories.filter((c) => c.type === "income");
   const expenseCats = categories.filter((c) => c.type === "expense");
@@ -299,7 +302,7 @@ function TransactionFormModal({
   return (
     <>
       <div className="mb-6 flex items-center justify-between">
-        <h3 className="text-lg font-semibold">{isEditing ? "Editar transacción" : "Nueva transacción"}</h3>
+        <h3 className="text-lg font-semibold">{isEditing ? t("transactions.form.editTitle") : t("transactions.form.newTitle")}</h3>
         <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
           <X className="h-5 w-5" />
         </button>
@@ -321,28 +324,28 @@ function TransactionFormModal({
                     : "text-slate-500 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200"
                 }`}
               >
-                {opt === "income" ? "Ingreso" : "Gasto"}
+                {opt === "income" ? t("transactions.form.income") : t("transactions.form.expense")}
               </button>
             ))}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Categoría</label>
+              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("transactions.form.category")}</label>
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
                 required
                 className="w-full rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
               >
-                <option value="">Seleccionar</option>
+                <option value="">{t("transactions.form.select")}</option>
                 {catOptions.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Cuenta</label>
+              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("transactions.form.account")}</label>
               <select
                 value={accountId}
                 onChange={(e) => setAccountId(e.target.value)}
@@ -358,7 +361,7 @@ function TransactionFormModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Monto ($)</label>
+              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("transactions.form.amount")}</label>
               <input
                 type="number"
                 step="0.01"
@@ -371,7 +374,7 @@ function TransactionFormModal({
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Fecha</label>
+              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("transactions.form.date")}</label>
               <input
                 type="date"
                 value={date}
@@ -383,24 +386,24 @@ function TransactionFormModal({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Descripción</label>
+            <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("transactions.form.description")}</label>
             <input
               type="text"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              placeholder="Ej: Supermercado"
+              placeholder={t("transactions.form.descriptionPlaceholder")}
               className="w-full rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
             />
           </div>
 
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Notas (opcional)</label>
+            <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("transactions.form.notes")}</label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={2}
-              placeholder="Notas adicionales..."
+              placeholder={t("transactions.form.notesPlaceholder")}
               className="w-full resize-none rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
             />
           </div>
@@ -411,14 +414,14 @@ function TransactionFormModal({
               onClick={onClose}
               className="flex-1 rounded-xl border border-slate-200/70 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.04]"
             >
-              Cancelar
+              {t("transactions.form.cancel")}
             </button>
             <button
               type="submit"
               disabled={isPending}
               className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
             >
-              {isPending ? "Guardando..." : isEditing ? "Guardar cambios" : "Crear transacción"}
+              {isPending ? t("transactions.form.saving") : isEditing ? t("transactions.form.saveChanges") : t("transactions.form.create")}
             </button>
           </div>
       </form>
