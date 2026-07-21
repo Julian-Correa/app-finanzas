@@ -401,6 +401,54 @@ export async function upsertSnapshot(
   return data;
 }
 
+export async function fetchSettings(): Promise<Tables<"settings"> | null> {
+  const { data, error } = await getSupabaseClient()
+    .from("settings")
+    .select("*")
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function upsertSetting(
+  setting: {
+    theme: string;
+    language: string;
+    currency: string;
+    default_profile: string | null;
+    animations: boolean;
+    notifications: boolean;
+  }
+): Promise<Tables<"settings">> {
+  const { data: existing } = await getSupabaseClient()
+    .from("settings")
+    .select("id")
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (existing) {
+    const { data, error } = await getSupabaseClient()
+      .from("settings")
+      .update(setting as never)
+      .eq("id", existing.id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  const { data, error } = await getSupabaseClient()
+    .from("settings")
+    .insert(setting as never)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function fetchTransactionsByDateRange(
   profileId: string,
   startDate: string,

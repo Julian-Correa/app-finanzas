@@ -351,8 +351,44 @@ export type TranslationKey =
   | "settings.eyebrow"
   | "settings.title"
   | "settings.description"
-  | "settings.preferencesTitle"
-  | "settings.preferencesDesc"
+  | "settings.loadingDesc"
+  | "settings.errorDesc"
+  | "settings.errorUnknown"
+  | "settings.sectionAppearance"
+  | "settings.sectionAppearanceDesc"
+  | "settings.theme"
+  | "settings.themeLight"
+  | "settings.themeDark"
+  | "settings.themeSystem"
+  | "settings.language"
+  | "settings.languageEs"
+  | "settings.languageEn"
+  | "settings.sectionProfile"
+  | "settings.sectionProfileDesc"
+  | "settings.defaultProfile"
+  | "settings.defaultProfileDesc"
+  | "settings.profileJulian"
+  | "settings.profilePareja"
+  | "settings.profileAmbos"
+  | "settings.sectionPreferences"
+  | "settings.sectionPreferencesDesc"
+  | "settings.animations"
+  | "settings.animationsDesc"
+  | "settings.notifications"
+  | "settings.notificationsDesc"
+  | "settings.sectionData"
+  | "settings.sectionDataDesc"
+  | "settings.exportData"
+  | "settings.exportDataDesc"
+  | "settings.exportCsv"
+  | "settings.exportPdf"
+  | "settings.sectionAbout"
+  | "settings.sectionAboutDesc"
+  | "settings.version"
+  | "settings.framework"
+  | "settings.saved"
+  | "settings.save"
+  | "settings.saving"
   // engine status labels (used in dashboard)
   | "engine.statusHealthy"
   | "engine.statusAttention"
@@ -730,10 +766,46 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "history.snapshotDesc": "Immutable financial state for a given month.",
     // settings
     "settings.eyebrow": "Ajustes",
-    "settings.title": "Preferencias de la aplicación",
-    "settings.description": "Acá vas a configurar tema, idioma, perfil por defecto, animaciones, notificaciones y opciones de respaldo.",
-    "settings.preferencesTitle": "Preferencias",
-    "settings.preferencesDesc": "Tema, idioma y perfil ya están disponibles en el shell principal.",
+    "settings.title": "Configuración",
+    "settings.description": "Personalizá tu experiencia en FinOS",
+    "settings.loadingDesc": "Cargando configuración...",
+    "settings.errorDesc": "No se pudo cargar la configuración.",
+    "settings.errorUnknown": "Error desconocido",
+    "settings.sectionAppearance": "Apariencia",
+    "settings.sectionAppearanceDesc": "Tema e idioma de la aplicación",
+    "settings.theme": "Tema",
+    "settings.themeLight": "Claro",
+    "settings.themeDark": "Oscuro",
+    "settings.themeSystem": "Sistema",
+    "settings.language": "Idioma",
+    "settings.languageEs": "Español",
+    "settings.languageEn": "English",
+    "settings.sectionProfile": "Perfil",
+    "settings.sectionProfileDesc": "Perfil financiero por defecto",
+    "settings.defaultProfile": "Perfil por defecto",
+    "settings.defaultProfileDesc": "Seleccioná qué perfil se usa al abrir la app",
+    "settings.profileJulian": "Julián",
+    "settings.profilePareja": "Pareja",
+    "settings.profileAmbos": "Ambos",
+    "settings.sectionPreferences": "Preferencias",
+    "settings.sectionPreferencesDesc": "Opciones generales de la aplicación",
+    "settings.animations": "Animaciones",
+    "settings.animationsDesc": "Transiciones y efectos visuales",
+    "settings.notifications": "Notificaciones",
+    "settings.notificationsDesc": "Alertas de presupuesto, deudas y metas",
+    "settings.sectionData": "Datos",
+    "settings.sectionDataDesc": "Exportá y administrá tus datos",
+    "settings.exportData": "Exportar datos",
+    "settings.exportDataDesc": "Descargá tus transacciones y reportes",
+    "settings.exportCsv": "Exportar CSV",
+    "settings.exportPdf": "Exportar PDF",
+    "settings.sectionAbout": "Acerca de",
+    "settings.sectionAboutDesc": "Información de la aplicación",
+    "settings.version": "Versión",
+    "settings.framework": "Framework",
+    "settings.saved": "Configuración guardada",
+    "settings.save": "Guardar cambios",
+    "settings.saving": "Guardando...",
     // engine status labels
     "engine.statusHealthy": "Positivo ✓",
     "engine.statusAttention": "En equilibrio",
@@ -1110,10 +1182,46 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "history.snapshotDesc": "Estado financiero inmutable de un mes determinado.",
     // settings
     "settings.eyebrow": "Settings",
-    "settings.title": "Application Preferences",
-    "settings.description": "Configure theme, language, default profile, animations, notifications, and backup options.",
-    "settings.preferencesTitle": "Preferences",
-    "settings.preferencesDesc": "Theme, language, and profile are already available in the main shell.",
+    "settings.title": "Settings",
+    "settings.description": "Customize your FinOS experience",
+    "settings.loadingDesc": "Loading settings...",
+    "settings.errorDesc": "Could not load settings.",
+    "settings.errorUnknown": "Unknown error",
+    "settings.sectionAppearance": "Appearance",
+    "settings.sectionAppearanceDesc": "Theme and language",
+    "settings.theme": "Theme",
+    "settings.themeLight": "Light",
+    "settings.themeDark": "Dark",
+    "settings.themeSystem": "System",
+    "settings.language": "Language",
+    "settings.languageEs": "Español",
+    "settings.languageEn": "English",
+    "settings.sectionProfile": "Profile",
+    "settings.sectionProfileDesc": "Default financial profile",
+    "settings.defaultProfile": "Default profile",
+    "settings.defaultProfileDesc": "Select which profile to use when opening the app",
+    "settings.profileJulian": "Julián",
+    "settings.profilePareja": "Partner",
+    "settings.profileAmbos": "Both",
+    "settings.sectionPreferences": "Preferences",
+    "settings.sectionPreferencesDesc": "General application options",
+    "settings.animations": "Animations",
+    "settings.animationsDesc": "Transitions and visual effects",
+    "settings.notifications": "Notifications",
+    "settings.notificationsDesc": "Budget, debt, and goal alerts",
+    "settings.sectionData": "Data",
+    "settings.sectionDataDesc": "Export and manage your data",
+    "settings.exportData": "Export data",
+    "settings.exportDataDesc": "Download your transactions and reports",
+    "settings.exportCsv": "Export CSV",
+    "settings.exportPdf": "Export PDF",
+    "settings.sectionAbout": "About",
+    "settings.sectionAboutDesc": "Application information",
+    "settings.version": "Version",
+    "settings.framework": "Framework",
+    "settings.saved": "Settings saved",
+    "settings.save": "Save changes",
+    "settings.saving": "Saving...",
     // engine status labels
     "engine.statusHealthy": "Positive ✓",
     "engine.statusAttention": "Balanced",
