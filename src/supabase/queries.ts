@@ -344,6 +344,63 @@ export async function fetchGoalContributions(
   return data;
 }
 
+export async function fetchSnapshots(profileId: string): Promise<Tables<"monthly_snapshots">[]> {
+  const { data, error } = await getSupabaseClient()
+    .from("monthly_snapshots")
+    .select("*")
+    .eq("profile_id", profileId)
+    .is("deleted_at", null)
+    .order("year", { ascending: false })
+    .order("month", { ascending: false });
+
+  if (error) throw error;
+  return data;
+}
+
+export async function upsertSnapshot(
+  snapshot: {
+    profile_id: string;
+    month: number;
+    year: number;
+    income: number;
+    expenses: number;
+    cashflow: number;
+    debt: number;
+    savings: number;
+    financial_score: number;
+    json_snapshot: Json;
+  }
+): Promise<Tables<"monthly_snapshots">> {
+  const { data: existing } = await getSupabaseClient()
+    .from("monthly_snapshots")
+    .select("id")
+    .eq("profile_id", snapshot.profile_id)
+    .eq("month", snapshot.month)
+    .eq("year", snapshot.year)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (existing) {
+    const { data, error } = await getSupabaseClient()
+      .from("monthly_snapshots")
+      .update(snapshot as never)
+      .eq("id", existing.id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+
+  const { data, error } = await getSupabaseClient()
+    .from("monthly_snapshots")
+    .insert(snapshot as never)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function fetchTransactionsByDateRange(
   profileId: string,
   startDate: string,

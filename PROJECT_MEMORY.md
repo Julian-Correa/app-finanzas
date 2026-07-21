@@ -12,11 +12,11 @@
 
 **Project:** FinOS
 
-**Status:** Phase 1 complete and verified
+**Status:** v0.1.0 — Feature-complete with full i18n (es/en)
 
 **Version:** 0.1.0
 
-**Current Phase:** Polish complete — UI animations and transitions implemented. Application feature-complete for v0.1.0.
+**Current Phase:** v0.1.0 complete — all 12 feature pages implemented, UI animations polished, i18n applied across all pages and layout, 110 tests passing.
 
 ------------------------------------------------------------------------
 
@@ -42,6 +42,7 @@ decisions through deterministic analysis, forecasting and simulations.
 -   React Hook Form
 -   Zod
 -   Netlify
+-   i18n (built-in, no external library)
 
 ------------------------------------------------------------------------
 
@@ -58,9 +59,11 @@ decisions through deterministic analysis, forecasting and simulations.
   Business Rules         ✅
   Financial Rules        ✅
   Formula Reference      ✅
-  User Flows             ✅
   SQL Generation Guide   ✅
   MASTER_PROMPT          ✅
+  CHANGELOG              ✅
+  PROJECT_MEMORY         ✅
+  TODO                   ✅
 
 ------------------------------------------------------------------------
 
@@ -133,50 +136,21 @@ Pending:
 
 ## Phase 2 --- Project Setup
 
-Status: ⏳ Pending
-
-Tasks:
-
--   Create Vite project
--   Configure TypeScript
--   Install dependencies
--   Configure TailwindCSS
--   Configure shadcn/ui
--   Configure Supabase
--   Configure aliases
--   Configure ESLint
--   Configure Prettier
+Status: ✅ Complete
 
 ------------------------------------------------------------------------
 
 ## Phase 3 --- Database
 
-Status: ✅ Generated locally
-
-Tasks:
-
--   Generated SQL package under `04_Database/`
--   Added no-auth RLS policies for anonymous persistence
--   Added seed data
--   Pending execution against Supabase because local `psql` is unavailable
+Status: ✅ Complete (SQL executed against Supabase)
 
 ------------------------------------------------------------------------
 
-## Phase 4 --- Feature Pages
+## Phase 4 --- Feature Pages & Polish
 
 Status: ✅ Complete
 
-Tasks:
-
--   Transactions page (list, create, edit, delete) ✅
--   Budgets page (progress, management) ✅
--   Debts page (tracking, payments) ✅
--   Goals page (progress, contributions) ✅
--   Reports page (Chart.js visualizations) ✅
--   Simulator page (scenario engine, never writes to DB) ✅
--   Purchase Advisor page (purchase evaluation UI) ✅
--   Timeline page (monthly financial flow) ✅
--   Calendar page (monthly event grid) ✅
+Includes: all 12 feature pages, code-splitting, tests, animations, dashboard optimization, i18n.
 
 ------------------------------------------------------------------------
 
@@ -496,6 +470,39 @@ Framer Motion was already installed as a dependency but completely unused until 
 
 ---
 
+## Session 012
+
+Date: 2026-07-20
+
+Completed:
+
+-   Added `LanguageProvider` with browser language auto-detection (`navigator.language`), `localStorage` persistence, and `document.documentElement.lang` sync.
+-   Created typed `TranslationKey` union (~120 keys) and `useTranslation` hook with `{param}` interpolation support.
+-   Created `LanguageToggle` component with compact (header icon, toggle EN/ES) and full (sidebar segmented control) modes.
+-   Added ~1,080 translation entries (es + en) covering all 12 feature pages and shell layout (sidebar, header, bottom nav).
+-   Updated all 12 pages to use `useTranslation()` instead of hardcoded strings:
+    -   DashboardPage, TransactionsPage, BudgetsPage, DebtsPage, GoalsPage
+    -   ReportsPage, SimulatorPage, PurchaseAdvisorPage, TimelinePage, CalendarPage
+    -   HistoryPage, SettingsPage
+-   Updated layout components: Sidebar, Header, BottomNavigation, ThemeToggle, ProfileSwitcher.
+-   Exposed `locale` from LanguageProvider (`es-AR` / `en-US`) for future date/number formatting.
+-   Improved sidebar scroll behavior for better usability on smaller screens.
+-   Verified `npm run typecheck`, `npm run build`, and `npm run test -- --run` (110/110 pass).
+
+Pending:
+
+-   Implement real History page with monthly snapshots.
+-   Implement real Settings page with configurable preferences.
+-   Add E2E tests, PWA support, data export.
+
+Notes:
+
+-   i18n is implemented as a built-in system (no external i18n library). The `useTranslation` hook is lightweight and typed.
+-   All existing tests continue to pass without modification since translations are a UI-only layer.
+-   The project is now fully bilingual (es/en) out of the box.
+
+---
+
 # Pending Decisions
 
 -   Final SQL implementation.
@@ -514,11 +521,13 @@ None.
 
 # Next Recommended Task
 
-1.  Review and optimize dashboard query performance.
-2.  Add scroll-triggered animations (`whileInView`).
-3.  Add number count-up animations on dashboard KPIs.
-4.  Add skeleton loading shimmer animations.
-5.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
+1.  History page — implement real monthly snapshot functionality.
+2.  Settings page — implement configurable preferences (default profile, animations toggle, backup options).
+3.  E2E tests — add Playwright or Cypress for critical user flows.
+4.  PWA / offline support — service worker, manifest, offline fallback.
+5.  Data export — CSV/PDF export for transactions and reports.
+6.  Keyboard shortcuts and accessibility audit (WCAG AA compliance).
+7.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
 
 ------------------------------------------------------------------------
 

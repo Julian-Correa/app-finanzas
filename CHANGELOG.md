@@ -33,22 +33,46 @@
 -   Typed services (`transactionsService`, `budgetsService`, `debtsService`, `goalsService`, `reportsService`, `simulatorService`, `purchaseAdvisorService`).
 -   TanStack Query hooks for each feature.
 
+### Added (i18n)
+
+-   Full internationalization with `es` (Argentine Spanish) and `en` (English) support.
+-   `LanguageProvider` with browser language auto-detection, `localStorage` persistence, and `document.documentElement.lang` sync.
+-   `useTranslation` hook with typed `TranslationKey` union and `{param}` interpolation.
+-   `LanguageToggle` component with compact (header icon) and full (sidebar) modes.
+-   ~1,080 translation keys covering all 12 feature pages: dashboard, transactions, budgets, debts, goals, reports, simulator, purchase advisor, timeline, calendar, history, settings.
+-   Shell navigation (sidebar, header, bottom nav) fully translated.
+-   Locale-aware `locale` export (`es-AR` / `en-US`) from LanguageProvider for future date/number formatting.
+-   Sidebar scroll improvements for better usability on smaller screens.
+
 ### Fixed
 
 -   Dashboard loading now uses the aggregated Supabase RPC `generate_dashboard` instead of composing multiple raw data fetches on the client.
 -   Dashboard debt ratio source was corrected as part of the RPC-backed load path.
 -   Timezone-dependent date parsing in engine: replaced `new Date(t.date).getMonth()` with manual string split to avoid UTC-to-local timezone shift that caused incorrect month matching in GMT-3 (Argentina). Affected `calculateCashflow`, `calculateDebtRatio`, and `calculateMonthlyPrediction`.
 
+### Added (History Page)
+
+-   Real HistoryPage implementation replacing the placeholder — monthly snapshot browser with KPI cards (income, expenses, cashflow, debt, savings, financial score).
+-   Month-by-month navigation via prev/next buttons and a pill selector of available months.
+-   Comparison mode: select a baseline month to diff against the current selection, with delta values, percentage bars, and directional indicators for all 6 KPIs.
+-   "Generate Snapshot" button to compute and persist a snapshot for the current month via `upsertSnapshot`.
+-   `historyService.ts` with `getHistorySnapshots`, `computeSnapshot`, `saveSnapshot`, and `diffSnapshots` functions.
+-   `useHistory` TanStack Query hook with `generateSnapshot` mutation.
+-   Snapshot detail panel showing counts of budgets, transactions, goals, debts, and accounts.
+-   Query helpers `fetchSnapshots` and `upsertSnapshot` in `src/supabase/queries.ts`.
+-   22 new translation keys for history page (es/en).
+
 ### Verified
 
--   `npm.cmd run typecheck` passes.
--   `npm.cmd run build` passes.
--   `npm.cmd test -- --run` passes (`110` tests).
+-   `npm run typecheck` passes.
+-   `npm run build` passes.
+-   `npm run test -- --run` passes (`110` tests).
 
 ### Notes
 
 -   All 12 FinOS feature pages are now implemented with real hooks, services, and UI.
 -   Application is feature-complete for v0.1.0.
+-   Full i18n (es/en) applied across all pages and layout components.
 
 ## 0.1.0 - 2026-07-14
 

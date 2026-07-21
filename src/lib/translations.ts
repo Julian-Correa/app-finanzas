@@ -324,6 +324,27 @@ export type TranslationKey =
   | "history.eyebrow"
   | "history.title"
   | "history.description"
+  | "history.loadingDesc"
+  | "history.errorDesc"
+  | "history.errorUnknown"
+  | "history.income"
+  | "history.expenses"
+  | "history.cashflow"
+  | "history.debt"
+  | "history.savings"
+  | "history.score"
+  | "history.empty"
+  | "history.generate"
+  | "history.generating"
+  | "history.generated"
+  | "history.comparing"
+  | "history.baseline"
+  | "history.target"
+  | "history.diff"
+  | "history.vsPrevious"
+  | "history.pctChange"
+  | "history.monthsWithData"
+  | "history.noDataForMonth"
   | "history.snapshotTitle"
   | "history.snapshotDesc"
   // settings
@@ -683,9 +704,30 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     // history
     "history.eyebrow": "History",
     "history.title": "Immutable monthly snapshots",
-    "history.description": "History will browse year and month snapshots, compare periods and export archived views.",
-    "history.snapshotTitle": "Snapshot browser",
-    "history.snapshotDesc": "Snapshot generation depends on the database and financial engine phases.",
+    "history.description": "Browse and compare monthly financial snapshots.",
+    "history.loadingDesc": "Loading snapshot data...",
+    "history.errorDesc": "Could not load snapshot data.",
+    "history.errorUnknown": "Unknown error",
+    "history.income": "Income",
+    "history.expenses": "Expenses",
+    "history.cashflow": "Cashflow",
+    "history.debt": "Total Debt",
+    "history.savings": "Savings",
+    "history.score": "Financial Score",
+    "history.empty": "No snapshots available. Generate one for the current month.",
+    "history.generate": "Generate Snapshot",
+    "history.generating": "Generating...",
+    "history.generated": "Snapshot saved!",
+    "history.comparing": "Comparing:",
+    "history.baseline": "Baseline",
+    "history.target": "Target",
+    "history.diff": "Change",
+    "history.vsPrevious": "vs previous month",
+    "history.pctChange": "% change",
+    "history.monthsWithData": "Months with data",
+    "history.noDataForMonth": "No data for this month. Generate a snapshot.",
+    "history.snapshotTitle": "Monthly snapshot",
+    "history.snapshotDesc": "Immutable financial state for a given month.",
     // settings
     "settings.eyebrow": "Ajustes",
     "settings.title": "Preferencias de la aplicación",
@@ -1041,10 +1083,31 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "calendar.more": "more",
     // history
     "history.eyebrow": "Historial",
-    "history.title": "Instantáneas mensuales inmutables",
-    "history.description": "El historial permitirá navegar instantáneas por año y mes, comparar períodos y exportar vistas archivadas.",
-    "history.snapshotTitle": "Navegador de instantáneas",
-    "history.snapshotDesc": "La generación de instantáneas depende de las fases de base de datos y motor financiero.",
+    "history.title": "Instantáneas mensuales",
+    "history.description": "Navegá y compará instantáneas financieras mensuales.",
+    "history.loadingDesc": "Cargando instantáneas...",
+    "history.errorDesc": "No se pudieron cargar las instantáneas.",
+    "history.errorUnknown": "Error desconocido",
+    "history.income": "Ingresos",
+    "history.expenses": "Gastos",
+    "history.cashflow": "Flujo de caja",
+    "history.debt": "Deuda total",
+    "history.savings": "Ahorro",
+    "history.score": "Score financiero",
+    "history.empty": "No hay instantáneas disponibles. Generá una para el mes actual.",
+    "history.generate": "Generar instantánea",
+    "history.generating": "Generando...",
+    "history.generated": "¡Instantánea guardada!",
+    "history.comparing": "Comparando:",
+    "history.baseline": "Base",
+    "history.target": "Objetivo",
+    "history.diff": "Cambio",
+    "history.vsPrevious": "vs mes anterior",
+    "history.pctChange": "Cambio %",
+    "history.monthsWithData": "Meses con datos",
+    "history.noDataForMonth": "Sin datos para este mes. Generá una instantánea.",
+    "history.snapshotTitle": "Instantánea mensual",
+    "history.snapshotDesc": "Estado financiero inmutable de un mes determinado.",
     // settings
     "settings.eyebrow": "Settings",
     "settings.title": "Application Preferences",
