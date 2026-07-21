@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ReceiptText, Plus, ArrowUpRight, ArrowDownRight, X, Search } from "lucide-react";
+import { useState, useRef } from "react";
+import { ReceiptText, Plus, ArrowUpRight, ArrowDownRight, X, Search, Download } from "lucide-react";
 import { useTranslation } from "@/lib/translations";
 
 import { PageShell } from "@/components/common/PageShell";
@@ -11,6 +11,7 @@ import { ModalWrapper } from "@/components/common/ModalWrapper";
 import { useTransactions, useTransactionMutations } from "@/features/transactions/hooks/useTransactions";
 import type { TransactionInput } from "@/services/transactionsService";
 import type { Tables } from "@/types/database";
+import { downloadCsv, printAsPdf, type CsvColumn } from "@/services/exportService";
 import { cn } from "@/lib/utils";
 
 const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -60,6 +61,9 @@ export function TransactionsPage() {
     }
     return true;
   });
+
+  const [showExport, setShowExport] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   const catMap = new Map(categories.map((c) => [c.id, c]));
 
@@ -113,6 +117,80 @@ export function TransactionsPage() {
               {opt === "all" ? t("transactions.all") : opt === "income" ? t("transactions.income") : t("transactions.expense")}
             </button>
           ))}
+        </div>
+        <div className="relative" ref={exportRef}>
+          <button
+            onClick={() => setShowExport(!showExport)}
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm font-medium text-slate-600 backdrop-blur-xl transition hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-300 dark:hover:border-white/20"
+          >
+            <Download className="h-4 w-4" />
+            <span className="hidden sm:inline">CSV</span>
+          </button>
+          {showExport && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowExport(false)} />
+              <div className="absolute right-0 top-full z-20 mt-1 w-40 overflow-hidden rounded-xl border border-slate-200/70 bg-white shadow-lg backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowExport(false);
+                    const exportData = filtered.map((t) => ({
+                      date: t.date,
+                      type: t.transaction_type === "income" ? "Income" : "Expense",
+                      description: t.description,
+                      category: t.category?.name ?? "",
+                      account: t.account?.name ?? "",
+                      amount: t.transaction_type === "income" ? Number(t.amount) : -Number(t.amount),
+                      notes: t.notes ?? "",
+                    }));
+                    const columns: CsvColumn<typeof exportData[number]>[] = [
+                      { key: "date", header: "Date" },
+                      { key: "type", header: "Type" },
+                      { key: "description", header: "Description" },
+                      { key: "category", header: "Category" },
+                      { key: "account", header: "Account" },
+                      { key: "amount", header: "Amount ($)" },
+                      { key: "notes", header: "Notes" },
+                    ];
+                    downloadCsv(exportData, columns, `transactions-${year}-${String(month).padStart(2, "0")}.csv`);
+                  }}
+                  className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs font-medium text-slate-600 transition hover:bg-slate-50 dark:text-zinc-300 dark:hover:bg-white/5"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  {t("transactions.exportCsv")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowExport(false);
+                    const rows = filtered.map((t) => `
+                      <tr>
+                        <td>${t.date}</td>
+                        <td>${t.transaction_type === "income" ? "Income" : "Expense"}</td>
+                        <td>${t.description}</td>
+                        <td>${t.category?.name ?? ""}</td>
+                        <td>${t.account?.name ?? ""}</td>
+                        <td class="text-right">$${Number(t.amount).toLocaleString("es-AR")}</td>
+                      </tr>
+                    `).join("");
+                    printAsPdf(
+                      `Transactions ${month}/${year}`,
+                      `<h1>Transactions — ${month}/${year}</h1>
+                      <p class="subtitle">${filtered.length} transactions</p>
+                      <table>
+                        <thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Category</th><th>Account</th><th class="text-right">Amount</th></tr></thead>
+                        <tbody>${rows}</tbody>
+                      </table>`
+                    );
+                  }}
+                  className="flex w-full items-center gap-2 border-t border-slate-100 px-4 py-2.5 text-left text-xs font-medium text-slate-600 transition hover:bg-slate-50 dark:border-white/5 dark:text-zinc-300 dark:hover:bg-white/5"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  {t("transactions.exportPdf")}
+                </button>
+              </div>
+            </>
+          )}
         </div>
         <button
           onClick={() => setShowForm(true)}

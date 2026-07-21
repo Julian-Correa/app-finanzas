@@ -16,7 +16,10 @@ import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
 import { SkeletonCard } from "@/components/common/Skeleton";
 import { PageTransition } from "@/components/common/PageTransition";
+import { useProfile } from "@/app/providers/ProfileProvider";
 import { useSettings } from "@/features/settings/hooks/useSettings";
+import { fetchTransactions, fetchBudgets, fetchDebts, fetchGoals } from "@/supabase/queries";
+import { downloadCsv, printAsPdf, type CsvColumn } from "@/services/exportService";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/translations";
 import type { AppSettings } from "@/services/settingsService";
@@ -36,6 +39,8 @@ const profileOptions: Array<{ value: string }> = [
 export function SettingsPage() {
   const { t, language } = useTranslation();
   const { settings, isLoading, error, updateField, handleSave, isSaving, isDirty, savedMsg } = useSettings();
+  const { currentProfile } = useProfile();
+  const profileId = currentProfile === "ambos" ? undefined : currentProfile === "julian" ? "11111111-1111-4111-8111-111111111111" : "22222222-2222-4222-8222-222222222222";
 
   if (isLoading) {
     return (
@@ -223,6 +228,27 @@ export function SettingsPage() {
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
+                  onClick={async () => {
+                    if (!profileId) return;
+                    const [transactions, budgets, debts, goals] = await Promise.all([
+                      fetchTransactions(profileId),
+                      fetchBudgets(profileId, new Date().getMonth() + 1, new Date().getFullYear()),
+                      fetchDebts(profileId),
+                      fetchGoals(profileId),
+                    ]);
+                    const rows: Array<{ type: string; description: string; amount: number }> = [
+                      ...transactions.map((t) => ({ type: t.transaction_type, description: t.description, amount: Number(t.amount) })),
+                      ...budgets.map((b) => ({ type: "budget" as const, description: `Budget (cat ${b.category_id})`, amount: Number(b.limit_amount) })),
+                      ...debts.map((d) => ({ type: "debt" as const, description: d.name, amount: Number(d.remaining_amount) })),
+                      ...goals.map((g) => ({ type: "goal" as const, description: g.name, amount: Number(g.target_amount) })),
+                    ];
+                    const columns: CsvColumn<typeof rows[number]>[] = [
+                      { key: "type", header: "Type" },
+                      { key: "description", header: "Description" },
+                      { key: "amount", header: "Amount ($)" },
+                    ];
+                    downloadCsv(rows, columns, `finos-full-export-${new Date().toISOString().slice(0, 10)}.csv`);
+                  }}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200/70 bg-white/50 px-3 py-2 text-xs font-medium text-slate-600 transition hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:border-white/20"
                 >
                   <Download className="h-3.5 w-3.5" />
@@ -230,6 +256,27 @@ export function SettingsPage() {
                 </button>
                 <button
                   type="button"
+                  onClick={async () => {
+                    if (!profileId) return;
+                    const [transactions, debts, goals] = await Promise.all([
+                      fetchTransactions(profileId),
+                      fetchDebts(profileId),
+                      fetchGoals(profileId),
+                    ]);
+                    const txRows = transactions.map((t) => `<tr><td>${t.date}</td><td>${t.description}</td><td class="text-right">$${Number(t.amount).toLocaleString("es-AR")}</td></tr>`).join("");
+                    const debtRows = debts.map((d) => `<tr><td>${d.name}</td><td class="text-right">$${Number(d.remaining_amount).toLocaleString("es-AR")}</td><td>${d.status}</td></tr>`).join("");
+                    const goalRows = goals.map((g) => `<tr><td>${g.name}</td><td class="text-right">$${Number(g.current_amount).toLocaleString("es-AR")} / $${Number(g.target_amount).toLocaleString("es-AR")}</td></tr>`).join("");
+                    printAsPdf("FinOS Full Report", `
+                      <h1>FinOS — Full Report</h1>
+                      <p class="subtitle">Generated on ${new Date().toLocaleDateString()}</p>
+                      <h2>Transactions (${transactions.length})</h2>
+                      <table><thead><tr><th>Date</th><th>Description</th><th class="text-right">Amount</th></tr></thead><tbody>${txRows}</tbody></table>
+                      <h2>Debts (${debts.length})</h2>
+                      <table><thead><tr><th>Name</th><th class="text-right">Remaining</th><th>Status</th></tr></thead><tbody>${debtRows}</tbody></table>
+                      <h2>Goals (${goals.length})</h2>
+                      <table><thead><tr><th>Name</th><th class="text-right">Progress</th></tr></thead><tbody>${goalRows}</tbody></table>
+                    `);
+                  }}
                   className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200/70 bg-white/50 px-3 py-2 text-xs font-medium text-slate-600 transition hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-300 dark:hover:border-white/20"
                 >
                   <Download className="h-3.5 w-3.5" />

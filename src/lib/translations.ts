@@ -63,6 +63,8 @@ export type TranslationKey =
   | "transactions.transactions"
   | "transactions.form.editTitle"
   | "transactions.form.newTitle"
+  | "transactions.exportCsv"
+  | "transactions.exportPdf"
   | "transactions.form.income"
   | "transactions.form.expense"
   | "transactions.form.category"
@@ -214,6 +216,8 @@ export type TranslationKey =
   | "reports.chartExpensesByCategory"
   | "reports.chartCashflowTrend"
   | "reports.monthlySummary"
+  | "reports.exportCsv"
+  | "reports.exportPdf"
   | "reports.tableMonth"
   | "reports.tableIncome"
   | "reports.tableExpenses"
@@ -467,6 +471,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "transactions.errorDesc": "No se pudieron cargar los movimientos.",
     "transactions.errorUnknown": "Error desconocido",
     "transactions.searchPlaceholder": "Buscar transacciones...",
+    "transactions.exportCsv": "Exportar CSV",
+    "transactions.exportPdf": "Exportar PDF",
     "transactions.all": "Todas",
     "transactions.income": "Ingresos",
     "transactions.expense": "Gastos",
@@ -635,6 +641,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "reports.tableIncome": "Ingresos",
     "reports.tableExpenses": "Gastos",
     "reports.tableCashflow": "Flujo de caja",
+    "reports.exportCsv": "Exportar CSV",
+    "reports.exportPdf": "Exportar PDF",
     // simulator
     "simulator.eyebrow": "Simulador",
     "simulator.title": "Simulador financiero",
@@ -883,6 +891,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "transactions.errorDesc": "Could not load transactions.",
     "transactions.errorUnknown": "Unknown error",
     "transactions.searchPlaceholder": "Search transactions...",
+    "transactions.exportCsv": "Export CSV",
+    "transactions.exportPdf": "Export PDF",
     "transactions.all": "All",
     "transactions.income": "Income",
     "transactions.expense": "Expenses",
@@ -1051,6 +1061,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "reports.tableIncome": "Income",
     "reports.tableExpenses": "Expenses",
     "reports.tableCashflow": "Cashflow",
+    "reports.exportCsv": "Export CSV",
+    "reports.exportPdf": "Export PDF",
     // simulator
     "simulator.eyebrow": "Simulator",
     "simulator.title": "Financial Simulator",

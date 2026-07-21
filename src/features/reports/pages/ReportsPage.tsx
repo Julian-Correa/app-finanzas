@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { BarChart3, TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import { BarChart3, TrendingUp, TrendingDown, Wallet, Download } from "lucide-react";
 import { Chart, registerables } from "chart.js";
 
 import { PageShell } from "@/components/common/PageShell";
@@ -8,6 +8,7 @@ import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { SkeletonCard } from "@/components/common/Skeleton";
 import { useReports } from "@/features/reports/hooks/useReports";
+import { downloadCsv, printAsPdf, type CsvColumn } from "@/services/exportService";
 import { useTranslation } from "@/lib/translations";
 
 Chart.register(...registerables);
@@ -329,7 +330,52 @@ export function ReportsPage() {
 
       <MotionCard hover="none">
         <div className="rounded-card border border-slate-200/70 bg-white/75 p-5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.04]">
-        <h3 className="mb-4 text-sm font-medium text-slate-700 dark:text-zinc-300">{t("reports.monthlySummary")}</h3>
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-sm font-medium text-slate-700 dark:text-zinc-300">{t("reports.monthlySummary")}</h3>
+          <div className="flex gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                const exportData = data.monthlyData.map((d) => ({
+                  month: `${monthNames[d.month - 1]} ${d.year}`,
+                  income: d.income,
+                  expenses: Math.abs(d.expenses),
+                  cashflow: d.cashflow,
+                }));
+                const columns: CsvColumn<typeof exportData[number]>[] = [
+                  { key: "month", header: "Month" },
+                  { key: "income", header: "Income ($)" },
+                  { key: "expenses", header: "Expenses ($)" },
+                  { key: "cashflow", header: "Cashflow ($)" },
+                ];
+                downloadCsv(exportData, columns, `reports-monthly-summary.csv`);
+              }}
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200/70 bg-white/50 px-2 py-1 text-[10px] font-medium text-slate-500 transition hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-400 dark:hover:border-white/20"
+            >
+              <Download className="h-3 w-3" />
+              {t("reports.exportCsv")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                const rows = data.monthlyData.map((d) => {
+                  const cfClass = d.cashflow >= 0 ? "text-success" : "text-danger";
+                  return `<tr><td>${monthNames[d.month - 1]} ${d.year}</td><td class="text-right">$${Math.round(d.income).toLocaleString("es-AR")}</td><td class="text-right">$${Math.round(Math.abs(d.expenses)).toLocaleString("es-AR")}</td><td class="text-right ${cfClass}">$${Math.round(d.cashflow).toLocaleString("es-AR")}</td></tr>`;
+                }).join("");
+                printAsPdf(
+                  "Monthly Summary",
+                  `<h1>${t("reports.monthlySummary")}</h1>
+                  <p class="subtitle">${data.monthlyData.length} months</p>
+                  <table><thead><tr><th>${t("reports.tableMonth")}</th><th class="text-right">${t("reports.tableIncome")}</th><th class="text-right">${t("reports.tableExpenses")}</th><th class="text-right">${t("reports.tableCashflow")}</th></tr></thead><tbody>${rows}</tbody></table>`
+                );
+              }}
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200/70 bg-white/50 px-2 py-1 text-[10px] font-medium text-slate-500 transition hover:border-slate-300 dark:border-white/10 dark:bg-white/[0.03] dark:text-zinc-400 dark:hover:border-white/20"
+            >
+              <Download className="h-3 w-3" />
+              {t("reports.exportPdf")}
+            </button>
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
