@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   History,
   TrendingUp,
@@ -10,7 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Camera,
-  CheckCircle2,
   BarChart3,
 } from "lucide-react";
 
@@ -51,11 +50,29 @@ function getMonthName(m: number, language: string): string {
 
 export function HistoryPage() {
   const { t, language } = useTranslation();
-  const { data, isLoading, error, generateSnapshot, isGenerating, generateError } = useHistory();
+  const { data, isLoading, error, generateSnapshot, generateOutcome, isGenerating, generateError } = useHistory();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [compareIndex, setCompareIndex] = useState<number | null>(null);
   const [showCompare, setShowCompare] = useState(false);
-  const [generatedMsg, setGeneratedMsg] = useState(false);
+  const [notice, setNotice] = useState<{ kind: "created" | "already_exists" | "error"; msg: string } | null>(null);
+
+  useEffect(() => {
+    if (!generateOutcome) return;
+    if (generateOutcome.status === "created") {
+      setNotice({ kind: "created", msg: t("history.generated") });
+    } else {
+      setNotice({ kind: "already_exists", msg: t("history.alreadyExists") });
+    }
+    const id = setTimeout(() => setNotice(null), 3500);
+    return () => clearTimeout(id);
+  }, [generateOutcome, t]);
+
+  useEffect(() => {
+    if (!generateError) return;
+    setNotice({ kind: "error", msg: (generateError as Error)?.message ?? t("history.errorUnknown") });
+    const id = setTimeout(() => setNotice(null), 3500);
+    return () => clearTimeout(id);
+  }, [generateError, t]);
 
   const sorted = useMemo(() => {
     if (!data?.snapshots) return [];
@@ -233,23 +250,33 @@ export function HistoryPage() {
                   onClick={() => {
                     const now = new Date();
                     generateSnapshot({ month: now.getMonth() + 1, year: now.getFullYear() });
-                    setGeneratedMsg(true);
-                    setTimeout(() => setGeneratedMsg(false), 3000);
                   }}
                   disabled={isGenerating}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary/90 disabled:opacity-50"
                 >
                   {isGenerating ? (
                     <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  ) : generatedMsg ? (
-                    <CheckCircle2 className="h-3.5 w-3.5" />
                   ) : (
                     <Camera className="h-3.5 w-3.5" />
                   )}
-                  {isGenerating ? t("history.generating") : generatedMsg ? t("history.generated") : t("history.generate")}
+                  {isGenerating ? t("history.generating") : t("history.generate")}
                 </button>
               </div>
             </div>
+
+            {notice && (
+              <div
+                className={cn(
+                  "rounded-card border p-3 text-xs",
+                  notice.kind === "created" && "border-emerald-400/30 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-950/30 dark:text-emerald-400",
+                  notice.kind === "already_exists" && "border-amber-400/30 bg-amber-50 text-amber-700 dark:border-amber-400/20 dark:bg-amber-950/30 dark:text-amber-400",
+                  notice.kind === "error" && "border-red-400/30 bg-red-50 text-red-700 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400"
+                )}
+                role="status"
+              >
+                {notice.msg}
+              </div>
+            )}
 
             {showCompare && (
               <div className="flex items-center gap-3 rounded-card border border-primary/20 bg-primary/[0.03] p-3 dark:border-primary/10">
@@ -385,14 +412,12 @@ export function HistoryPage() {
                   onClick={() => {
                     const now = new Date();
                     generateSnapshot({ month: now.getMonth() + 1, year: now.getFullYear() });
-                    setGeneratedMsg(true);
-                    setTimeout(() => setGeneratedMsg(false), 3000);
                   }}
                   disabled={isGenerating}
                   className="inline-flex items-center gap-1 rounded-lg border border-dashed border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-400 transition hover:border-primary/50 hover:text-primary dark:border-zinc-600 dark:text-zinc-500 dark:hover:border-primary/30"
                 >
                   <Camera className="h-3 w-3" />
-                  {isGenerating ? t("history.generating") : t("history.generate")}
+                  {isGenerating ? t("history.generating") : t("history.generateCurrent")}
                 </button>
               </div>
             </div>
@@ -407,16 +432,16 @@ export function HistoryPage() {
                     <p className="text-[10px] text-slate-400 dark:text-zinc-500">{t("history.snapshotDesc")}</p>
                   </div>
                   <span className="text-[10px] text-slate-400 dark:text-zinc-500">
-                    {new Date(current.createdAt).toLocaleDateString(language === "es" ? "es-AR" : "en-US")}
+                    {new Date(current.createdAt).toLocaleDateString(language === "es" ? "es-AR" : "en-US")} · {t("history.immutable")}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-3 text-center text-xs sm:grid-cols-5">
                   {[
-                    { label: t("budgets.title"), value: String((current.jsonSnapshot as Record<string, number>)?.budgets ?? "-") },
-                    { label: t("transactions.title"), value: String((current.jsonSnapshot as Record<string, number>)?.transactions ?? "-") },
-                    { label: t("goals.title"), value: String((current.jsonSnapshot as Record<string, number>)?.goals ?? "-") },
-                    { label: t("debts.title"), value: String((current.jsonSnapshot as Record<string, number>)?.debts ?? "-") },
-                    { label: t("header.search"), value: String((current.jsonSnapshot as Record<string, number>)?.accounts ?? "-") },
+                    { label: t("budgets.title"), value: String(current.jsonSnapshot.budgets) },
+                    { label: t("transactions.title"), value: String(current.jsonSnapshot.transactions) },
+                    { label: t("goals.title"), value: String(current.jsonSnapshot.goals) },
+                    { label: t("debts.title"), value: String(current.jsonSnapshot.debts) },
+                    { label: t("header.search"), value: String(current.jsonSnapshot.accounts) },
                   ].map((item) => (
                     <div key={item.label} className="rounded-lg bg-slate-50 p-2 dark:bg-white/[0.03]">
                       <span className="text-slate-400 dark:text-zinc-500">{item.label}</span>

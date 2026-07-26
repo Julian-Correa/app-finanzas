@@ -357,7 +357,14 @@ export async function fetchSnapshots(profileId: string): Promise<Tables<"monthly
   return data;
 }
 
-export async function upsertSnapshot(
+export class SnapshotAlreadyExistsError extends Error {
+  constructor() {
+    super("Snapshot already exists for this period and is immutable");
+    this.name = "SnapshotAlreadyExistsError";
+  }
+}
+
+export async function insertSnapshotIfAbsent(
   snapshot: {
     profile_id: string;
     month: number;
@@ -370,7 +377,7 @@ export async function upsertSnapshot(
     financial_score: number;
     json_snapshot: Json;
   }
-): Promise<Tables<"monthly_snapshots">> {
+): Promise<Tables<"monthly_snapshots"> | null> {
   const { data: existing } = await getSupabaseClient()
     .from("monthly_snapshots")
     .select("id")
@@ -381,14 +388,7 @@ export async function upsertSnapshot(
     .maybeSingle();
 
   if (existing) {
-    const { data, error } = await getSupabaseClient()
-      .from("monthly_snapshots")
-      .update(snapshot as never)
-      .eq("id", existing.id)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    return null;
   }
 
   const { data, error } = await getSupabaseClient()
@@ -396,6 +396,24 @@ export async function upsertSnapshot(
     .insert(snapshot as never)
     .select()
     .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function fetchSnapshot(
+  profileId: string,
+  month: number,
+  year: number
+): Promise<Tables<"monthly_snapshots"> | null> {
+  const { data, error } = await getSupabaseClient()
+    .from("monthly_snapshots")
+    .select("*")
+    .eq("profile_id", profileId)
+    .eq("month", month)
+    .eq("year", year)
+    .is("deleted_at", null)
+    .maybeSingle();
 
   if (error) throw error;
   return data;

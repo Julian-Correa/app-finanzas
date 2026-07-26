@@ -351,6 +351,10 @@ export type TranslationKey =
   | "history.noDataForMonth"
   | "history.snapshotTitle"
   | "history.snapshotDesc"
+  | "history.alreadyExists"
+  | "history.snapshotFinal"
+  | "history.generateCurrent"
+  | "history.immutable"
   // settings
   | "settings.eyebrow"
   | "settings.title"
@@ -770,8 +774,12 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "history.pctChange": "% change",
     "history.monthsWithData": "Months with data",
     "history.noDataForMonth": "No data for this month. Generate a snapshot.",
-    "history.snapshotTitle": "Monthly snapshot",
-    "history.snapshotDesc": "Immutable financial state for a given month.",
+  "history.snapshotTitle": "Monthly snapshot",
+  "history.snapshotDesc": "Immutable financial state for a given month.",
+  "history.alreadyExists": "Snapshot already exists for this month (immutable).",
+  "history.snapshotFinal": "Snapshots are immutable and cannot be regenerated once created.",
+  "history.generateCurrent": "Generate current month",
+  "history.immutable": "Immutable",
     // settings
     "settings.eyebrow": "Ajustes",
     "settings.title": "Configuración",
@@ -1190,8 +1198,12 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "history.pctChange": "Cambio %",
     "history.monthsWithData": "Meses con datos",
     "history.noDataForMonth": "Sin datos para este mes. Generá una instantánea.",
-    "history.snapshotTitle": "Instantánea mensual",
-    "history.snapshotDesc": "Estado financiero inmutable de un mes determinado.",
+  "history.snapshotTitle": "Instantánea mensual",
+  "history.snapshotDesc": "Estado financiero inmutable de un mes determinado.",
+  "history.alreadyExists": "Ya existe una instantánea para este mes (inmutable).",
+  "history.snapshotFinal": "Las instantáneas son inmutables y no se pueden regenerar una vez creadas.",
+  "history.generateCurrent": "Generar mes actual",
+  "history.immutable": "Inmutable",
     // settings
     "settings.eyebrow": "Settings",
     "settings.title": "Settings",

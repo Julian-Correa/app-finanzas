@@ -12,11 +12,11 @@
 
 **Project:** FinOS
 
-**Status:** v0.1.0 — Feature-complete with full i18n (es/en)
+**Status:** v0.1.0 — Feature-complete with full i18n (es/en). History page backed by persisted immutable snapshots.
 
 **Version:** 0.1.0
 
-**Current Phase:** v0.1.0 complete — all 12 feature pages implemented, UI animations polished, i18n applied across all pages and layout, 110 tests passing.
+**Current Phase:** v0.1.0 complete — all 12 feature pages implemented, UI animations polished, i18n applied across all pages and layout, 119 tests passing. History module migrated to insert-only persistence semantics.
 
 ------------------------------------------------------------------------
 
@@ -503,6 +503,32 @@ Notes:
 
 ---
 
+## Session 013
+
+Date: 2026-07-25
+
+Completed:
+
+-   Hardened the History module against the `trg_monthly_snapshots_immutable` database trigger. The previous `upsertSnapshot` issued an `UPDATE` that the trigger rejects at runtime; replaced it with `insertSnapshotIfAbsent` and `fetchSnapshot` query helpers.
+-   Rewrote `saveSnapshot` to be insert-only: returns a typed `SaveSnapshotOutcome` (`{ status: "created" } | { status: "already_exists" }`) and reconciles concurrent inserts via a second `fetchSnapshot` lookup.
+-   Removed the live-compute fallback from `getHistorySnapshots`. History now strictly reflects persisted rows; an empty database shows an empty state instead of fabricating the last 6 months.
+-   Tightened `computeSnapshot` to return `Omit<SnapshotData, "id" | "createdAt">` so a computed payload can no longer be mistaken for a persisted row (no synthetic `computed-{year}-{month}` id).
+-   Introduced a typed `SnapshotJson` interface and `coerceSnapshotJson` defensive defaulting; removed the `unknown` payload and the `Record<string, number>` casts in `HistoryPage`.
+-   Reworked `HistoryPage` snapshot generation UI: replaced the bespoke `generatedMsg` boolean with an effect-driven status notice (`created` / `already_exists` / `error`) and added an "Immutable" badge plus new i18n keys (`history.alreadyExists`, `history.snapshotFinal`, `history.generateCurrent`, `history.immutable`) for es and en.
+-   Added 9 integration tests for `historyService` covering `getHistorySnapshots`, `computeSnapshot`, `saveSnapshot` (created, already_exists, concurrent insert, error path), and `diffSnapshots`. Full suite: 119/119 passing.
+-   Updated `CHANGELOG.md`, `DECISIONS.md` (ADR-006), `TODO.md`, and this file.
+
+Pending:
+
+-   Settings page — real configurable preferences (still placeholder in some areas).
+-   E2E tests, PWA/offline, accessibility audit.
+
+Notes:
+
+-   The previous implementation masked the immutability mismatch by computing live snapshots when none were persisted, so the bug only surfaced the first time a user regenerated an existing month. The new contract makes the invariant explicit at the service boundary.
+
+---
+
 # Pending Decisions
 
 -   Final SQL implementation.
@@ -521,13 +547,12 @@ None.
 
 # Next Recommended Task
 
-1.  History page — implement real monthly snapshot functionality.
-2.  Settings page — implement configurable preferences (default profile, animations toggle, backup options).
-3.  E2E tests — add Playwright or Cypress for critical user flows.
-4.  PWA / offline support — service worker, manifest, offline fallback.
-5.  Data export — CSV/PDF export for transactions and reports.
-6.  Keyboard shortcuts and accessibility audit (WCAG AA compliance).
-7.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
+1.  Settings page — implement configurable preferences (default profile, animations toggle, backup options).
+2.  E2E tests — add Playwright or Cypress for critical user flows.
+3.  PWA / offline support — service worker, manifest, offline fallback.
+4.  Data export — CSV/PDF export for transactions and reports.
+5.  Keyboard shortcuts and accessibility audit (WCAG AA compliance).
+6.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
 
 ------------------------------------------------------------------------
 

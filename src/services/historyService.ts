@@ -5,19 +5,26 @@ import {
   fetchDebts,
   fetchGoals,
   fetchBudgets,
-  upsertSnapshot,
-  fetchCategories,
+  insertSnapshotIfAbsent,
+  fetchSnapshot,
 } from "@/supabase/queries";
 import {
   calculateCashflow,
   calculateLiquidity,
-  calculateDebtRatio,
   calculateTotalDebt,
   calculateGoalScore,
   calculateBudgetDiscipline,
   calculateFinancialScore,
 } from "@/engine";
 import type { Tables } from "@/types/database";
+
+export interface SnapshotJson {
+  transactions: number;
+  accounts: number;
+  debts: number;
+  goals: number;
+  budgets: number;
+}
 
 export interface SnapshotData {
   id: string;
@@ -29,7 +36,7 @@ export interface SnapshotData {
   debt: number;
   savings: number;
   financialScore: number;
-  jsonSnapshot: unknown;
+  jsonSnapshot: SnapshotJson;
   createdAt: string;
 }
 
@@ -47,7 +54,18 @@ export interface HistoryData {
   monthsWithData: Array<{ month: number; year: number }>;
 }
 
-function toSnapshotData(row: Tables<"monthly_snapshots">): SnapshotData {
+function coerceSnapshotJson(raw: unknown): SnapshotJson {
+  const obj = (raw ?? {}) as Partial<SnapshotJson>;
+  return {
+    transactions: obj.transactions ?? 0,
+    accounts: obj.accounts ?? 0,
+    debts: obj.debts ?? 0,
+    goals: obj.goals ?? 0,
+    budgets: obj.budgets ?? 0,
+  };
+}
+
+export function toSnapshotData(row: Tables<"monthly_snapshots">): SnapshotData {
   return {
     id: row.id,
     month: row.month,
@@ -58,35 +76,17 @@ function toSnapshotData(row: Tables<"monthly_snapshots">): SnapshotData {
     debt: Number(row.debt),
     savings: Number(row.savings),
     financialScore: row.financial_score,
-    jsonSnapshot: row.json_snapshot,
+    jsonSnapshot: coerceSnapshotJson(row.json_snapshot),
     createdAt: row.created_at,
   };
 }
 
 export async function getHistorySnapshots(profileId: string): Promise<HistoryData> {
   const rows = await fetchSnapshots(profileId);
-
-  if (rows.length > 0) {
-    return {
-      snapshots: rows.map(toSnapshotData),
-      monthsWithData: rows.map((r) => ({ month: r.month, year: r.year })),
-    };
-  }
-
-  const now = new Date();
-  const computed: SnapshotData[] = [];
-
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const m = d.getMonth() + 1;
-    const y = d.getFullYear();
-    const snapshot = await computeSnapshot(profileId, m, y);
-    computed.push(snapshot);
-  }
-
+  const snapshots = rows.map(toSnapshotData);
   return {
-    snapshots: computed,
-    monthsWithData: computed.map((s) => ({ month: s.month, year: s.year })),
+    snapshots,
+    monthsWithData: snapshots.map((s) => ({ month: s.month, year: s.year })),
   };
 }
 
@@ -94,7 +94,7 @@ export async function computeSnapshot(
   profileId: string,
   month: number,
   year: number
-): Promise<SnapshotData & { month: number; year: number }> {
+): Promise<Omit<SnapshotData, "id" | "createdAt">> {
   const [transactions, accounts, debts, goals, budgets] = await Promise.all([
     fetchTransactions(profileId, month, year),
     fetchAccounts(profileId),
@@ -120,7 +120,7 @@ export async function computeSnapshot(
     goalProgressScore,
   });
 
-  const jsonSnapshot = {
+  const jsonSnapshot: SnapshotJson = {
     transactions: transactions.length,
     accounts: accounts.length,
     debts: debts.filter((d) => d.status === "active").length,
@@ -129,7 +129,6 @@ export async function computeSnapshot(
   };
 
   return {
-    id: `computed-${year}-${month}`,
     month,
     year,
     income: cashflow.income,
@@ -139,14 +138,25 @@ export async function computeSnapshot(
     savings,
     financialScore: financialScore.total,
     jsonSnapshot,
-    createdAt: new Date().toISOString(),
   };
 }
 
-export async function saveSnapshot(profileId: string, month: number, year: number): Promise<SnapshotData> {
-  const computed = await computeSnapshot(profileId, month, year);
+export type SaveSnapshotOutcome =
+  | { status: "created"; snapshot: SnapshotData }
+  | { status: "already_exists"; snapshot: SnapshotData };
 
-  const saved = await upsertSnapshot({
+export async function saveSnapshot(
+  profileId: string,
+  month: number,
+  year: number
+): Promise<SaveSnapshotOutcome> {
+  const existing = await fetchSnapshot(profileId, month, year);
+  if (existing) {
+    return { status: "already_exists", snapshot: toSnapshotData(existing) };
+  }
+
+  const computed = await computeSnapshot(profileId, month, year);
+  const inserted = await insertSnapshotIfAbsent({
     profile_id: profileId,
     month: computed.month,
     year: computed.year,
@@ -159,7 +169,15 @@ export async function saveSnapshot(profileId: string, month: number, year: numbe
     json_snapshot: computed.jsonSnapshot as never,
   });
 
-  return toSnapshotData(saved);
+  if (!inserted) {
+    const concurrent = await fetchSnapshot(profileId, month, year);
+    if (!concurrent) {
+      throw new Error("Snapshot insert returned null and no existing snapshot found");
+    }
+    return { status: "already_exists", snapshot: toSnapshotData(concurrent) };
+  }
+
+  return { status: "created", snapshot: toSnapshotData(inserted) };
 }
 
 export function diffSnapshots(baseline: SnapshotData, target: SnapshotData): SnapshotDiff {

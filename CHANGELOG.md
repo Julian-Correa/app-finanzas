@@ -2,7 +2,22 @@
 
 ## Unreleased
 
+### Changed
+
+-   `historyService.getHistorySnapshots` now returns only persisted snapshots, dropping the live-compute fallback for the last 6 months.
+-   `saveSnapshot` now resolves immutability by returning a typed `SaveSnapshotOutcome` (`{ status: "created" | "already_exists" }`) instead of upserting. Existing snapshots are no longer overwritten.
+-   `historyService.computeSnapshot` no longer fabricates a synthetic `id`/`createdAt`; it returns `Omit<SnapshotData, "id" | "createdAt">` so callers cannot mistake a computed payload for a persisted row.
+-   Replaced `upsertSnapshot` (which issued `UPDATE` against the immutable `monthly_snapshots` table) with `insertSnapshotIfAbsent` and added `fetchSnapshot` for single-period lookups. The DB trigger `prevent_monthly_snapshot_mutation` is now respected on the client side.
+
 ### Added
+
+-   Typed `SnapshotJson` interface and `coerceSnapshotJson` helper, replacing the previous `unknown` payload with a normalized shape (`transactions`, `accounts`, `debts`, `goals`, `budgets`) and defensive defaults.
+-   Integration tests for `historyService` — 9 tests covering `getHistorySnapshots`, `computeSnapshot`, `saveSnapshot` (created, already_exists, concurrent insert, error path), and `diffSnapshots`.
+-   New i18n keys for the History page: `history.alreadyExists`, `history.snapshotFinal`, `history.generateCurrent`, `history.immutable`.
+-   Status notice banner on `HistoryPage` for "created", "already_exists", and "error" outcomes of `generateSnapshot`, replacing the previous bespoke `generatedMsg` flag.
+-   "Immutable" badge in the snapshot metadata card on `HistoryPage`.
+
+### Added (previous)
 
 -   Reusable shimmer loading skeletons via `Skeleton` and `SkeletonCard` components.
 -   Scroll-triggered reveal animations with `whileInView` support in shared motion components.

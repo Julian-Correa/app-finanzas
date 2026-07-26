@@ -1,6 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useProfile } from "@/app/providers/ProfileProvider";
-import { getHistorySnapshots, saveSnapshot, diffSnapshots, type SnapshotData, type SnapshotDiff } from "@/services/historyService";
+import {
+  getHistorySnapshots,
+  saveSnapshot,
+  diffSnapshots,
+  type SnapshotData,
+  type SnapshotDiff,
+  type SaveSnapshotOutcome,
+} from "@/services/historyService";
 
 function getProfileId(currentProfile: string): string | undefined {
   if (currentProfile === "ambos") return undefined;
@@ -23,8 +30,9 @@ export function useHistory() {
   const generateMutation = useMutation({
     mutationFn: ({ month, year }: { month: number; year: number }) =>
       saveSnapshot(profileId!, month, year),
-    onSuccess: () => {
+    onSuccess: (outcome: SaveSnapshotOutcome) => {
       queryClient.invalidateQueries({ queryKey: ["history", profileId] });
+      return outcome;
     },
   });
 
@@ -33,6 +41,7 @@ export function useHistory() {
     isLoading: query.isLoading,
     error: query.error,
     generateSnapshot: generateMutation.mutate,
+    generateOutcome: generateMutation.data,
     isGenerating: generateMutation.isPending,
     generateError: generateMutation.error,
   };

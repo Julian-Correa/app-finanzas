@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Application feature-complete for v0.1.0. Full i18n (es/en) implemented across all pages and layout components. All 110 tests pass, typecheck and build clean.
+Application feature-complete for v0.1.0. History page now backed by persisted immutable snapshots (no live fallback); `saveSnapshot` returns a typed outcome and respects the DB immutability trigger. Full i18n (es/en) implemented across all pages and layout components. All 119 tests pass, typecheck and build clean.
 
 ## Completed
 
@@ -43,9 +43,17 @@ Application feature-complete for v0.1.0. Full i18n (es/en) implemented across al
 - 80 engine unit tests + 30 service integration tests = 110 total (all passing)
 - Vitest test runner configured
 
+### History page (real)
+-   `getHistorySnapshots` returns only persisted rows; dropped live-compute fallback.
+-   `saveSnapshot` is insert-only and returns `{ status: "created" | "already_exists" }`, respecting the `trg_monthly_snapshots_immutable` trigger.
+-   New `insertSnapshotIfAbsent` and `fetchSnapshot` query helpers replace `upsertSnapshot` (which issued a forbidden `UPDATE`).
+-   `computeSnapshot` no longer synthesizes `id`/`createdAt`; returns `Omit<SnapshotData, "id" | "createdAt">`.
+-   Typed `SnapshotJson` interface with defensive `coerceSnapshotJson` defaults.
+-   `HistoryPage` surfaces a status notice (created / already_exists / error) instead of the bespoke `generatedMsg` flag; adds an "Immutable" badge and new i18n keys (`history.alreadyExists`, `history.snapshotFinal`, `history.generateCurrent`, `history.immutable`).
+-   9 integration tests added for `historyService` (119 total).
+
 ## Future / Optional
-- Real History page with monthly snapshots
-- Real Settings page with configurable preferences
+-   Real Settings page with configurable preferences
 - E2E tests (Playwright/Cypress)
 - PWA / offline support
 - Data export (CSV/PDF)
