@@ -12,11 +12,11 @@
 
 **Project:** FinOS
 
-**Status:** v0.1.0 — Feature-complete with full i18n (es/en). History page backed by persisted immutable snapshots.
+**Status:** v0.1.0 — Feature-complete with full i18n (es/en), real History page backed by persisted immutable snapshots, real Settings page with configurable preferences, CSV/PDF data export, and PWA/offline support.
 
 **Version:** 0.1.0
 
-**Current Phase:** v0.1.0 complete — all 12 feature pages implemented, UI animations polished, i18n applied across all pages and layout, 119 tests passing. History module migrated to insert-only persistence semantics.
+**Current Phase:** v0.1.0 complete — all 12 feature pages implemented, UI animations polished, i18n applied across all pages and layout, History module migrated to insert-only persistence semantics, Settings with localStorage-first + DB sync, CSV/PDF export shipped. 119 tests passing.
 
 ------------------------------------------------------------------------
 
@@ -150,7 +150,7 @@ Status: ✅ Complete (SQL executed against Supabase)
 
 Status: ✅ Complete
 
-Includes: all 12 feature pages, code-splitting, tests, animations, dashboard optimization, i18n.
+Includes: all 12 feature pages, code-splitting, tests, animations, dashboard optimization, i18n, real History/Settings pages, CSV/PDF data export.
 
 ------------------------------------------------------------------------
 
@@ -479,7 +479,7 @@ Completed:
 -   Added `LanguageProvider` with browser language auto-detection (`navigator.language`), `localStorage` persistence, and `document.documentElement.lang` sync.
 -   Created typed `TranslationKey` union (~120 keys) and `useTranslation` hook with `{param}` interpolation support.
 -   Created `LanguageToggle` component with compact (header icon, toggle EN/ES) and full (sidebar segmented control) modes.
--   Added ~1,080 translation entries (es + en) covering all 12 feature pages and shell layout (sidebar, header, bottom nav).
+-   Added 406 unique keys per language (~810 entries, es + en) covering all 12 feature pages and shell layout (sidebar, header, bottom nav).
 -   Updated all 12 pages to use `useTranslation()` instead of hardcoded strings:
     -   DashboardPage, TransactionsPage, BudgetsPage, DebtsPage, GoalsPage
     -   ReportsPage, SimulatorPage, PurchaseAdvisorPage, TimelinePage, CalendarPage
@@ -529,6 +529,108 @@ Notes:
 
 ---
 
+## Session 014
+
+Date: 2026-07-20
+
+Completed:
+
+-   Implemented the real HistoryPage replacing the placeholder: month-by-month snapshot browser with KPI cards (income, expenses, cashflow, debt, savings, financial score), prev/next month navigation plus a pill selector of available months.
+-   Comparison mode: select a baseline month to diff against the current selection — delta values, percentage bars and directional indicators for all 6 KPIs.
+-   "Generate Snapshot" button computes and persists the current month via the `generateSnapshot` mutation; snapshot detail panel shows counts of budgets, transactions, goals, debts and accounts.
+-   Created `src/services/historyService.ts` (`getHistorySnapshots`, `computeSnapshot`, `saveSnapshot`, `diffSnapshots`), `useHistory` TanStack Query hook with `generateSnapshot` mutation, and `fetchSnapshots`/`upsertSnapshot` query helpers.
+-   Added 22 new translation keys (es/en).
+-   Implemented the real SettingsPage replacing the placeholder with 5 sections:
+    -   Appearance: theme picker (light/dark/system) and language selector (es/en).
+    -   Profile: default profile selector (Julián/Pareja/Ambos) wired to `ProfileProvider`.
+    -   Preferences: animations and notifications toggle switches.
+    -   Data: CSV/PDF export buttons (UI placeholder at this point, wired in Session 016).
+    -   About: version, framework and current language display.
+-   Created `src/services/settingsService.ts` with `AppSettings` type, localStorage-first persistence (`finos.settings` key), optional Supabase sync (`loadSettingsFromDb` / `persistSettings`) and `getDefaultProfileId` mapping; `useSettings` hook bridging the theme/language/profile providers; `fetchSettings`/`upsertSetting` query helpers.
+-   Added 38 new translation keys (es/en).
+-   Verified `npm run typecheck`, `npm run build` and `npm run test -- --run` pass.
+
+Pending:
+
+-   Data export implementation (CSV/PDF) — the Settings Data section was UI-only.
+-   E2E tests, PWA/offline, accessibility audit.
+
+Notes:
+
+-   Settings uses localStorage-first with best-effort Supabase sync: `persistSettings` saves locally and tries the DB but swallows failures, so the app remains usable offline.
+
+---
+
+## Session 015
+
+Date: 2026-07-20
+
+Completed:
+
+-   Implemented CSV/PDF data export across the app:
+    -   `src/services/exportService.ts` with `generateCsv` (UTF-8 BOM for Excel compatibility, proper CSV escaping), `downloadFile`, `downloadCsv` and `printAsPdf` (styled HTML print template with `@page` margins and footer).
+    -   TransactionsPage: export dropdown with CSV/PDF for the currently filtered transaction list.
+    -   ReportsPage: CSV/PDF export buttons for the monthly summary table.
+    -   SettingsPage: full data export of transactions, budgets, debts and goals via CSV and PDF report.
+-   Added 6 new translation keys (es/en).
+-   Verified `npm run typecheck`, `npm run build` and `npm run test -- --run` pass.
+
+Pending:
+
+-   E2E tests, PWA/offline, accessibility audit.
+
+Notes:
+
+-   CSV generation is deterministic and locale-agnostic; BOM is prepended so Excel renders UTF-8 characters (e.g. accents in Spanish) correctly. PDF is generated client-side via the browser print dialog (no external dependency).
+
+---
+
+## Session 016
+
+Date: 2026-07-25
+
+Completed:
+
+-   Hardened the History module against the `trg_monthly_snapshots_immutable` database trigger (see Session 013 details above — this is the session log for the `bb27b7f` fix that landed after Session 014's `upsertSnapshot` implementation).
+-   Updated project documentation (`CHANGELOG.md`, `TODO.md`, this file) to reflect Sessions 014 and 015, which had not been logged.
+
+Pending:
+
+-   E2E tests, PWA/offline, accessibility audit, shimmer skeletons for forms/modals.
+
+Notes:
+
+-   Documentation was lagging behind the repository state; reconciled `CHANGELOG.md`, `TODO.md` and `PROJECT_MEMORY.md` with the last 3 feature commits.
+
+---
+
+## Session 017
+
+Date: 2026-08-03
+
+Completed:
+
+-   Verified Supabase connectivity — the project had been auto-paused and auto-deleted by the Free Plan inactivity policy; after the user restored it from the dashboard, DNS and the REST API came back up. The seed data survived the restore (profiles, transactions, budgets, debts, goals, monthly_snapshots, settings all respond 200). `.env` keys required no change.
+-   Implemented PWA / offline support:
+    -   Installed `vite-plugin-pwa@1.3.0` (generateSW mode, `registerType: "autoUpdate"`).
+    -   Web app manifest: FinOS name/short_name, `es-AR` lang, standalone display, `#09090B` theme/background, icons 64/192/512 + maskable 512.
+    -   Created `public/finos-icon.svg` and generated the icon set (`favicon.ico`, `apple-touch-icon-180x180.png`, `pwa-64x64.png`, `pwa-192x192.png`, `pwa-512x512.png`, `maskable-icon-512x512.png`) with `@vite-pwa/assets-generator`.
+    -   Registered the service worker from `main.tsx` via `virtual:pwa-register`; `sw.js` precaches the app shell (46 entries) with SPA `navigateFallback` → `/index.html`.
+    -   Workbox runtime caching for Supabase REST GETs (`NetworkFirst`, 3s network timeout, 24h cache) so previously fetched data renders offline.
+    -   Updated `index.html` with PWA/Apple metas and favicons; added `public/_redirects` SPA fallback for Netlify; new `vendor-pwa` chunk.
+-   Verified `npm run typecheck`, `npm run build` (sw.js + manifest.webmanifest emitted) and `npm run test -- --run` (119/119 pass).
+-   Updated `CHANGELOG.md`, `TODO.md` and this file.
+
+Pending:
+
+-   E2E tests, accessibility audit / keyboard shortcuts, shimmer skeletons for forms and modals.
+
+Notes:
+
+-   Free-tier Supabase projects are auto-paused after ~1 week of inactivity and later deleted if never restored; cheap API requests (e.g. a daily cron ping) keep a project alive. Manual deletion only frees the subdomain — an NXDOMAIN means the project is gone from edge DNS (paused projects still resolve).
+
+---
+
 # Pending Decisions
 
 -   Final SQL implementation.
@@ -547,12 +649,10 @@ None.
 
 # Next Recommended Task
 
-1.  Settings page — implement configurable preferences (default profile, animations toggle, backup options).
-2.  E2E tests — add Playwright or Cypress for critical user flows.
-3.  PWA / offline support — service worker, manifest, offline fallback.
-4.  Data export — CSV/PDF export for transactions and reports.
-5.  Keyboard shortcuts and accessibility audit (WCAG AA compliance).
-6.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
+1.  E2E tests — add Playwright or Cypress for critical user flows.
+2.  Keyboard shortcuts and accessibility audit (WCAG AA compliance).
+3.  Extend shimmer skeletons to forms and modal loading states.
+4.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
 
 ------------------------------------------------------------------------
 

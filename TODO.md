@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Application feature-complete for v0.1.0. History page now backed by persisted immutable snapshots (no live fallback); `saveSnapshot` returns a typed outcome and respects the DB immutability trigger. Full i18n (es/en) implemented across all pages and layout components. All 119 tests pass, typecheck and build clean.
+Application feature-complete for v0.1.0. History page backed by persisted immutable snapshots (no live fallback); `saveSnapshot` returns a typed outcome and respects the DB immutability trigger. Real Settings page with configurable preferences (theme, language, default profile, animations/notifications toggles) with localStorage-first plus optional Supabase sync. CSV/PDF data export shipped across Transactions, Reports and Settings. Full i18n (es/en) implemented across all pages and layout components. PWA with offline app shell, web app manifest and Supabase read caching. All 119 tests pass, typecheck and build clean.
 
 ## Completed
 
@@ -52,10 +52,30 @@ Application feature-complete for v0.1.0. History page now backed by persisted im
 -   `HistoryPage` surfaces a status notice (created / already_exists / error) instead of the bespoke `generatedMsg` flag; adds an "Immutable" badge and new i18n keys (`history.alreadyExists`, `history.snapshotFinal`, `history.generateCurrent`, `history.immutable`).
 -   9 integration tests added for `historyService` (119 total).
 
+### Settings page (real)
+-   `settingsService.ts` with `AppSettings` type, localStorage-first persistence (`finos.settings`), optional Supabase sync (`loadSettingsFromDb` / `persistSettings`) and `getDefaultProfileId` mapping.
+-   `useSettings` hook bridging theme/language/profile providers with a persist/save flow.
+-   `fetchSettings` and `upsertSetting` query helpers in `src/supabase/queries.ts`.
+-   `SettingsPage` with 5 sections: Appearance (theme light/dark/system, language es/en), Profile (Julián/Pareja/Ambos), Preferences (animations, notifications toggles), Data (export buttons) and About (version, framework, language).
+-   38 new translation keys (es/en).
+
+### Data export (CSV/PDF)
+-   `exportService.ts`: `generateCsv` (UTF-8 BOM, CSV escaping), `downloadFile`, `downloadCsv`, `printAsPdf` (styled HTML print template).
+-   TransactionsPage: CSV/PDF export of the filtered transaction list.
+-   ReportsPage: CSV/PDF export of the monthly summary table.
+-   SettingsPage: full dataset export (transactions, budgets, debts, goals) via CSV and PDF report.
+-   6 new translation keys (es/en).
+
+### PWA / offline
+-   `vite-plugin-pwa@1.3.0` with `registerType: "autoUpdate"` and generateSW mode.
+-   Web app manifest (name, short_name, `es-AR`, standalone, `#09090B` theme/background, icons 64/192/512 + maskable).
+-   Brand icon set in `public/` generated from `finos-icon.svg` via `@vite-pwa/assets-generator` (favicon.ico, apple-touch-icon, pwa-64/192/512, maskable-512).
+-   Service worker registration in `main.tsx`; `sw.js` precaches app shell (46 entries) with SPA `navigateFallback` to `/index.html`.
+-   Workbox runtime caching for Supabase REST GETs (`NetworkFirst`, 3s timeout, 24h cache).
+-   Updated `index.html` with PWA/Apple metas and favicons; added `public/_redirects` SPA fallback for Netlify.
+-   Vendor chunk `vendor-pwa`.
+
 ## Future / Optional
--   Real Settings page with configurable preferences
-- E2E tests (Playwright/Cypress)
-- PWA / offline support
-- Data export (CSV/PDF)
-- Keyboard shortcuts and accessibility audit
-- Extend shimmer skeletons to forms and modal loading states
+-   E2E tests (Playwright/Cypress)
+-   Keyboard shortcuts and accessibility audit
+-   Extend shimmer skeletons to forms and modal loading states

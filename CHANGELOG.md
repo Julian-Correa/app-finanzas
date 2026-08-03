@@ -54,7 +54,7 @@
 -   `LanguageProvider` with browser language auto-detection, `localStorage` persistence, and `document.documentElement.lang` sync.
 -   `useTranslation` hook with typed `TranslationKey` union and `{param}` interpolation.
 -   `LanguageToggle` component with compact (header icon) and full (sidebar) modes.
--   ~1,080 translation keys covering all 12 feature pages: dashboard, transactions, budgets, debts, goals, reports, simulator, purchase advisor, timeline, calendar, history, settings.
+-   406 unique keys per language (~810 entries total, es + en) covering all 12 feature pages: dashboard, transactions, budgets, debts, goals, reports, simulator, purchase advisor, timeline, calendar, history, settings.
 -   Shell navigation (sidebar, header, bottom nav) fully translated.
 -   Locale-aware `locale` export (`es-AR` / `en-US`) from LanguageProvider for future date/number formatting.
 -   Sidebar scroll improvements for better usability on smaller screens.
@@ -70,22 +70,56 @@
 -   Real HistoryPage implementation replacing the placeholder — monthly snapshot browser with KPI cards (income, expenses, cashflow, debt, savings, financial score).
 -   Month-by-month navigation via prev/next buttons and a pill selector of available months.
 -   Comparison mode: select a baseline month to diff against the current selection, with delta values, percentage bars, and directional indicators for all 6 KPIs.
--   "Generate Snapshot" button to compute and persist a snapshot for the current month via `upsertSnapshot`.
+-   "Generate Snapshot" button to compute and persist a snapshot for the current month via the `generateSnapshot` mutation (insert-only, respects the `trg_monthly_snapshots_immutable` trigger; see Changed above).
 -   `historyService.ts` with `getHistorySnapshots`, `computeSnapshot`, `saveSnapshot`, and `diffSnapshots` functions.
--   `useHistory` TanStack Query hook with `generateSnapshot` mutation.
+-   `useHistory` TanStack Query hook with `generateSnapshot` mutation and `useSnapshotComparison` helper.
 -   Snapshot detail panel showing counts of budgets, transactions, goals, debts, and accounts.
--   Query helpers `fetchSnapshots` and `upsertSnapshot` in `src/supabase/queries.ts`.
+-   Query helpers `fetchSnapshots`, `fetchSnapshot` and `insertSnapshotIfAbsent` in `src/supabase/queries.ts`.
 -   22 new translation keys for history page (es/en).
+
+### Added (Settings Page)
+
+-   Real SettingsPage implementation replacing the placeholder with 5 configuration sections.
+-   Appearance: theme picker (light/dark/system) and language selector (es/en).
+-   Profile: default profile selector (Julián/Pareja/Ambos) wired to `ProfileProvider`.
+-   Preferences: animations and notifications toggle switches.
+-   Data: CSV/PDF export buttons for the full dataset (see Data Export below).
+-   About: version, framework and current language display.
+-   `settingsService.ts` with `AppSettings` type, localStorage-first persistence (`finos.settings` key), optional Supabase sync via `loadSettingsFromDb` and `persistSettings`, and `getDefaultProfileId` mapping.
+-   `useSettings` TanStack Query hook bridging the theme/language/profile providers with a persist/save flow.
+-   Query helpers `fetchSettings` and `upsertSetting` in `src/supabase/queries.ts`.
+-   38 new translation keys for settings page (es/en).
+
+### Added (Data Export)
+
+-   `exportService.ts` with `generateCsv` (UTF-8 BOM for Excel compatibility, proper escaping/quotes), `downloadFile`, `downloadCsv` and `printAsPdf` (styled HTML print template with `@page` margins and footer).
+-   TransactionsPage: export dropdown with CSV/PDF for the currently filtered transaction list.
+-   ReportsPage: CSV/PDF export buttons for the monthly summary table.
+-   SettingsPage: full data export of transactions, budgets, debts and goals via CSV and PDF report.
+-   6 new translation keys (es/en).
+
+### Added (PWA / Offline)
+
+-   `vite-plugin-pwa@1.3.0` integration with `registerType: "autoUpdate"` and generateSW mode.
+-   Web app manifest (`manifest.webmanifest`): FinOS name/short_name, `es-AR` lang, standalone display, dark theme/background color (`#09090B`), icons 64/192/512 + maskable 512.
+-   Brand icon set in `public/`: `finos-icon.svg` (source), `favicon.ico`, `apple-touch-icon-180x180.png`, `pwa-64x64.png`, `pwa-192x192.png`, `pwa-512x512.png`, `maskable-icon-512x512.png` (generated with `@vite-pwa/assets-generator`).
+-   Service worker registration in `main.tsx` via `virtual:pwa-register` (`registerSW({ immediate: true })`); `sw.js` precaches the app shell (46 entries) with SPA `navigateFallback` to `/index.html`.
+-   Workbox runtime caching for Supabase REST GET requests (`NetworkFirst`, 3s network timeout, 24h cache) so previously loaded data renders offline.
+-   `index.html` PWA metas: description, theme-color, mobile-web-app-capable, apple-touch-icon and mobile status bar settings; new favicon (SVG + ICO).
+-   `public/_redirects` SPA fallback (`/* → /index.html 200`) for Netlify deploys.
+-   Vendor chunk `vendor-pwa` for the PWA bootstrap code.
 
 ### Verified
 
 -   `npm run typecheck` passes.
--   `npm run build` passes.
--   `npm run test -- --run` passes (`110` tests).
+-   `npm run build` passes (dist includes `sw.js`, `workbox-*.js`, `manifest.webmanifest`).
+-   `npm run test -- --run` passes (`119` tests: 80 engine unit + 39 service integration).
 
 ### Notes
 
 -   All 12 FinOS feature pages are now implemented with real hooks, services, and UI.
+-   History page is backed by persisted immutable snapshots; Settings page has configurable preferences with DB sync; CSV/PDF export is available in Transactions, Reports and Settings.
+-   PWA installed: installable on desktop/mobile with offline app shell and cached Supabase reads.
 -   Application is feature-complete for v0.1.0.
 -   Full i18n (es/en) applied across all pages and layout components.
 
