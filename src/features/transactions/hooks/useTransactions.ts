@@ -30,11 +30,16 @@ export function useTransactions(month?: number, year?: number) {
   return { ...query, month: m, year: y, profileId };
 }
 
-export function useTransactionMutations(profileId: string, month: number, year: number) {
+export function useTransactionMutations(profileId: string | undefined, month: number, year: number) {
   const queryClient = useQueryClient();
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ["transactions", profileId, month, year] });
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["transactions"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    queryClient.invalidateQueries({ queryKey: ["reports"] });
+    queryClient.invalidateQueries({ queryKey: ["timeline"] });
+    queryClient.invalidateQueries({ queryKey: ["calendar"] });
+  };
 
   const create = useMutation({
     mutationFn: (input: TransactionInput) => addTransaction(input),

@@ -29,11 +29,16 @@ export function useBudgets(month?: number, year?: number) {
   return { ...query, month: m, year: y, profileId };
 }
 
-export function useBudgetMutations(profileId: string, month: number, year: number) {
+export function useBudgetMutations(profileId: string | undefined, month: number, year: number) {
   const queryClient = useQueryClient();
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ["budgets", profileId, month, year] });
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["budgets"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    queryClient.invalidateQueries({ queryKey: ["reports"] });
+    queryClient.invalidateQueries({ queryKey: ["timeline"] });
+    queryClient.invalidateQueries({ queryKey: ["calendar"] });
+  };
 
   const create = useMutation({
     mutationFn: (input: BudgetInput) => addBudget(input),

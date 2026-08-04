@@ -29,11 +29,16 @@ export function useDebts() {
   return { ...query, profileId };
 }
 
-export function useDebtMutations(profileId: string) {
+export function useDebtMutations(profileId: string | undefined) {
   const queryClient = useQueryClient();
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ["debts", profileId] });
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["debts"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    queryClient.invalidateQueries({ queryKey: ["reports"] });
+    queryClient.invalidateQueries({ queryKey: ["timeline"] });
+    queryClient.invalidateQueries({ queryKey: ["calendar"] });
+  };
 
   const create = useMutation({
     mutationFn: (input: DebtInput) => addDebt(input),

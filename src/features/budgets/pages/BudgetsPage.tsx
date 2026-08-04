@@ -199,7 +199,7 @@ export function BudgetsPage() {
         <BudgetFormModal
           initial={editingInitial}
           categories={categories.filter((c) => !budgets.some((b) => b.category_id === c.id) || (editingInitial && c.id === editingInitial.category_id))}
-          profileId={profileId ?? ""}
+          profileId={profileId}
           month={month}
           year={year}
           mutations={mutations}
@@ -218,7 +218,7 @@ export function BudgetsPage() {
 interface BudgetFormModalProps {
   initial: { category_id: string; limit_amount: number; month: number; year: number; profile_id: string } | null;
   categories: Tables<"categories">[];
-  profileId: string;
+  profileId: string | undefined;
   month: number;
   year: number;
   mutations: ReturnType<typeof useBudgetMutations>;
@@ -239,14 +239,17 @@ function BudgetFormModal({
   const { t, language } = useTranslation();
   const isEditing = !!initial && !!editId;
 
+  const [selectedProfileId, setSelectedProfileId] = useState(initial?.profile_id ?? "11111111-1111-4111-8111-111111111111");
   const [categoryId, setCategoryId] = useState(initial?.category_id ?? "");
   const [limitAmount, setLimitAmount] = useState(initial ? String(initial.limit_amount) : "");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const finalProfileId = profileId || selectedProfileId;
+
     const base = {
-      profile_id: profileId,
+      profile_id: finalProfileId,
       category_id: categoryId,
       limit_amount: Number(limitAmount),
       month,
@@ -281,6 +284,21 @@ function BudgetFormModal({
         <SkeletonForm rows={2} />
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
+          {!profileId && (
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Perfil</label>
+              <select
+                value={selectedProfileId}
+                onChange={(e) => setSelectedProfileId(e.target.value)}
+                required
+                className="w-full rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
+              >
+                <option value="11111111-1111-4111-8111-111111111111">Julian</option>
+                <option value="22222222-2222-4222-8222-222222222222">Pareja</option>
+              </select>
+            </div>
+          )}
+
           <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("budgets.form.category")}</label>
             <select

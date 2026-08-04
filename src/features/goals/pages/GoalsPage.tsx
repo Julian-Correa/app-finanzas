@@ -239,7 +239,7 @@ export function GoalsPage() {
       >
         <GoalFormModal
           initial={formInitial}
-          profileId={profileId ?? ""}
+          profileId={profileId}
           mutations={mutations}
           editId={editingId}
           onClose={() => {
@@ -277,7 +277,7 @@ interface GoalFormModalProps {
     icon: string | null;
     color: string | null;
   } | null;
-  profileId: string;
+  profileId: string | undefined;
   mutations: ReturnType<typeof useGoalMutations>;
   editId: string | null;
   onClose: () => void;
@@ -287,6 +287,7 @@ function GoalFormModal({ initial, profileId, mutations, editId, onClose }: GoalF
   const { t, language } = useTranslation();
   const isEditing = !!initial && !!editId;
 
+  const [selectedProfileId, setSelectedProfileId] = useState(initial?.profile_id ?? "11111111-1111-4111-8111-111111111111");
   const [name, setName] = useState(initial?.name ?? "");
   const [targetAmount, setTargetAmount] = useState(initial ? String(initial.target_amount) : "");
   const [currentAmount, setCurrentAmount] = useState(initial ? String(initial.current_amount) : "0");
@@ -297,8 +298,10 @@ function GoalFormModal({ initial, profileId, mutations, editId, onClose }: GoalF
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const finalProfileId = profileId || selectedProfileId;
+
     const base = {
-      profile_id: profileId,
+      profile_id: finalProfileId,
       name,
       target_amount: Number(targetAmount),
       current_amount: Number(currentAmount),
@@ -338,6 +341,21 @@ function GoalFormModal({ initial, profileId, mutations, editId, onClose }: GoalF
         <SkeletonForm rows={4} />
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
+          {!profileId && (
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Perfil</label>
+              <select
+                value={selectedProfileId}
+                onChange={(e) => setSelectedProfileId(e.target.value)}
+                required
+                className="w-full rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
+              >
+                <option value="11111111-1111-4111-8111-111111111111">Julian</option>
+                <option value="22222222-2222-4222-8222-222222222222">Pareja</option>
+              </select>
+            </div>
+          )}
+
           <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("goals.form.name")}</label>
             <input

@@ -28,11 +28,16 @@ export function useGoals() {
   return { ...query, profileId };
 }
 
-export function useGoalMutations(profileId: string) {
+export function useGoalMutations(profileId: string | undefined) {
   const queryClient = useQueryClient();
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ["goals", profileId] });
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["goals"] });
+    queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+    queryClient.invalidateQueries({ queryKey: ["reports"] });
+    queryClient.invalidateQueries({ queryKey: ["timeline"] });
+    queryClient.invalidateQueries({ queryKey: ["calendar"] });
+  };
 
   const create = useMutation({
     mutationFn: (input: GoalInput) => addGoal(input),

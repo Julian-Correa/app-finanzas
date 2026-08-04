@@ -236,7 +236,7 @@ export function DebtsPage() {
       >
         <DebtFormModal
           initial={formInitial}
-          profileId={profileId ?? ""}
+          profileId={profileId}
           mutations={mutations}
           editId={editingId}
           onClose={() => {
@@ -277,7 +277,7 @@ interface DebtFormModalProps {
     due_day: number | null;
     status: string;
   } | null;
-  profileId: string;
+  profileId: string | undefined;
   mutations: ReturnType<typeof useDebtMutations>;
   editId: string | null;
   onClose: () => void;
@@ -287,6 +287,7 @@ function DebtFormModal({ initial, profileId, mutations, editId, onClose }: DebtF
   const { t, language } = useTranslation();
   const isEditing = !!initial && !!editId;
 
+  const [selectedProfileId, setSelectedProfileId] = useState(initial?.profile_id ?? "11111111-1111-4111-8111-111111111111");
   const [name, setName] = useState(initial?.name ?? "");
   const [creditor, setCreditor] = useState(initial?.creditor ?? "");
   const [originalAmount, setOriginalAmount] = useState(initial ? String(initial.original_amount) : "");
@@ -301,8 +302,10 @@ function DebtFormModal({ initial, profileId, mutations, editId, onClose }: DebtF
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const finalProfileId = profileId || selectedProfileId;
+
     const base = {
-      profile_id: profileId,
+      profile_id: finalProfileId,
       name,
       creditor: creditor || null,
       original_amount: Number(originalAmount),
@@ -344,6 +347,21 @@ function DebtFormModal({ initial, profileId, mutations, editId, onClose }: DebtF
         <SkeletonForm rows={5} />
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
+          {!profileId && (
+            <div>
+              <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">Perfil</label>
+              <select
+                value={selectedProfileId}
+                onChange={(e) => setSelectedProfileId(e.target.value)}
+                required
+                className="w-full rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
+              >
+                <option value="11111111-1111-4111-8111-111111111111">Julian</option>
+                <option value="22222222-2222-4222-8222-222222222222">Pareja</option>
+              </select>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("debts.form.name")}</label>
