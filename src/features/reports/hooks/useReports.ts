@@ -13,8 +13,8 @@ export function useReports(months: number = 6) {
 
   const query = useQuery({
     queryKey: ["reports", profileId, months],
-    queryFn: () => getMonthlyReports(profileId!, months),
-    enabled: !!profileId,
+    queryFn: () => getMonthlyReports(profileId, months),
+    enabled: true,
   });
 
   return { ...query, profileId };

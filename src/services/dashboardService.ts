@@ -48,19 +48,46 @@ function parseDashboardOverview(overview: Json): {
 }
 
 export async function getDashboardData(
-  profileId: string,
+  profileId: string | undefined,
   month: number,
   year: number
 ): Promise<DashboardData> {
-  const [overview, budgets, goals, alerts] =
+  const julianId = "11111111-1111-4111-8111-111111111111";
+  const parejaId = "22222222-2222-4222-8222-222222222222";
+
+  const [overviewJulian, overviewPareja, budgets, goals, alerts] =
     await Promise.all([
-      fetchDashboardOverview(profileId, month, year),
+      profileId ? fetchDashboardOverview(profileId, month, year) : fetchDashboardOverview(julianId, month, year),
+      profileId ? Promise.resolve(null) : fetchDashboardOverview(parejaId, month, year),
       fetchBudgets(profileId, month, year),
       fetchGoals(profileId),
       fetchAlerts(profileId, 3),
     ]);
 
-  const { cashflow, liquidity, debtRatio } = parseDashboardOverview(overview);
+  const parsedJulian = parseDashboardOverview(overviewJulian);
+  const parsedPareja = overviewPareja ? parseDashboardOverview(overviewPareja) : null;
+
+  let cashflow: Required<DashboardData>["cashflow"];
+  let liquidity: number;
+  let debtRatio: number;
+
+  if (parsedPareja) {
+    cashflow = {
+      income: parsedJulian.cashflow.income + parsedPareja.cashflow.income,
+      expenses: parsedJulian.cashflow.expenses + parsedPareja.cashflow.expenses,
+      cashflow: parsedJulian.cashflow.cashflow + parsedPareja.cashflow.cashflow,
+    };
+    liquidity = parsedJulian.liquidity + parsedPareja.liquidity;
+    const julianPayments = (parsedJulian.cashflow.income * parsedJulian.debtRatio) / 100;
+    const parejaPayments = (parsedPareja.cashflow.income * parsedPareja.debtRatio) / 100;
+    const totalIncome = cashflow.income;
+    debtRatio = totalIncome > 0 ? ((julianPayments + parejaPayments) / totalIncome) * 100 : 0;
+    debtRatio = Math.round(debtRatio * 100) / 100;
+  } else {
+    cashflow = parsedJulian.cashflow;
+    liquidity = parsedJulian.liquidity;
+    debtRatio = parsedJulian.debtRatio;
+  }
 
   const liquidityRatio = calculateLiquidityRatio(liquidity, cashflow.expenses);
   const budgetDiscipline = calculateBudgetDiscipline(budgets);

@@ -9,7 +9,7 @@ import {
 } from "@/supabase/queries";
 import type { Tables } from "@/types/database";
 
-export async function getDebts(profileId: string) {
+export async function getDebts(profileId: string | undefined) {
   const debts = await fetchDebts(profileId);
   const withPayments = await Promise.all(
     debts.map(async (d) => {

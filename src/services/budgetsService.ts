@@ -8,7 +8,7 @@ import {
 import { calculateBudgetUsage } from "@/engine";
 import type { Tables } from "@/types/database";
 
-export async function getBudgets(profileId: string, month: number, year: number) {
+export async function getBudgets(profileId: string | undefined, month: number, year: number) {
   const [budgets, categories] = await Promise.all([
     fetchBudgets(profileId, month, year),
     fetchCategories(),

@@ -22,8 +22,8 @@ export function useBudgets(month?: number, year?: number) {
 
   const query = useQuery({
     queryKey: ["budgets", profileId, m, y],
-    queryFn: () => getBudgets(profileId!, m, y),
-    enabled: !!profileId,
+    queryFn: () => getBudgets(profileId, m, y),
+    enabled: true,
   });
 
   return { ...query, month: m, year: y, profileId };

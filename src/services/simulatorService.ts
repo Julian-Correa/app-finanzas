@@ -47,7 +47,7 @@ export interface SimulatorResult {
   };
 }
 
-export async function getSimulatorBaseline(profileId: string): Promise<SimulatorResult["baseline"]> {
+export async function getSimulatorBaseline(profileId: string | undefined): Promise<SimulatorResult["baseline"]> {
   const now = new Date();
   const month = now.getMonth() + 1;
   const year = now.getFullYear();

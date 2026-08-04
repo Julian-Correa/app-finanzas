@@ -21,8 +21,8 @@ export function useGoals() {
 
   const query = useQuery({
     queryKey: ["goals", profileId],
-    queryFn: () => getGoals(profileId!),
-    enabled: !!profileId,
+    queryFn: () => getGoals(profileId),
+    enabled: true,
   });
 
   return { ...query, profileId };

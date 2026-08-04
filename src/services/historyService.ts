@@ -81,9 +81,50 @@ export function toSnapshotData(row: Tables<"monthly_snapshots">): SnapshotData {
   };
 }
 
-export async function getHistorySnapshots(profileId: string): Promise<HistoryData> {
+export async function getHistorySnapshots(profileId: string | undefined): Promise<HistoryData> {
   const rows = await fetchSnapshots(profileId);
-  const snapshots = rows.map(toSnapshotData);
+  const rawSnapshots = rows.map(toSnapshotData);
+
+  const grouped = new Map<string, SnapshotData[]>();
+  for (const s of rawSnapshots) {
+    const key = `${s.year}-${s.month}`;
+    if (!grouped.has(key)) {
+      grouped.set(key, []);
+    }
+    grouped.get(key)!.push(s);
+  }
+
+  const snapshots: SnapshotData[] = [];
+  for (const group of grouped.values()) {
+    if (group.length === 1) {
+      snapshots.push(group[0]);
+    } else {
+      const first = group[0];
+      const consolidated: SnapshotData = {
+        id: `consolidated-${first.year}-${first.month}`,
+        month: first.month,
+        year: first.year,
+        income: group.reduce((sum, s) => sum + s.income, 0),
+        expenses: group.reduce((sum, s) => sum + s.expenses, 0),
+        cashflow: group.reduce((sum, s) => sum + s.cashflow, 0),
+        debt: group.reduce((sum, s) => sum + s.debt, 0),
+        savings: group.reduce((sum, s) => sum + s.savings, 0),
+        financialScore: Math.round(group.reduce((sum, s) => sum + s.financialScore, 0) / group.length),
+        jsonSnapshot: {
+          transactions: group.reduce((sum, s) => sum + s.jsonSnapshot.transactions, 0),
+          accounts: group.reduce((sum, s) => sum + s.jsonSnapshot.accounts, 0),
+          debts: group.reduce((sum, s) => sum + s.jsonSnapshot.debts, 0),
+          goals: group.reduce((sum, s) => sum + s.jsonSnapshot.goals, 0),
+          budgets: group.reduce((sum, s) => sum + s.jsonSnapshot.budgets, 0),
+        },
+        createdAt: first.createdAt,
+      };
+      snapshots.push(consolidated);
+    }
+  }
+
+  snapshots.sort((a, b) => b.year - a.year || b.month - a.month);
+
   return {
     snapshots,
     monthsWithData: snapshots.map((s) => ({ month: s.month, year: s.year })),

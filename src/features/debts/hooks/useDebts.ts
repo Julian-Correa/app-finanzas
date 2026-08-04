@@ -22,8 +22,8 @@ export function useDebts() {
 
   const query = useQuery({
     queryKey: ["debts", profileId],
-    queryFn: () => getDebts(profileId!),
-    enabled: !!profileId,
+    queryFn: () => getDebts(profileId),
+    enabled: true,
   });
 
   return { ...query, profileId };

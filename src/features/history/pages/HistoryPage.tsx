@@ -50,7 +50,7 @@ function getMonthName(m: number, language: string): string {
 
 export function HistoryPage() {
   const { t, language } = useTranslation();
-  const { data, isLoading, error, generateSnapshot, generateOutcome, isGenerating, generateError } = useHistory();
+  const { data, isLoading, error, generateSnapshot, generateOutcome, isGenerating, generateError, profileId } = useHistory();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [compareIndex, setCompareIndex] = useState<number | null>(null);
   const [showCompare, setShowCompare] = useState(false);
@@ -245,22 +245,24 @@ export function HistoryPage() {
                   {t("history.comparing")}
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    const now = new Date();
-                    generateSnapshot({ month: now.getMonth() + 1, year: now.getFullYear() });
-                  }}
-                  disabled={isGenerating}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary/90 disabled:opacity-50"
-                >
-                  {isGenerating ? (
-                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  ) : (
-                    <Camera className="h-3.5 w-3.5" />
-                  )}
-                  {isGenerating ? t("history.generating") : t("history.generate")}
-                </button>
+                {profileId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const now = new Date();
+                      generateSnapshot({ month: now.getMonth() + 1, year: now.getFullYear() });
+                    }}
+                    disabled={isGenerating}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-1.5 text-xs font-medium text-white transition hover:bg-primary/90 disabled:opacity-50"
+                  >
+                    {isGenerating ? (
+                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    ) : (
+                      <Camera className="h-3.5 w-3.5" />
+                    )}
+                    {isGenerating ? t("history.generating") : t("history.generate")}
+                  </button>
+                )}
               </div>
             </div>
 
@@ -407,18 +409,20 @@ export function HistoryPage() {
                     {getMonthName(s.month, language)} {s.year}
                   </button>
                 ))}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const now = new Date();
-                    generateSnapshot({ month: now.getMonth() + 1, year: now.getFullYear() });
-                  }}
-                  disabled={isGenerating}
-                  className="inline-flex items-center gap-1 rounded-lg border border-dashed border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-400 transition hover:border-primary/50 hover:text-primary dark:border-zinc-600 dark:text-zinc-500 dark:hover:border-primary/30"
-                >
-                  <Camera className="h-3 w-3" />
-                  {isGenerating ? t("history.generating") : t("history.generateCurrent")}
-                </button>
+                {profileId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const now = new Date();
+                      generateSnapshot({ month: now.getMonth() + 1, year: now.getFullYear() });
+                    }}
+                    disabled={isGenerating}
+                    className="inline-flex items-center gap-1 rounded-lg border border-dashed border-slate-300 px-2.5 py-1 text-xs font-medium text-slate-400 transition hover:border-primary/50 hover:text-primary dark:border-zinc-600 dark:text-zinc-500 dark:hover:border-primary/30"
+                  >
+                    <Camera className="h-3 w-3" />
+                    {isGenerating ? t("history.generating") : t("history.generateCurrent")}
+                  </button>
+                )}
               </div>
             </div>
 

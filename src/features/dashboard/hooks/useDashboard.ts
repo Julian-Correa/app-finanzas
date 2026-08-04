@@ -16,8 +16,8 @@ export function useDashboard(month?: number, year?: number) {
 
   return useQuery({
     queryKey: ["dashboard", profileId, m, y],
-    queryFn: () => getDashboardData(profileId!, m, y),
-    enabled: !!profileId,
+    queryFn: () => getDashboardData(profileId, m, y),
+    enabled: true,
     staleTime: 30_000,
   });
 }

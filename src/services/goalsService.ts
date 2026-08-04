@@ -9,7 +9,7 @@ import {
 import { calculateGoalEta, calculateGoalProgress } from "@/engine";
 import type { Tables } from "@/types/database";
 
-export async function getGoals(profileId: string) {
+export async function getGoals(profileId: string | undefined) {
   const goals = await fetchGoals(profileId);
   const withDetails = await Promise.all(
     goals.map(async (g) => {

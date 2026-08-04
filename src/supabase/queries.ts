@@ -20,14 +20,18 @@ export async function fetchProfiles(): Promise<Tables<"profiles">[]> {
   return data;
 }
 
-export async function fetchAccounts(profileId: string): Promise<Tables<"accounts">[]> {
-  const { data, error } = await getSupabaseClient()
+export async function fetchAccounts(profileId?: string): Promise<Tables<"accounts">[]> {
+  let query = getSupabaseClient()
     .from("accounts")
     .select("*")
-    .eq("profile_id", profileId)
     .is("deleted_at", null)
     .order("name", { ascending: true });
 
+  if (profileId) {
+    query = query.eq("profile_id", profileId);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data;
 }
@@ -44,16 +48,19 @@ export async function fetchCategories(): Promise<Tables<"categories">[]> {
 }
 
 export async function fetchTransactions(
-  profileId: string,
+  profileId?: string,
   month?: number,
   year?: number
 ): Promise<Tables<"transactions">[]> {
   let query = getSupabaseClient()
     .from("transactions")
     .select("*")
-    .eq("profile_id", profileId)
     .is("deleted_at", null)
     .order("date", { ascending: false });
+
+  if (profileId) {
+    query = query.eq("profile_id", profileId);
+  }
 
   if (month !== undefined && year !== undefined) {
     const start = `${year}-${String(month).padStart(2, "0")}-01`;
@@ -67,30 +74,38 @@ export async function fetchTransactions(
 }
 
 export async function fetchBudgets(
-  profileId: string,
+  profileId: string | undefined,
   month: number,
   year: number
 ): Promise<Tables<"budgets">[]> {
-  const { data, error } = await getSupabaseClient()
+  let query = getSupabaseClient()
     .from("budgets")
     .select("*")
-    .eq("profile_id", profileId)
     .eq("month", month)
     .eq("year", year)
     .is("deleted_at", null);
 
+  if (profileId) {
+    query = query.eq("profile_id", profileId);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data;
 }
 
-export async function fetchDebts(profileId: string): Promise<Tables<"debts">[]> {
-  const { data, error } = await getSupabaseClient()
+export async function fetchDebts(profileId?: string): Promise<Tables<"debts">[]> {
+  let query = getSupabaseClient()
     .from("debts")
     .select("*")
-    .eq("profile_id", profileId)
     .is("deleted_at", null)
     .order("priority", { ascending: true });
 
+  if (profileId) {
+    query = query.eq("profile_id", profileId);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data;
 }
@@ -109,25 +124,32 @@ export async function fetchDebtPayments(
   return data;
 }
 
-export async function fetchGoals(profileId: string): Promise<Tables<"goals">[]> {
-  const { data, error } = await getSupabaseClient()
+export async function fetchGoals(profileId?: string): Promise<Tables<"goals">[]> {
+  let query = getSupabaseClient()
     .from("goals")
     .select("*")
-    .eq("profile_id", profileId)
     .is("deleted_at", null)
     .order("priority", { ascending: true });
 
+  if (profileId) {
+    query = query.eq("profile_id", profileId);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data;
 }
 
-export async function fetchAlerts(profileId: string, limit?: number): Promise<Tables<"alerts">[]> {
+export async function fetchAlerts(profileId?: string, limit?: number): Promise<Tables<"alerts">[]> {
   let query = getSupabaseClient()
     .from("alerts")
     .select("*")
-    .eq("profile_id", profileId)
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
+
+  if (profileId) {
+    query = query.eq("profile_id", profileId);
+  }
 
   if (limit !== undefined) {
     query = query.limit(limit);
@@ -344,15 +366,19 @@ export async function fetchGoalContributions(
   return data;
 }
 
-export async function fetchSnapshots(profileId: string): Promise<Tables<"monthly_snapshots">[]> {
-  const { data, error } = await getSupabaseClient()
+export async function fetchSnapshots(profileId?: string): Promise<Tables<"monthly_snapshots">[]> {
+  let query = getSupabaseClient()
     .from("monthly_snapshots")
     .select("*")
-    .eq("profile_id", profileId)
     .is("deleted_at", null)
     .order("year", { ascending: false })
     .order("month", { ascending: false });
 
+  if (profileId) {
+    query = query.eq("profile_id", profileId);
+  }
+
+  const { data, error } = await query;
   if (error) throw error;
   return data;
 }

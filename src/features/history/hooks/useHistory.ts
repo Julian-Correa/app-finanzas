@@ -22,8 +22,8 @@ export function useHistory() {
 
   const query = useQuery({
     queryKey: ["history", profileId],
-    queryFn: () => getHistorySnapshots(profileId!),
-    enabled: !!profileId,
+    queryFn: () => getHistorySnapshots(profileId),
+    enabled: true,
     staleTime: 30_000,
   });
 
@@ -44,6 +44,7 @@ export function useHistory() {
     generateOutcome: generateMutation.data,
     isGenerating: generateMutation.isPending,
     generateError: generateMutation.error,
+    profileId,
   };
 }
 

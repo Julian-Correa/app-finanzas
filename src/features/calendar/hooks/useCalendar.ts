@@ -28,9 +28,9 @@ export function useCalendar(month: number, year: number) {
     queryKey: ["calendar", profileId, month, year],
     queryFn: async () => {
       const [transactions, debts, goals, categories] = await Promise.all([
-        fetchTransactions(profileId!, month, year),
-        fetchDebts(profileId!),
-        fetchGoals(profileId!),
+        fetchTransactions(profileId, month, year),
+        fetchDebts(profileId),
+        fetchGoals(profileId),
         fetchCategories(),
       ]);
 
@@ -79,7 +79,7 @@ export function useCalendar(month: number, year: number) {
 
       return { events, transactions, categoryMap: catMap };
     },
-    enabled: !!profileId,
+    enabled: true,
   });
 
   return query;

@@ -14,8 +14,8 @@ export function useSimulator() {
 
   const query = useQuery({
     queryKey: ["simulator", profileId],
-    queryFn: () => getSimulatorBaseline(profileId!),
-    enabled: !!profileId,
+    queryFn: () => getSimulatorBaseline(profileId),
+    enabled: true,
   });
 
   return { ...query, profileId };

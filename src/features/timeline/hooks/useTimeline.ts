@@ -20,9 +20,9 @@ export function useTimeline(month: number, year: number) {
     queryKey: ["timeline", profileId, month, year],
     queryFn: async () => {
       const [transactions, budgets, debts, categories] = await Promise.all([
-        fetchTransactions(profileId!, month, year),
-        fetchBudgets(profileId!, month, year),
-        fetchDebts(profileId!),
+        fetchTransactions(profileId, month, year),
+        fetchBudgets(profileId, month, year),
+        fetchDebts(profileId),
         fetchCategories(),
       ]);
 
@@ -40,7 +40,7 @@ export function useTimeline(month: number, year: number) {
         debts,
       };
     },
-    enabled: !!profileId,
+    enabled: true,
   });
 
   return query;

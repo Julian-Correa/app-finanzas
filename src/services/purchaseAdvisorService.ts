@@ -2,7 +2,7 @@ import { getDashboardData } from "@/services/dashboardService";
 import { evaluatePurchase } from "@/engine";
 import type { PurchaseEvaluation } from "@/engine/types";
 
-export async function getPurchaseBaseline(profileId: string) {
+export async function getPurchaseBaseline(profileId: string | undefined) {
   const now = new Date();
   const month = now.getMonth() + 1;
   const year = now.getFullYear();

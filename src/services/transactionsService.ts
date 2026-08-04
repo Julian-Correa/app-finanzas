@@ -9,7 +9,7 @@ import {
 import type { Tables } from "@/types/database";
 
 export async function getTransactions(
-  profileId: string,
+  profileId: string | undefined,
   month?: number,
   year?: number
 ) {

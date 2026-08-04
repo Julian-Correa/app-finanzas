@@ -23,8 +23,8 @@ export function useTransactions(month?: number, year?: number) {
 
   const query = useQuery({
     queryKey: ["transactions", profileId, m, y],
-    queryFn: () => getTransactions(profileId!, m, y),
-    enabled: !!profileId,
+    queryFn: () => getTransactions(profileId, m, y),
+    enabled: true,
   });
 
   return { ...query, month: m, year: y, profileId };

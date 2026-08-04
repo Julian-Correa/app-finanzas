@@ -17,7 +17,7 @@ export interface CategorySummary {
   percentage: number;
 }
 
-export async function getMonthlyReports(profileId: string, months: number = 6) {
+export async function getMonthlyReports(profileId: string | undefined, months: number = 6) {
   const now = new Date();
   const categories = await fetchCategories();
 

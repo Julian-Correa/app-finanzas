@@ -15,8 +15,8 @@ export function usePurchaseAdvisor() {
 
   const query = useQuery({
     queryKey: ["purchase-advisor", profileId],
-    queryFn: () => getPurchaseBaseline(profileId!),
-    enabled: !!profileId,
+    queryFn: () => getPurchaseBaseline(profileId),
+    enabled: true,
   });
 
   return { ...query, profileId };
