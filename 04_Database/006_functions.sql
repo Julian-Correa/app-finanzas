@@ -386,7 +386,12 @@ begin
   delete from debts where id is not null;
   delete from goals where id is not null;
   delete from alerts where id is not null;
+  
+  -- Desactivar el trigger de inmutabilidad temporalmente para limpiar los snapshots
+  alter table monthly_snapshots disable trigger trg_monthly_snapshots_immutable;
   delete from monthly_snapshots where id is not null;
+  alter table monthly_snapshots enable trigger trg_monthly_snapshots_immutable;
+
   delete from settings where id is not null;
 
   -- 3. Borrar tablas principales (Padres)
