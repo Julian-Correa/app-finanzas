@@ -22,12 +22,14 @@ Application feature-complete for v0.1.0. History page backed by persisted immuta
 - `src/engine/` — deterministic TypeScript engine (cashflow, liquidity, burn rate, savings rate, debt ratio, budget usage, goal ETA, financial score, predictions, purchase advisor)
 - Dashboard service, TanStack Query hook, live KPI dashboard
 
-### Polish — UI Animations & Performance
+### Polish — UI Animations, Performance & Skeletons
 - Framer Motion integration (PageTransition, MotionCard, StaggerContainer, ModalWrapper)
 - Route transitions, staggered lists, animated modals, hover lift, scroll-triggered reveals
 - Count-up animations on KPIs, shimmer skeletons
 - CSS dark/light mode transitions, custom Tailwind keyframes
 - Code-splitting: React.lazy() + Suspense for all 12 pages, vendor chunk splitting
+- Reusable shimmer loading skeletons (`Skeleton`, `SkeletonCard`, and new `SkeletonForm` for form modal loading/saving states)
+- Integrated `SkeletonForm` in all entity modals (Transactions, Budgets, Debts, Payments, Goals, Contributions) when submitting or loading data
 
 ### Phase 4-8 — Feature Pages
 - All 12 pages implemented: Dashboard, Transactions, Budgets, Debts, Goals, Reports, Simulator, Purchase Advisor, Timeline, Calendar, History, Settings
@@ -78,4 +80,3 @@ Application feature-complete for v0.1.0. History page backed by persisted immuta
 ## Future / Optional
 -   E2E tests (Playwright/Cypress)
 -   Keyboard shortcuts and accessibility audit
--   Extend shimmer skeletons to forms and modal loading states

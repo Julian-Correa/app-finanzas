@@ -36,3 +36,27 @@ export function SkeletonCard({ className, children }: SkeletonCardProps) {
     </div>
   );
 }
+
+interface SkeletonFormProps {
+  className?: string;
+  rows?: number;
+}
+
+export function SkeletonForm({ className, rows = 3 }: SkeletonFormProps) {
+  return (
+    <div className={cn("space-y-5 py-2", className)}>
+      <div className="space-y-4">
+        {Array.from({ length: rows }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <Skeleton className="h-3 w-1/4" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-3 pt-4">
+        <Skeleton className="h-10 flex-1" />
+        <Skeleton className="h-10 flex-1" />
+      </div>
+    </div>
+  );
+}

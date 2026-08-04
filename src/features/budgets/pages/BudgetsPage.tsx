@@ -4,7 +4,7 @@ import { useTranslation } from "@/lib/translations";
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
-import { SkeletonCard } from "@/components/common/Skeleton";
+import { SkeletonCard, SkeletonForm } from "@/components/common/Skeleton";
 import { StaggerContainer } from "@/components/common/StaggerContainer";
 import { PageTransition } from "@/components/common/PageTransition";
 import { ModalWrapper } from "@/components/common/ModalWrapper";
@@ -270,12 +270,17 @@ function BudgetFormModal({
     <>
       <div className="mb-6 flex items-center justify-between">
         <h3 className="text-lg font-semibold">{isEditing ? t("budgets.form.editTitle") : t("budgets.form.newTitle")}</h3>
-        <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
-          <X className="h-5 w-5" />
-        </button>
+        {!isPending && (
+          <button onClick={onClose} className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-zinc-300">
+            <X className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {isPending ? (
+        <SkeletonForm rows={2} />
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="mb-1.5 block text-xs font-medium text-slate-500 dark:text-zinc-400">{t("budgets.form.category")}</label>
             <select
@@ -321,7 +326,8 @@ function BudgetFormModal({
               {isPending ? t("budgets.form.saving") : isEditing ? t("budgets.form.saveChanges") : t("budgets.form.create")}
             </button>
           </div>
-      </form>
+        </form>
+      )}
     </>
   );
 }

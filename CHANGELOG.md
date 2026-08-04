@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added
+
+-   Reusable `SkeletonForm` component for rendering shimmer placeholders inside modals/forms during network mutations.
+-   Integrated `SkeletonForm` loader when creating or saving data (`isPending` state) across:
+    -   Transactions (new and edit transaction)
+    -   Budgets (new and edit budget limit)
+    -   Debts (new debt and register payment)
+    -   Goals (new goal and register contribution)
+
 ### Changed
 
 -   `historyService.getHistorySnapshots` now returns only persisted snapshots, dropping the live-compute fallback for the last 6 months.

@@ -631,6 +631,26 @@ Notes:
 
 ---
 
+## Session 018
+
+Date: 2026-08-04
+
+Completed:
+
+-   Created reusable `SkeletonForm` component in `src/components/common/Skeleton.tsx` to display shimmer loaders inside forms.
+-   Integrated `SkeletonForm` into all critical entity modals/forms during loading/saving (`isPending` states):
+    -   `TransactionsPage.tsx` -> `TransactionFormModal` (4 rows)
+    -   `BudgetsPage.tsx` -> `BudgetFormModal` (2 rows)
+    -   `DebtsPage.tsx` -> `DebtFormModal` (5 rows) and `PaymentFormModal` (3 rows)
+    -   `GoalsPage.tsx` -> `GoalFormModal` (4 rows) and `ContributionFormModal` (3 rows)
+-   Validated that all 119 tests pass and the production build completes cleanly.
+
+Pending:
+
+-   E2E tests, accessibility audit / keyboard shortcuts.
+
+---
+
 # Pending Decisions
 
 -   Final SQL implementation.
@@ -651,8 +671,7 @@ None.
 
 1.  E2E tests — add Playwright or Cypress for critical user flows.
 2.  Keyboard shortcuts and accessibility audit (WCAG AA compliance).
-3.  Extend shimmer skeletons to forms and modal loading states.
-4.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
+3.  Update `PROJECT_MEMORY.md`, `TODO.md`, `CHANGELOG.md` after each session.
 
 ------------------------------------------------------------------------
 
