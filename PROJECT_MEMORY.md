@@ -672,6 +672,28 @@ Pending:
 
 ---
 
+## Session 020
+
+Date: 2026-08-04
+
+Completed:
+
+-   Added a "Eliminar" (Delete goal) button to each expanded goal card in `GoalsPage.tsx`, guarded by a `window.confirm` dialog and wired to the existing `mutations.remove` from `useGoals`; errors are logged without crashing the UI.
+-   Added the `goals.delete` / `goals.deleteConfirm` i18n keys (es/en) to `src/lib/translations.ts`.
+-   Removed the demo `goals` and `alerts` seed inserts from `reset_database()` in `04_Database/006_functions.sql`. The reset now restores only profiles, accounts and settings, leaving the Goals section empty for a clean start.
+-   Note: `reset_database()` changed in the repository only; the updated SQL must be executed manually in the Supabase SQL Editor to take effect (commit `cf10cb8`).
+-   Verified `npm run typecheck`, `npm run build` and `npm run test -- --run` (119/119 pass). Committed and pushed (`cf10cb8`).
+
+Pending:
+
+-   E2E tests, accessibility audit / keyboard shortcuts.
+
+Notes:
+
+-   Delete-order requirement reminder: `reset_database` must delete children (debt_payments, goal_contributions, recurring_transactions) before intermediates (transactions, budgets, debts, goals, alerts, monthly_snapshots with the immutable trigger disabled, settings) and parents (accounts, profiles) last, due to FK constraints. Supabase `safeupdate` also requires a `WHERE` clause on every DELETE (use `where id is not null`).
+
+---
+
 # Pending Decisions
 
 -   Final SQL implementation.

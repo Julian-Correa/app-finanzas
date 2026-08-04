@@ -83,6 +83,7 @@ Application feature-complete for v0.1.0. History page backed by persisted immuta
 -   Renamed profile 'Pareja' to 'Sol' in settings, dropdown selectors, translations, and database seed.
 -   Removed account negative balance check constraint and defaulted allow_overdraft to true to support negative balances.
 -   Added 'Restablecer cuenta' database reset function and UI button in Settings Danger Zone.
+-   Reset now also clears the Goals section (no demo goals/alerts re-seeded) and each goal card can be deleted individually via the "Eliminar" button with confirmation.
 
 ## Future / Optional
 -   E2E tests (Playwright/Cypress)
