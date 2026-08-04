@@ -28,6 +28,7 @@ grant execute on function calculate_financial_score(uuid, integer, integer) to a
 grant execute on function create_month_snapshot(uuid, integer, integer) to anon, authenticated;
 grant execute on function generate_dashboard(uuid, integer, integer) to anon, authenticated;
 grant execute on function generate_monthly_report(uuid, integer, integer) to anon, authenticated;
+grant execute on function reset_database() to anon, authenticated;
 
 create policy profiles_no_auth_select on profiles for select using (true);
 create policy profiles_no_auth_insert on profiles for insert with check (true);

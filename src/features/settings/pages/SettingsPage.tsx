@@ -10,7 +10,9 @@ import {
   Download,
   Info,
   CheckCircle2,
+  Trash2,
 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
@@ -18,7 +20,7 @@ import { SkeletonCard } from "@/components/common/Skeleton";
 import { PageTransition } from "@/components/common/PageTransition";
 import { useProfile } from "@/app/providers/ProfileProvider";
 import { useSettings } from "@/features/settings/hooks/useSettings";
-import { fetchTransactions, fetchBudgets, fetchDebts, fetchGoals } from "@/supabase/queries";
+import { fetchTransactions, fetchBudgets, fetchDebts, fetchGoals, resetDatabase } from "@/supabase/queries";
 import { downloadCsv, printAsPdf, type CsvColumn } from "@/services/exportService";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/lib/translations";
@@ -38,6 +40,7 @@ const profileOptions: Array<{ value: string }> = [
 
 export function SettingsPage() {
   const { t, language } = useTranslation();
+  const queryClient = useQueryClient();
   const { settings, isLoading, error, updateField, handleSave, isSaving, isDirty, savedMsg } = useSettings();
   const { currentProfile } = useProfile();
   const profileId = currentProfile === "ambos" ? "ambos" : currentProfile === "julian" ? "11111111-1111-4111-8111-111111111111" : "22222222-2222-4222-8222-222222222222";
@@ -311,6 +314,43 @@ export function SettingsPage() {
                   <span className="text-slate-500 dark:text-zinc-400">Idioma / Language</span>
                   <span className="font-medium text-slate-700 dark:text-zinc-300">{language === "es" ? "Español (Argentina)" : "English"}</span>
                 </div>
+              </div>
+            </div>
+          </MotionCard>
+
+          <MotionCard hover="none">
+            <div className="rounded-card border border-red-200/50 bg-red-50/50 p-5 backdrop-blur-xl dark:border-red-500/10 dark:bg-red-950/30">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-600 dark:text-red-400">
+                  <Trash2 className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-red-700 dark:text-red-400">{t("settings.resetDatabase")}</p>
+                  <p className="text-xs text-red-500/80 dark:text-red-400/80">{t("settings.resetDatabaseDesc")}</p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    if (window.confirm(t("settings.resetDatabaseConfirm"))) {
+                      try {
+                        await resetDatabase();
+                        alert(t("settings.resetDatabaseSuccess"));
+                        queryClient.clear();
+                        window.location.reload();
+                      } catch (err) {
+                        console.error(err);
+                        alert("Error: " + ((err as any)?.message || String(err)));
+                      }
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-red-700 disabled:opacity-50"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {t("settings.resetDatabase")}
+                </button>
               </div>
             </div>
           </MotionCard>

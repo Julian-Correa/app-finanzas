@@ -479,6 +479,7 @@ export async function upsertSetting(
       .eq("id", existing.id)
       .select()
       .single();
+
     if (error) throw error;
     return data;
   }
@@ -491,6 +492,11 @@ export async function upsertSetting(
 
   if (error) throw error;
   return data;
+}
+
+export async function resetDatabase(): Promise<void> {
+  const { error } = await (getSupabaseClient() as any).rpc("reset_database");
+  if (error) throw error;
 }
 
 export async function fetchTransactionsByDateRange(

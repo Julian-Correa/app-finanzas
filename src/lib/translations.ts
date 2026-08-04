@@ -390,6 +390,10 @@ export type TranslationKey =
   | "settings.exportDataDesc"
   | "settings.exportCsv"
   | "settings.exportPdf"
+  | "settings.resetDatabase"
+  | "settings.resetDatabaseDesc"
+  | "settings.resetDatabaseConfirm"
+  | "settings.resetDatabaseSuccess"
   | "settings.sectionAbout"
   | "settings.sectionAboutDesc"
   | "settings.version"
@@ -815,6 +819,10 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "settings.exportDataDesc": "Descargá tus transacciones y reportes",
     "settings.exportCsv": "Exportar CSV",
     "settings.exportPdf": "Exportar PDF",
+    "settings.resetDatabase": "Restablecer cuenta",
+    "settings.resetDatabaseDesc": "Esto eliminará todos los datos cargados y restablecerá la base de datos a su estado inicial.",
+    "settings.resetDatabaseConfirm": "¿Estás seguro de que deseas restablecer la cuenta? Esta acción no se puede deshacer.",
+    "settings.resetDatabaseSuccess": "Base de datos restablecida con éxito.",
     "settings.sectionAbout": "Acerca de",
     "settings.sectionAboutDesc": "Información de la aplicación",
     "settings.version": "Versión",
@@ -1239,6 +1247,10 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "settings.exportDataDesc": "Download your transactions and reports",
     "settings.exportCsv": "Export CSV",
     "settings.exportPdf": "Export PDF",
+    "settings.resetDatabase": "Reset account",
+    "settings.resetDatabaseDesc": "This will delete all entered data and restore the database to its initial seeded state.",
+    "settings.resetDatabaseConfirm": "Are you sure you want to reset the account? This action cannot be undone.",
+    "settings.resetDatabaseSuccess": "Database reset successfully.",
     "settings.sectionAbout": "About",
     "settings.sectionAboutDesc": "Application information",
     "settings.version": "Version",
