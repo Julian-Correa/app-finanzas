@@ -651,6 +651,27 @@ Pending:
 
 ---
 
+## Session 019
+
+Date: 2026-08-04
+
+Completed:
+
+-   Resolved the "Ambos" profile selection bugs by enabling queries and passing `"ambos"` instead of `undefined` in React Query keys.
+-   Consolidated dashboard metrics, charts, and history snapshots mathematically when `"ambos"` profile is active.
+-   Added profile select dropdown in modal forms (Transactions, Budgets, Debts, Goals) dynamically when `"ambos"` view is active.
+-   Implemented dependent filtering of accounts and categories by the selected profile UUID to prevent cross-profile assignment errors.
+-   Enforced positive transaction amounts in `TransactionsPage.tsx` to satisfy the database check constraint `transactions_amount_positive`.
+-   Renamed the "Pareja" profile to "Sol" in settings, dropdown lists, translation files, and database seed.
+-   Removed the account negative balance check constraint and changed the default value of `allow_overdraft` to `true` to allow negative balances.
+-   Added a "Restablecer cuenta" (Reset account) database function RPC and UI button in the Settings page Danger Zone card to clear all tables and re-populate with seed data.
+
+Pending:
+
+-   E2E tests, accessibility audit / keyboard shortcuts.
+
+---
+
 # Pending Decisions
 
 -   Final SQL implementation.

@@ -4,6 +4,11 @@
 
 ### Added
 
+-   Consolidated "Ambos" profile view across all dashboard components, transaction lists, budgets, history snapshots, and calendar/timeline components.
+-   Profile selection dropdown inside creation forms (Transactions, Budgets, Debts, Goals) dynamically displayed when the "Ambos" view is active.
+-   Dependent dropdown filtering of accounts and categories based on the selected profile to avoid cross-profile assignment errors.
+-   "Restablecer cuenta" (Reset account) button in the Settings page Danger Zone with a PostgreSQL RPC `reset_database` to wipe all tables and reload starter seed data.
+-   Console logging of database/API errors on form submissions for easier debugging.
 -   Reusable `SkeletonForm` component for rendering shimmer placeholders inside modals/forms during network mutations.
 -   Integrated `SkeletonForm` loader when creating or saving data (`isPending` state) across:
     -   Transactions (new and edit transaction)
@@ -13,6 +18,9 @@
 
 ### Changed
 
+-   Renamed the "Pareja" profile to "Sol" across settings, switcher dropdowns, translations (ES/EN), and database seed.
+-   Removed negative balance constraint on accounts and changed default value of `allow_overdraft` to `true` to allow negative account balances.
+-   Enforced positive transaction amounts in the frontend to align with the database check constraint `transactions_amount_positive`.
 -   `historyService.getHistorySnapshots` now returns only persisted snapshots, dropping the live-compute fallback for the last 6 months.
 -   `saveSnapshot` now resolves immutability by returning a typed `SaveSnapshotOutcome` (`{ status: "created" | "already_exists" }`) instead of upserting. Existing snapshots are no longer overwritten.
 -   `historyService.computeSnapshot` no longer fabricates a synthetic `id`/`createdAt`; it returns `Omit<SnapshotData, "id" | "createdAt">` so callers cannot mistake a computed payload for a persisted row.

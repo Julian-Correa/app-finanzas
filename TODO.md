@@ -77,6 +77,13 @@ Application feature-complete for v0.1.0. History page backed by persisted immuta
 -   Updated `index.html` with PWA/Apple metas and favicons; added `public/_redirects` SPA fallback for Netlify.
 -   Vendor chunk `vendor-pwa`.
 
+### Consolidated Ambos view, Sol Profile, Negative Balances, & Reset Functionality
+-   Consolidated 'Ambos' view supported across all pages, including combined dashboard metrics, consolidated charts, and combined history snapshots.
+-   Dependent filtering in creation forms: accounts and budget categories are filtered dynamically by selected profile when in the 'Ambos' view to prevent configuration errors.
+-   Renamed profile 'Pareja' to 'Sol' in settings, dropdown selectors, translations, and database seed.
+-   Removed account negative balance check constraint and defaulted allow_overdraft to true to support negative balances.
+-   Added 'Restablecer cuenta' database reset function and UI button in Settings Danger Zone.
+
 ## Future / Optional
 -   E2E tests (Playwright/Cypress)
 -   Keyboard shortcuts and accessibility audit
