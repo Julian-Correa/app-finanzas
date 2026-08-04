@@ -25,6 +25,8 @@ export function TransactionsPage() {
   const [typeFilter, setTypeFilter] = useState<"all" | "income" | "expense">("all");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [showExport, setShowExport] = useState(false);
+  const exportRef = useRef<HTMLDivElement>(null);
 
   if (isLoading) {
     return (
@@ -61,9 +63,6 @@ export function TransactionsPage() {
     }
     return true;
   });
-
-  const [showExport, setShowExport] = useState(false);
-  const exportRef = useRef<HTMLDivElement>(null);
 
   const catMap = new Map(categories.map((c) => [c.id, c]));
 
