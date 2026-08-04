@@ -206,6 +206,20 @@ export function GoalsPage() {
                       >
                         {t("goals.edit")}
                       </button>
+                      <button
+                        onClick={async () => {
+                          if (window.confirm(t("goals.deleteConfirm"))) {
+                            try {
+                              await mutations.remove.mutateAsync(g.id);
+                            } catch (err) {
+                              console.error("Error deleting goal:", err);
+                            }
+                          }
+                        }}
+                        className="rounded-lg border border-red-200/70 px-3 py-1.5 text-xs font-medium text-red-500 transition-colors hover:bg-red-50 dark:border-red-500/10 dark:text-red-400 dark:hover:bg-red-950/20"
+                      >
+                        {t("goals.delete")}
+                      </button>
                     </div>
 
                     {g.contributions.length > 0 && (

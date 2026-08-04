@@ -412,18 +412,6 @@ begin
     ('40000000-0000-4000-8000-000000000101', '22222222-2222-4222-8222-222222222222', 'Cash', 'cash', 'ARS', 0, 0, 'banknote', '#d946ef', true),
     ('40000000-0000-4000-8000-000000000102', '22222222-2222-4222-8222-222222222222', 'Bank', 'bank', 'ARS', 0, 0, 'building-2', '#7c3aed', true);
 
-  insert into goals(id, profile_id, name, target_amount, current_amount, monthly_target, priority, deadline, status, icon, color)
-  values
-    ('50000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'Recover Edesur', 250000, 0, 50000, 'critical', null, 'active', 'zap', '#ef4444'),
-    ('50000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'Emergency Fund', 1500000, 0, 150000, 'high', null, 'active', 'shield', '#22c55e'),
-    ('50000000-0000-4000-8000-000000000003', '11111111-1111-4111-8111-111111111111', 'Baby', 1000000, 0, 100000, 'high', null, 'active', 'baby', '#ec4899'),
-    ('50000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'Pay Off Credit Card', 500000, 0, 100000, 'high', null, 'active', 'credit-card', '#f97316'),
-    ('50000000-0000-4000-8000-000000000005', '11111111-1111-4111-8111-111111111111', 'Pay Off Notebook', 350000, 0, 70000, 'medium', null, 'active', 'laptop', '#6366f1');
-
-  insert into alerts(id, profile_id, type, title, description, severity)
-  values
-    ('60000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'system', 'FinOS listo', 'Carga tus saldos iniciales para activar los indicadores.', 'info');
-
   insert into settings(id, theme, language, currency, default_profile, animations, notifications)
   values
     ('70000000-0000-4000-8000-000000000001', 'system', 'es-AR', 'ARS', '11111111-1111-4111-8111-111111111111', true, true);

@@ -178,6 +178,8 @@ export type TranslationKey =
   | "goals.deadline"
   | "goals.contribute"
   | "goals.edit"
+  | "goals.delete"
+  | "goals.deleteConfirm"
   | "goals.registeredContributions"
   | "goals.form.editTitle"
   | "goals.form.newTitle"
@@ -607,6 +609,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "goals.deadline": "Fecha límite:",
     "goals.contribute": "Aportar",
     "goals.edit": "Editar",
+    "goals.delete": "Eliminar",
+    "goals.deleteConfirm": "¿Estás seguro de que deseas eliminar esta meta?",
     "goals.registeredContributions": "Aportes registrados",
     "goals.form.editTitle": "Editar meta",
     "goals.form.newTitle": "Nueva meta",
@@ -1035,6 +1039,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "goals.deadline": "Deadline:",
     "goals.contribute": "Contribute",
     "goals.edit": "Edit",
+    "goals.delete": "Delete",
+    "goals.deleteConfirm": "Are you sure you want to delete this goal?",
     "goals.registeredContributions": "Registered contributions",
     "goals.form.editTitle": "Edit goal",
     "goals.form.newTitle": "New goal",
