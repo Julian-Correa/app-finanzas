@@ -375,18 +375,18 @@ language plpgsql
 security definer
 as $$
 begin
-  delete from transactions;
-  delete from recurring_transactions;
-  delete from budgets;
-  delete from debts;
-  delete from debt_payments;
-  delete from goals;
-  delete from goal_contributions;
-  delete from alerts;
-  delete from monthly_snapshots;
-  delete from settings;
-  delete from accounts;
-  delete from profiles;
+  delete from transactions where id is not null;
+  delete from recurring_transactions where id is not null;
+  delete from budgets where id is not null;
+  delete from debts where id is not null;
+  delete from debt_payments where id is not null;
+  delete from goals where id is not null;
+  delete from goal_contributions where id is not null;
+  delete from alerts where id is not null;
+  delete from monthly_snapshots where id is not null;
+  delete from settings where id is not null;
+  delete from accounts where id is not null;
+  delete from profiles where id is not null;
 
   insert into profiles(id, name, avatar, color, is_active)
   values
