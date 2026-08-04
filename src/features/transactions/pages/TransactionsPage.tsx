@@ -357,7 +357,7 @@ function TransactionFormModal({
       profile_id: finalProfileId,
       account_id: accountId,
       category_id: categoryId,
-      amount: type === "expense" ? -Math.abs(Number(amount)) : Math.abs(Number(amount)),
+      amount: Math.abs(Number(amount)),
       transaction_type: type,
       description,
       date,
