@@ -198,7 +198,8 @@ export function BudgetsPage() {
       >
         <BudgetFormModal
           initial={editingInitial}
-          categories={categories.filter((c) => !budgets.some((b) => b.category_id === c.id) || (editingInitial && c.id === editingInitial.category_id))}
+          categories={categories}
+          budgets={budgets}
           profileId={profileId}
           month={month}
           year={year}
@@ -218,6 +219,7 @@ export function BudgetsPage() {
 interface BudgetFormModalProps {
   initial: { category_id: string; limit_amount: number; month: number; year: number; profile_id: string } | null;
   categories: Tables<"categories">[];
+  budgets: Tables<"budgets">[];
   profileId: string | undefined;
   month: number;
   year: number;
@@ -229,6 +231,7 @@ interface BudgetFormModalProps {
 function BudgetFormModal({
   initial,
   categories,
+  budgets,
   profileId,
   month,
   year,
@@ -243,10 +246,18 @@ function BudgetFormModal({
   const [categoryId, setCategoryId] = useState(initial?.category_id ?? "");
   const [limitAmount, setLimitAmount] = useState(initial ? String(initial.limit_amount) : "");
 
+  const finalProfileId = profileId && profileId !== "ambos" ? profileId : selectedProfileId;
+
+  const availableCategories = categories.filter((c) => {
+    // Only expense categories can have budgets
+    if (c.type !== "expense") return false;
+    const alreadyBudgeted = budgets.some((b) => b.profile_id === finalProfileId && b.category_id === c.id);
+    const isEditingCurrent = initial && c.id === initial.category_id;
+    return !alreadyBudgeted || isEditingCurrent;
+  });
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const finalProfileId = profileId || selectedProfileId;
 
     const base = {
       profile_id: finalProfileId,
@@ -308,7 +319,7 @@ function BudgetFormModal({
               className="w-full rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
             >
               <option value="">{t("budgets.form.select")}</option>
-              {categories.map((c) => (
+              {availableCategories.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>

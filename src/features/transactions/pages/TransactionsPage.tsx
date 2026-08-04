@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ReceiptText, Plus, ArrowUpRight, ArrowDownRight, X, Search, Download } from "lucide-react";
 import { useTranslation } from "@/lib/translations";
 
@@ -339,12 +339,32 @@ function TransactionFormModal({
 
   const [selectedProfileId, setSelectedProfileId] = useState(initial?.profile_id ?? "11111111-1111-4111-8111-111111111111");
   const [type, setType] = useState<"income" | "expense">(initial?.transaction_type ?? "expense");
-  const [accountId, setAccountId] = useState(initial?.account_id ?? accounts[0]?.id ?? "");
+  const [accountId, setAccountId] = useState(() => {
+    if (initial?.account_id) return initial.account_id;
+    const initialProfileId = profileId && profileId !== "ambos" ? profileId : (initial?.profile_id ?? "11111111-1111-4111-8111-111111111111");
+    const initialFiltered = accounts.filter((a) => a.profile_id === initialProfileId);
+    return initialFiltered[0]?.id ?? "";
+  });
   const [categoryId, setCategoryId] = useState(initial?.category_id ?? "");
   const [amount, setAmount] = useState(initial ? String(Math.abs(initial.amount)) : "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [date, setDate] = useState(initial?.date ?? new Date().toISOString().split("T")[0]);
   const [notes, setNotes] = useState(initial?.notes ?? "");
+
+  const finalProfileId = profileId && profileId !== "ambos" ? profileId : selectedProfileId;
+  const filteredAccounts = accounts.filter((a) => a.profile_id === finalProfileId);
+
+  useEffect(() => {
+    const activeProfileId = profileId && profileId !== "ambos" ? profileId : selectedProfileId;
+    const profileAccounts = accounts.filter((a) => a.profile_id === activeProfileId);
+    if (profileAccounts.length > 0) {
+      if (!profileAccounts.some((a) => a.id === accountId)) {
+        setAccountId(profileAccounts[0].id);
+      }
+    } else {
+      setAccountId("");
+    }
+  }, [profileId, selectedProfileId, accounts, accountId]);
 
   const catOptions = type === "income" ? incomeCats : expenseCats;
 
@@ -452,7 +472,7 @@ function TransactionFormModal({
                 required
                 className="w-full rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
               >
-                {accounts.map((a) => (
+                {filteredAccounts.map((a) => (
                   <option key={a.id} value={a.id}>{a.name}</option>
                 ))}
               </select>
