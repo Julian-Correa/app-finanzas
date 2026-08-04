@@ -16,7 +16,7 @@ interface ProfileContextValue {
 const profileStorageKey = "finos.profile";
 const profileOptions: ProfileOption[] = [
   { id: "julian", label: "Julian" },
-  { id: "pareja", label: "Pareja" },
+  { id: "pareja", label: "Sol" },
   { id: "ambos", label: "Ambos" },
 ];
 

@@ -357,7 +357,7 @@ function DebtFormModal({ initial, profileId, mutations, editId, onClose }: DebtF
                 className="w-full rounded-xl border border-slate-200/70 bg-white/75 px-3 py-2.5 text-sm backdrop-blur-xl focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:border-white/10 dark:bg-white/[0.04]"
               >
                 <option value="11111111-1111-4111-8111-111111111111">Julian</option>
-                <option value="22222222-2222-4222-8222-222222222222">Pareja</option>
+                <option value="22222222-2222-4222-8222-222222222222">Sol</option>
               </select>
             </div>
           )}

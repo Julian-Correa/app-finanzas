@@ -2,7 +2,7 @@
 insert into profiles(id, name, avatar, color, is_active)
 values
   ('11111111-1111-4111-8111-111111111111', 'Julian', null, '#2563eb', true),
-  ('22222222-2222-4222-8222-222222222222', 'Pareja', null, '#d946ef', true)
+  ('22222222-2222-4222-8222-222222222222', 'Sol', null, '#d946ef', true)
 on conflict (id) do nothing;
 
 insert into categories(id, parent_id, name, type, icon, color, display_order, is_default)
