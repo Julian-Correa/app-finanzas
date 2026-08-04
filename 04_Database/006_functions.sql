@@ -424,9 +424,9 @@ begin
   values
     ('60000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'system', 'FinOS listo', 'Carga tus saldos iniciales para activar los indicadores.', 'info');
 
-  insert into settings(id, profile_id, language, currency, default_profile, animations_enabled, notifications_enabled)
+  insert into settings(id, theme, language, currency, default_profile, animations, notifications)
   values
-    ('70000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'es-AR', 'ARS', '11111111-1111-4111-8111-111111111111', true, true);
+    ('70000000-0000-4000-8000-000000000001', 'system', 'es-AR', 'ARS', '11111111-1111-4111-8111-111111111111', true, true);
 end;
 $$;
 
