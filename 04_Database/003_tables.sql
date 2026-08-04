@@ -25,7 +25,7 @@ create table if not exists accounts (
   icon text,
   color text,
   is_archived boolean not null default false,
-  allow_overdraft boolean not null default false,
+  allow_overdraft boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   deleted_at timestamptz,

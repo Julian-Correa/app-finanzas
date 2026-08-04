@@ -24,12 +24,12 @@ on conflict (id) do nothing;
 
 insert into accounts(id, profile_id, name, type, currency, initial_balance, current_balance, icon, color, allow_overdraft)
 values
-  ('40000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'Cash', 'cash', 'ARS', 0, 0, 'banknote', '#22c55e', false),
-  ('40000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'Bank', 'bank', 'ARS', 0, 0, 'building-2', '#2563eb', false),
-  ('40000000-0000-4000-8000-000000000003', '11111111-1111-4111-8111-111111111111', 'Mercado Pago', 'mercado_pago', 'ARS', 0, 0, 'wallet-cards', '#38bdf8', false),
+  ('40000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'Cash', 'cash', 'ARS', 0, 0, 'banknote', '#22c55e', true),
+  ('40000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'Bank', 'bank', 'ARS', 0, 0, 'building-2', '#2563eb', true),
+  ('40000000-0000-4000-8000-000000000003', '11111111-1111-4111-8111-111111111111', 'Mercado Pago', 'mercado_pago', 'ARS', 0, 0, 'wallet-cards', '#38bdf8', true),
   ('40000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'Credit Card', 'credit_card', 'ARS', 0, 0, 'credit-card', '#f97316', true),
-  ('40000000-0000-4000-8000-000000000101', '22222222-2222-4222-8222-222222222222', 'Cash', 'cash', 'ARS', 0, 0, 'banknote', '#d946ef', false),
-  ('40000000-0000-4000-8000-000000000102', '22222222-2222-4222-8222-222222222222', 'Bank', 'bank', 'ARS', 0, 0, 'building-2', '#7c3aed', false)
+  ('40000000-0000-4000-8000-000000000101', '22222222-2222-4222-8222-222222222222', 'Cash', 'cash', 'ARS', 0, 0, 'banknote', '#d946ef', true),
+  ('40000000-0000-4000-8000-000000000102', '22222222-2222-4222-8222-222222222222', 'Bank', 'bank', 'ARS', 0, 0, 'building-2', '#7c3aed', true)
 on conflict (id) do nothing;
 
 insert into goals(id, profile_id, name, target_amount, current_amount, monthly_target, priority, deadline, status, icon, color)

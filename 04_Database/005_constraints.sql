@@ -2,7 +2,7 @@
 alter table profiles add constraint profiles_name_not_blank check (btrim(name) <> '');
 alter table accounts add constraint accounts_name_not_blank check (btrim(name) <> '');
 alter table accounts add constraint accounts_currency_ars check (currency = 'ARS');
-alter table accounts add constraint accounts_balance_non_negative_unless_overdraft check (allow_overdraft or current_balance >= 0);
+-- alter table accounts add constraint accounts_balance_non_negative_unless_overdraft check (allow_overdraft or current_balance >= 0);
 alter table categories add constraint categories_name_not_blank check (btrim(name) <> '');
 alter table categories add constraint categories_not_self_parent check (parent_id is null or parent_id <> id);
 alter table transactions add constraint transactions_amount_positive check (amount > 0);
