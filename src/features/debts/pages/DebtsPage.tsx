@@ -299,10 +299,10 @@ function DebtFormModal({ initial, profileId, mutations, editId, onClose }: DebtF
   const [priority, setPriority] = useState(initial?.priority ?? "other");
   const [dueDay, setDueDay] = useState(initial?.due_day ? String(initial.due_day) : "");
 
+  const finalProfileId = profileId && profileId !== "ambos" ? profileId : selectedProfileId;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const finalProfileId = profileId || selectedProfileId;
 
     const base = {
       profile_id: finalProfileId,

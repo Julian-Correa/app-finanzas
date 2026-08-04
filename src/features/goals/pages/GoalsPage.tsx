@@ -295,10 +295,10 @@ function GoalFormModal({ initial, profileId, mutations, editId, onClose }: GoalF
   const [priority, setPriority] = useState(initial?.priority ?? "medium");
   const [deadline, setDeadline] = useState(initial?.deadline ?? "");
 
+  const finalProfileId = profileId && profileId !== "ambos" ? profileId : selectedProfileId;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const finalProfileId = profileId || selectedProfileId;
 
     const base = {
       profile_id: finalProfileId,

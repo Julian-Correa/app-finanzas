@@ -371,8 +371,6 @@ function TransactionFormModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const finalProfileId = profileId || selectedProfileId;
-
     const base = {
       profile_id: finalProfileId,
       account_id: accountId,
