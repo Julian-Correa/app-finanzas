@@ -274,7 +274,8 @@ function BudgetFormModal({
         await mutations.create.mutateAsync(base as BudgetInput);
       }
       onClose();
-    } catch {
+    } catch (err) {
+      console.error("Error creating/updating budget:", err);
     }
   };
 

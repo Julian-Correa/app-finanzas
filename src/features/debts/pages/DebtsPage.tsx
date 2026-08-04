@@ -326,7 +326,8 @@ function DebtFormModal({ initial, profileId, mutations, editId, onClose }: DebtF
         await mutations.create.mutateAsync(base as DebtInput);
       }
       onClose();
-    } catch {
+    } catch (err) {
+      console.error("Error creating/updating debt:", err);
     }
   };
 
@@ -525,7 +526,8 @@ function PaymentFormModal({ debtId, profileId, mutations, onClose }: PaymentForm
         debtId,
       });
       onClose();
-    } catch {
+    } catch (err) {
+      console.error("Error registering payment:", err);
     }
   };
 

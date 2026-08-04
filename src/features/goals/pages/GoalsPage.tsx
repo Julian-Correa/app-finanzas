@@ -320,7 +320,8 @@ function GoalFormModal({ initial, profileId, mutations, editId, onClose }: GoalF
         await mutations.create.mutateAsync(base as GoalInput);
       }
       onClose();
-    } catch {
+    } catch (err) {
+      console.error("Error creating/updating goal:", err);
     }
   };
 
@@ -465,7 +466,8 @@ function ContributionFormModal({ goalId, mutations, onClose }: ContributionFormM
         notes: notes || null,
       } as GoalContributionInput);
       onClose();
-    } catch {
+    } catch (err) {
+      console.error("Error registering contribution:", err);
     }
   };
 

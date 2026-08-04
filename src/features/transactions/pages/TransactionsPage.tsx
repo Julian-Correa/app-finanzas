@@ -391,7 +391,8 @@ function TransactionFormModal({
         await mutations.create.mutateAsync(base as TransactionInput);
       }
       onClose();
-    } catch {
+    } catch (err) {
+      console.error("Error creating/updating transaction:", err);
     }
   };
 
