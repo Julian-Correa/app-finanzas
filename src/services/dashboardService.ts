@@ -57,8 +57,8 @@ export async function getDashboardData(
 
   const [overviewJulian, overviewPareja, budgets, goals, alerts] =
     await Promise.all([
-      profileId ? fetchDashboardOverview(profileId, month, year) : fetchDashboardOverview(julianId, month, year),
-      profileId ? Promise.resolve(null) : fetchDashboardOverview(parejaId, month, year),
+      profileId && profileId !== "ambos" ? fetchDashboardOverview(profileId, month, year) : fetchDashboardOverview(julianId, month, year),
+      profileId && profileId !== "ambos" ? Promise.resolve(null) : fetchDashboardOverview(parejaId, month, year),
       fetchBudgets(profileId, month, year),
       fetchGoals(profileId),
       fetchAlerts(profileId, 3),

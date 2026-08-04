@@ -27,7 +27,7 @@ export async function fetchAccounts(profileId?: string): Promise<Tables<"account
     .is("deleted_at", null)
     .order("name", { ascending: true });
 
-  if (profileId) {
+  if (profileId && profileId !== "ambos") {
     query = query.eq("profile_id", profileId);
   }
 
@@ -58,7 +58,7 @@ export async function fetchTransactions(
     .is("deleted_at", null)
     .order("date", { ascending: false });
 
-  if (profileId) {
+  if (profileId && profileId !== "ambos") {
     query = query.eq("profile_id", profileId);
   }
 
@@ -85,7 +85,7 @@ export async function fetchBudgets(
     .eq("year", year)
     .is("deleted_at", null);
 
-  if (profileId) {
+  if (profileId && profileId !== "ambos") {
     query = query.eq("profile_id", profileId);
   }
 
@@ -101,7 +101,7 @@ export async function fetchDebts(profileId?: string): Promise<Tables<"debts">[]>
     .is("deleted_at", null)
     .order("priority", { ascending: true });
 
-  if (profileId) {
+  if (profileId && profileId !== "ambos") {
     query = query.eq("profile_id", profileId);
   }
 
@@ -131,7 +131,7 @@ export async function fetchGoals(profileId?: string): Promise<Tables<"goals">[]>
     .is("deleted_at", null)
     .order("priority", { ascending: true });
 
-  if (profileId) {
+  if (profileId && profileId !== "ambos") {
     query = query.eq("profile_id", profileId);
   }
 
@@ -147,7 +147,7 @@ export async function fetchAlerts(profileId?: string, limit?: number): Promise<T
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
-  if (profileId) {
+  if (profileId && profileId !== "ambos") {
     query = query.eq("profile_id", profileId);
   }
 
@@ -374,7 +374,7 @@ export async function fetchSnapshots(profileId?: string): Promise<Tables<"monthl
     .order("year", { ascending: false })
     .order("month", { ascending: false });
 
-  if (profileId) {
+  if (profileId && profileId !== "ambos") {
     query = query.eq("profile_id", profileId);
   }
 

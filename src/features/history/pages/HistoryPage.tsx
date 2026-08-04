@@ -245,7 +245,7 @@ export function HistoryPage() {
                   {t("history.comparing")}
                 </button>
 
-                {profileId && (
+                {profileId && profileId !== "ambos" && (
                   <button
                     type="button"
                     onClick={() => {
@@ -409,7 +409,7 @@ export function HistoryPage() {
                     {getMonthName(s.month, language)} {s.year}
                   </button>
                 ))}
-                {profileId && (
+                {profileId && profileId !== "ambos" && (
                   <button
                     type="button"
                     onClick={() => {

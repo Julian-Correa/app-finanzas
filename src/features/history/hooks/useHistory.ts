@@ -10,7 +10,7 @@ import {
 } from "@/services/historyService";
 
 function getProfileId(currentProfile: string): string | undefined {
-  if (currentProfile === "ambos") return undefined;
+  if (currentProfile === "ambos") return "ambos";
   if (currentProfile === "julian") return "11111111-1111-4111-8111-111111111111";
   return "22222222-2222-4222-8222-222222222222";
 }
