@@ -393,6 +393,16 @@ function TransactionFormModal({
       onClose();
     } catch (err) {
       console.error("Error creating/updating transaction:", err);
+      const errMsg = (err as any)?.message || "";
+      if (errMsg.includes("accounts_balance_non_negative_unless_overdraft")) {
+        alert(language === "es" 
+          ? "El saldo de la cuenta no puede quedar en negativo. Registrá un ingreso primero en esta cuenta o seleccioná otra cuenta." 
+          : "The account balance cannot become negative. Please register an income first or choose another account.");
+      } else {
+        alert(language === "es" 
+          ? "Error al guardar la transacción. Verificá los datos." 
+          : "Error saving transaction. Please check your data.");
+      }
     }
   };
 
