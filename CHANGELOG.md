@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Added (Mobile & PWA)
+
+-   Native View Transitions API integration via React Router v7 (`viewTransition` prop on all navigation links) for lightweight and native-feeling page transitions, replacing the previous Framer Motion page wrapper.
+-   Dynamic `<meta name="theme-color">` tag synchronization in `ThemeProvider` to seamlessly blend the mobile status bar with the active app theme.
+-   URL search param (`?new=true`) listener in `TransactionsPage` to automatically open the transaction form modal.
+-   Global Floating Action Button (FAB) in `AppLayout` now routes to `/transactions?new=true` with a View Transition to quickly add transactions from anywhere on mobile.
+-   Enforced WCAG 2.5.5 AAA touch target sizes (`min-h-[44px] min-w-[44px]`) on the `BottomNavigation` links for better mobile accessibility.
+-   Corrected the HTML document language attribute (`lang="es-AR"`) to match the PWA manifest and prevent unwanted translation prompts.
+
 ### Added
 
 -   Consolidated "Ambos" profile view across all dashboard components, transaction lists, budgets, history snapshots, and calendar/timeline components.
