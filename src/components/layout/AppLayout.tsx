@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { Suspense } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { Header } from "@/components/layout/Header";
@@ -22,6 +22,7 @@ function PageLoader() {
 
 export function AppLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-surface-light text-slate-950 antialiased dark:bg-surface-dark dark:text-white">
@@ -47,6 +48,7 @@ export function AppLayout() {
 
       <button
         type="button"
+        onClick={() => navigate('/transactions?new=true')}
         className="fixed bottom-24 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-soft transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:hidden"
         aria-label="Add transaction"
       >

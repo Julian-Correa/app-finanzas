@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ReceiptText, Plus, ArrowUpRight, ArrowDownRight, X, Search, Download } from "lucide-react";
 import { useTranslation } from "@/lib/translations";
+import { useSearchParams } from "react-router-dom";
 
 import { PageShell } from "@/components/common/PageShell";
 import { MotionCard } from "@/components/common/MotionCard";
@@ -21,12 +22,27 @@ export function TransactionsPage() {
   const { data, isLoading, error, month, year, profileId } = useTransactions();
   const mutations = useTransactionMutations(profileId ?? "", month, year);
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | "income" | "expense">("all");
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(() => searchParams.get("new") === "true");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showExport, setShowExport] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (searchParams.get("new") === "true") {
+      setShowForm(true);
+    }
+  }, [searchParams]);
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    if (searchParams.get("new") === "true") {
+      setSearchParams(new URLSearchParams());
+    }
+  };
 
   if (isLoading) {
     return (
@@ -279,10 +295,7 @@ export function TransactionsPage() {
 
       <ModalWrapper
         open={showForm || !!formInitial}
-        onClose={() => {
-          setShowForm(false);
-          setEditingId(null);
-        }}
+        onClose={handleCloseForm}
       >
         <TransactionFormModal
           initial={formInitial}
@@ -291,10 +304,7 @@ export function TransactionsPage() {
           profileId={profileId}
           mutations={mutations}
           editId={editingId}
-          onClose={() => {
-            setShowForm(false);
-            setEditingId(null);
-          }}
+          onClose={handleCloseForm}
         />
       </ModalWrapper>
     </PageShell>

@@ -24,7 +24,7 @@ export function BottomNavigation() {
               to={item.path}
               className={({ isActive }) =>
                 cn(
-                  "flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+                  "flex min-h-[44px] min-w-[44px] flex-col items-center justify-center gap-1 rounded-2xl px-1 py-1.5 text-[11px] font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
                   isActive
                     ? "bg-primary text-white"
                     : "text-slate-500 hover:bg-slate-100 hover:text-slate-950 dark:text-zinc-400 dark:hover:bg-white/10 dark:hover:text-white",
