@@ -51,14 +51,15 @@ export async function fetchTransactions(
   profileId?: string,
   month?: number,
   year?: number
-): Promise<Tables<"transactions">[]> {
-  let query = getSupabaseClient()
-    .from("transactions")
-    .select("*")
-    .is("deleted_at", null)
-    .order("date", { ascending: false });
+  ): Promise<Tables<"transactions">[]> {
+    let query = getSupabaseClient()
+      .from("transactions")
+      .select("*")
+      .is("deleted_at", null)
+      .order("date", { ascending: false })
+      .order("created_at", { ascending: false });
 
-  if (profileId && profileId !== "ambos") {
+    if (profileId && profileId !== "ambos") {
     query = query.eq("profile_id", profileId);
   }
 
@@ -508,11 +509,12 @@ export async function fetchTransactionsByDateRange(
     .from("transactions")
     .select("*")
     .eq("profile_id", profileId)
-    .is("deleted_at", null)
-    .gte("date", startDate)
-    .lte("date", endDate)
-    .order("date", { ascending: false });
+      .is("deleted_at", null)
+      .gte("date", startDate)
+      .lte("date", endDate)
+      .order("date", { ascending: false })
+      .order("created_at", { ascending: false });
 
-  if (error) throw error;
+    if (error) throw error;
   return data;
 }
