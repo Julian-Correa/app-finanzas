@@ -395,6 +395,7 @@ begin
   delete from settings where id is not null;
 
   -- 3. Borrar tablas principales (Padres)
+  delete from categories where id is not null;
   delete from accounts where id is not null;
   delete from profiles where id is not null;
 
@@ -403,14 +404,30 @@ begin
     ('11111111-1111-4111-8111-111111111111', 'Julian', null, '#2563eb', true),
     ('22222222-2222-4222-8222-222222222222', 'Sol', null, '#d946ef', true);
 
+  insert into categories(id, parent_id, name, type, icon, color, display_order, is_default)
+  values
+    ('30000000-0000-4000-8000-000000000001', null, 'Ingresos', 'income', 'wallet', '#16a34a', 1, true),
+    ('30000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000001', 'Salario', 'income', 'briefcase', '#22c55e', 2, true),
+    ('30000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000001', 'Freelance', 'income', 'laptop', '#84cc16', 3, true),
+    ('30000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000001', 'Bono', 'income', 'sparkles', '#10b981', 4, true),
+    ('30000000-0000-4000-8000-000000000010', null, 'Gastos', 'expense', 'receipt', '#ef4444', 10, true),
+    ('30000000-0000-4000-8000-000000000011', '30000000-0000-4000-8000-000000000010', 'Servicios', 'expense', 'zap', '#f97316', 11, true),
+    ('30000000-0000-4000-8000-000000000012', '30000000-0000-4000-8000-000000000010', 'Comida', 'expense', 'utensils', '#eab308', 12, true),
+    ('30000000-0000-4000-8000-000000000013', '30000000-0000-4000-8000-000000000010', 'Transporte', 'expense', 'bus', '#06b6d4', 13, true),
+    ('30000000-0000-4000-8000-000000000014', '30000000-0000-4000-8000-000000000010', 'Educación', 'expense', 'book-open', '#8b5cf6', 14, true),
+    ('30000000-0000-4000-8000-000000000015', '30000000-0000-4000-8000-000000000010', 'Salud', 'expense', 'heart-pulse', '#ec4899', 15, true),
+    ('30000000-0000-4000-8000-000000000016', '30000000-0000-4000-8000-000000000010', 'Entretenimiento', 'expense', 'ticket', '#6366f1', 16, true),
+    ('30000000-0000-4000-8000-000000000017', '30000000-0000-4000-8000-000000000010', 'Deuda', 'expense', 'credit-card', '#dc2626', 17, true),
+    ('30000000-0000-4000-8000-000000000018', '30000000-0000-4000-8000-000000000010', 'Ahorro', 'expense', 'piggy-bank', '#14b8a6', 18, true);
+
   insert into accounts(id, profile_id, name, type, currency, initial_balance, current_balance, icon, color, allow_overdraft)
   values
-    ('40000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'Cash', 'cash', 'ARS', 0, 0, 'banknote', '#22c55e', true),
-    ('40000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'Bank', 'bank', 'ARS', 0, 0, 'building-2', '#2563eb', true),
+    ('40000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'Efectivo', 'cash', 'ARS', 0, 0, 'banknote', '#22c55e', true),
+    ('40000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'Banco', 'bank', 'ARS', 0, 0, 'building-2', '#2563eb', true),
     ('40000000-0000-4000-8000-000000000003', '11111111-1111-4111-8111-111111111111', 'Mercado Pago', 'mercado_pago', 'ARS', 0, 0, 'wallet-cards', '#38bdf8', true),
-    ('40000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'Credit Card', 'credit_card', 'ARS', 0, 0, 'credit-card', '#f97316', true),
-    ('40000000-0000-4000-8000-000000000101', '22222222-2222-4222-8222-222222222222', 'Cash', 'cash', 'ARS', 0, 0, 'banknote', '#d946ef', true),
-    ('40000000-0000-4000-8000-000000000102', '22222222-2222-4222-8222-222222222222', 'Bank', 'bank', 'ARS', 0, 0, 'building-2', '#7c3aed', true);
+    ('40000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'Tarjeta de Crédito', 'credit_card', 'ARS', 0, 0, 'credit-card', '#f97316', true),
+    ('40000000-0000-4000-8000-000000000101', '22222222-2222-4222-8222-222222222222', 'Efectivo', 'cash', 'ARS', 0, 0, 'banknote', '#d946ef', true),
+    ('40000000-0000-4000-8000-000000000102', '22222222-2222-4222-8222-222222222222', 'Banco', 'bank', 'ARS', 0, 0, 'building-2', '#7c3aed', true);
 
   insert into settings(id, theme, language, currency, default_profile, animations, notifications)
   values
