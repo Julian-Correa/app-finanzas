@@ -427,11 +427,11 @@ created_at
 
 ------------------------------------------------------------------------
 
-## settings
+## settings (Deprecated)
 
 Purpose
 
-User preferences.
+User preferences. **Note:** As of the latest update, application settings are stored strictly locally per-device via `localStorage`. This table is currently unused and kept only for backward compatibility or future server-side preferences.
 
 Fields
 

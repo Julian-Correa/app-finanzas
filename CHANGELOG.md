@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Changed
+
+-   Application settings (Theme, Language, Default Profile, Animations, Notifications) are now **strictly local per device** (`localStorage`). They no longer sync to or fetch from the Supabase `settings` table. This allows users to have different UI preferences (e.g., dark mode on mobile, light mode on desktop, or different default profiles) across different devices without overriding each other.
+
 ### Added (Mobile & PWA)
 
 -   Native View Transitions API integration via React Router v7 (`viewTransition` prop on all navigation links) for lightweight and native-feeling page transitions, replacing the previous Framer Motion page wrapper.
