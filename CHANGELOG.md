@@ -93,6 +93,8 @@
 
 ### Fixed
 
+-   **Database Seed & Reset:** Fully translated the initial seed data (`010_seed.sql`) categories, accounts, and goals to Spanish. Updated the `reset_database` PostgreSQL function to also drop and recreate categories in Spanish, ensuring the "Reset Database" button correctly localizes dropdowns across the application.
+-   **Transaction Sorting:** Added a secondary sort level in `fetchTransactions` queries. Transactions are now strictly ordered chronologically by `date DESC` and then by `created_at DESC`, guaranteeing that multiple transactions added on the exact same day always render the most recently added one at the very top.
 -   Dashboard loading now uses the aggregated Supabase RPC `generate_dashboard` instead of composing multiple raw data fetches on the client.
 -   Dashboard debt ratio source was corrected as part of the RPC-backed load path.
 -   Timezone-dependent date parsing in engine: replaced `new Date(t.date).getMonth()` with manual string split to avoid UTC-to-local timezone shift that caused incorrect month matching in GMT-3 (Argentina). Affected `calculateCashflow`, `calculateDebtRatio`, and `calculateMonthlyPrediction`.
