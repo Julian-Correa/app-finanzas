@@ -5,7 +5,8 @@ import {
   CreditCard,
   Gauge,
   History,
-  LayoutDashboard,
+  LayoutGrid,
+  MoreHorizontal,
   PiggyBank,
   ReceiptText,
   Settings,
@@ -46,5 +47,5 @@ export const mobileNavigation: NavigationItem[] = [
   { labels: { es: "Movs", en: "Txns" }, path: "/transactions", icon: ReceiptText },
   { labels: { es: "Metas", en: "Goals" }, path: "/goals", icon: Target },
   { labels: { es: "Reportes", en: "Reports" }, path: "/reports", icon: BarChart3 },
-  { labels: { es: "Más", en: "More" }, path: "/settings", icon: BadgeDollarSign },
+  { labels: { es: "Menú", en: "Menu" }, path: "#menu", icon: LayoutGrid },
 ];
