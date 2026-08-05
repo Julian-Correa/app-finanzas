@@ -7,38 +7,38 @@ on conflict (id) do nothing;
 
 insert into categories(id, parent_id, name, type, icon, color, display_order, is_default)
 values
-  ('30000000-0000-4000-8000-000000000001', null, 'Income', 'income', 'wallet', '#16a34a', 1, true),
-  ('30000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000001', 'Salary', 'income', 'briefcase', '#22c55e', 2, true),
+  ('30000000-0000-4000-8000-000000000001', null, 'Ingresos', 'income', 'wallet', '#16a34a', 1, true),
+  ('30000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000001', 'Salario', 'income', 'briefcase', '#22c55e', 2, true),
   ('30000000-0000-4000-8000-000000000003', '30000000-0000-4000-8000-000000000001', 'Freelance', 'income', 'laptop', '#84cc16', 3, true),
-  ('30000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000001', 'Bonus', 'income', 'sparkles', '#10b981', 4, true),
-  ('30000000-0000-4000-8000-000000000010', null, 'Expenses', 'expense', 'receipt', '#ef4444', 10, true),
-  ('30000000-0000-4000-8000-000000000011', '30000000-0000-4000-8000-000000000010', 'Utilities', 'expense', 'zap', '#f97316', 11, true),
-  ('30000000-0000-4000-8000-000000000012', '30000000-0000-4000-8000-000000000010', 'Food', 'expense', 'utensils', '#eab308', 12, true),
-  ('30000000-0000-4000-8000-000000000013', '30000000-0000-4000-8000-000000000010', 'Transportation', 'expense', 'bus', '#06b6d4', 13, true),
-  ('30000000-0000-4000-8000-000000000014', '30000000-0000-4000-8000-000000000010', 'Education', 'expense', 'book-open', '#8b5cf6', 14, true),
-  ('30000000-0000-4000-8000-000000000015', '30000000-0000-4000-8000-000000000010', 'Health', 'expense', 'heart-pulse', '#ec4899', 15, true),
-  ('30000000-0000-4000-8000-000000000016', '30000000-0000-4000-8000-000000000010', 'Entertainment', 'expense', 'ticket', '#6366f1', 16, true),
-  ('30000000-0000-4000-8000-000000000017', '30000000-0000-4000-8000-000000000010', 'Debt', 'expense', 'credit-card', '#dc2626', 17, true),
-  ('30000000-0000-4000-8000-000000000018', '30000000-0000-4000-8000-000000000010', 'Savings', 'expense', 'piggy-bank', '#14b8a6', 18, true)
+  ('30000000-0000-4000-8000-000000000004', '30000000-0000-4000-8000-000000000001', 'Bono', 'income', 'sparkles', '#10b981', 4, true),
+  ('30000000-0000-4000-8000-000000000010', null, 'Gastos', 'expense', 'receipt', '#ef4444', 10, true),
+  ('30000000-0000-4000-8000-000000000011', '30000000-0000-4000-8000-000000000010', 'Servicios', 'expense', 'zap', '#f97316', 11, true),
+  ('30000000-0000-4000-8000-000000000012', '30000000-0000-4000-8000-000000000010', 'Comida', 'expense', 'utensils', '#eab308', 12, true),
+  ('30000000-0000-4000-8000-000000000013', '30000000-0000-4000-8000-000000000010', 'Transporte', 'expense', 'bus', '#06b6d4', 13, true),
+  ('30000000-0000-4000-8000-000000000014', '30000000-0000-4000-8000-000000000010', 'Educación', 'expense', 'book-open', '#8b5cf6', 14, true),
+  ('30000000-0000-4000-8000-000000000015', '30000000-0000-4000-8000-000000000010', 'Salud', 'expense', 'heart-pulse', '#ec4899', 15, true),
+  ('30000000-0000-4000-8000-000000000016', '30000000-0000-4000-8000-000000000010', 'Entretenimiento', 'expense', 'ticket', '#6366f1', 16, true),
+  ('30000000-0000-4000-8000-000000000017', '30000000-0000-4000-8000-000000000010', 'Deuda', 'expense', 'credit-card', '#dc2626', 17, true),
+  ('30000000-0000-4000-8000-000000000018', '30000000-0000-4000-8000-000000000010', 'Ahorro', 'expense', 'piggy-bank', '#14b8a6', 18, true)
 on conflict (id) do nothing;
 
 insert into accounts(id, profile_id, name, type, currency, initial_balance, current_balance, icon, color, allow_overdraft)
 values
-  ('40000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'Cash', 'cash', 'ARS', 0, 0, 'banknote', '#22c55e', true),
-  ('40000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'Bank', 'bank', 'ARS', 0, 0, 'building-2', '#2563eb', true),
+  ('40000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'Efectivo', 'cash', 'ARS', 0, 0, 'banknote', '#22c55e', true),
+  ('40000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'Banco', 'bank', 'ARS', 0, 0, 'building-2', '#2563eb', true),
   ('40000000-0000-4000-8000-000000000003', '11111111-1111-4111-8111-111111111111', 'Mercado Pago', 'mercado_pago', 'ARS', 0, 0, 'wallet-cards', '#38bdf8', true),
-  ('40000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'Credit Card', 'credit_card', 'ARS', 0, 0, 'credit-card', '#f97316', true),
-  ('40000000-0000-4000-8000-000000000101', '22222222-2222-4222-8222-222222222222', 'Cash', 'cash', 'ARS', 0, 0, 'banknote', '#d946ef', true),
-  ('40000000-0000-4000-8000-000000000102', '22222222-2222-4222-8222-222222222222', 'Bank', 'bank', 'ARS', 0, 0, 'building-2', '#7c3aed', true)
+  ('40000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'Tarjeta de Crédito', 'credit_card', 'ARS', 0, 0, 'credit-card', '#f97316', true),
+  ('40000000-0000-4000-8000-000000000101', '22222222-2222-4222-8222-222222222222', 'Efectivo', 'cash', 'ARS', 0, 0, 'banknote', '#d946ef', true),
+  ('40000000-0000-4000-8000-000000000102', '22222222-2222-4222-8222-222222222222', 'Banco', 'bank', 'ARS', 0, 0, 'building-2', '#7c3aed', true)
 on conflict (id) do nothing;
 
 insert into goals(id, profile_id, name, target_amount, current_amount, monthly_target, priority, deadline, status, icon, color)
 values
-  ('50000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'Recover Edesur', 250000, 0, 50000, 'critical', null, 'active', 'zap', '#ef4444'),
-  ('50000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'Emergency Fund', 1500000, 0, 150000, 'high', null, 'active', 'shield', '#22c55e'),
-  ('50000000-0000-4000-8000-000000000003', '11111111-1111-4111-8111-111111111111', 'Baby', 1000000, 0, 100000, 'high', null, 'active', 'baby', '#ec4899'),
-  ('50000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'Pay Off Credit Card', 500000, 0, 100000, 'high', null, 'active', 'credit-card', '#f97316'),
-  ('50000000-0000-4000-8000-000000000005', '11111111-1111-4111-8111-111111111111', 'Pay Off Notebook', 350000, 0, 70000, 'medium', null, 'active', 'laptop', '#6366f1')
+  ('50000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111', 'Recuperar Edesur', 250000, 0, 50000, 'critical', null, 'active', 'zap', '#ef4444'),
+  ('50000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111', 'Fondo de Emergencia', 1500000, 0, 150000, 'high', null, 'active', 'shield', '#22c55e'),
+  ('50000000-0000-4000-8000-000000000003', '11111111-1111-4111-8111-111111111111', 'Bebé', 1000000, 0, 100000, 'high', null, 'active', 'baby', '#ec4899'),
+  ('50000000-0000-4000-8000-000000000004', '11111111-1111-4111-8111-111111111111', 'Pagar Tarjeta de Crédito', 500000, 0, 100000, 'high', null, 'active', 'credit-card', '#f97316'),
+  ('50000000-0000-4000-8000-000000000005', '11111111-1111-4111-8111-111111111111', 'Pagar Notebook', 350000, 0, 70000, 'medium', null, 'active', 'laptop', '#6366f1')
 on conflict (id) do nothing;
 
 insert into budgets(profile_id, category_id, month, year, limit_amount, remaining_amount)
@@ -48,25 +48,25 @@ select
   extract(month from current_date)::integer,
   extract(year from current_date)::integer,
   case c.name
-    when 'Utilities' then 180000
-    when 'Food' then 300000
-    when 'Transportation' then 80000
-    when 'Education' then 100000
-    when 'Health' then 80000
-    when 'Entertainment' then 70000
-    when 'Debt' then 250000
-    when 'Savings' then 150000
+    when 'Servicios' then 180000
+    when 'Comida' then 300000
+    when 'Transporte' then 80000
+    when 'Educación' then 100000
+    when 'Salud' then 80000
+    when 'Entretenimiento' then 70000
+    when 'Deuda' then 250000
+    when 'Ahorro' then 150000
     else 100000
   end,
   case c.name
-    when 'Utilities' then 180000
-    when 'Food' then 300000
-    when 'Transportation' then 80000
-    when 'Education' then 100000
-    when 'Health' then 80000
-    when 'Entertainment' then 70000
-    when 'Debt' then 250000
-    when 'Savings' then 150000
+    when 'Servicios' then 180000
+    when 'Comida' then 300000
+    when 'Transporte' then 80000
+    when 'Educación' then 100000
+    when 'Salud' then 80000
+    when 'Entretenimiento' then 70000
+    when 'Deuda' then 250000
+    when 'Ahorro' then 150000
     else 100000
   end
 from categories c
