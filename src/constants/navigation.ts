@@ -5,6 +5,7 @@ import {
   CreditCard,
   Gauge,
   History,
+  LayoutDashboard,
   LayoutGrid,
   MoreHorizontal,
   PiggyBank,
