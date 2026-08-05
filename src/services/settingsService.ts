@@ -1,5 +1,3 @@
-import { fetchSettings, upsertSetting } from "@/supabase/queries";
-
 export interface AppSettings {
   theme: "light" | "dark" | "system";
   language: "es" | "en";
@@ -49,43 +47,12 @@ export function getProfileFromId(id: string | null): string | null {
 }
 
 export async function loadSettingsFromDb(): Promise<AppSettings> {
-  const local = getLocalSettings();
-
-  try {
-    const row = await fetchSettings();
-    if (row) {
-      const dbSettings: AppSettings = {
-        theme: (row.theme as AppSettings["theme"]) ?? local.theme,
-        language: (row.language && row.language.startsWith("es") ? "es" : "en") as AppSettings["language"],
-        currency: (row.currency as AppSettings["currency"]) ?? local.currency,
-        defaultProfile: getProfileFromId(row.default_profile) ?? "ambos",
-        animations: row.animations ?? local.animations,
-        notifications: row.notifications ?? local.notifications,
-      };
-      saveLocalSettings(dbSettings);
-      return dbSettings;
-    }
-  } catch (err) {
-    console.error("Error loading settings from DB:", err);
-  }
-
-  return local;
+  // Ahora las configuraciones son 100% locales por dispositivo.
+  // Ya no traemos datos de Supabase para evitar sobrescribir las preferencias entre dispositivos.
+  return getLocalSettings();
 }
 
 export async function persistSettings(settings: AppSettings): Promise<void> {
+  // Guardamos únicamente en el almacenamiento local del dispositivo.
   saveLocalSettings(settings);
-
-  try {
-    await upsertSetting({
-      theme: settings.theme,
-      language: settings.language,
-      currency: settings.currency,
-      default_profile: getDefaultProfileId(settings.defaultProfile),
-      animations: settings.animations,
-      notifications: settings.notifications,
-    });
-  } catch (err) {
-    console.error("Error persisting settings to DB:", err);
-    throw err;
-  }
 }
