@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 import { Suspense } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -9,14 +8,9 @@ import { Sidebar } from "@/components/layout/Sidebar";
 
 function PageLoader() {
   return (
-    <motion.div
-      className="flex h-[60vh] items-center justify-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
+    <div className="flex h-[60vh] items-center justify-center">
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/30 border-t-primary" />
-    </motion.div>
+    </div>
   );
 }
 
@@ -37,18 +31,16 @@ export function AppLayout() {
         <div className="flex min-w-0 flex-1 flex-col pb-24 lg:pb-0 lg:pl-[280px]">
           <Header />
           <main className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-5 sm:px-6 lg:px-8 lg:py-8">
-            <AnimatePresence mode="wait">
-              <Suspense fallback={<PageLoader />}>
-                <Outlet key={location.pathname} />
-              </Suspense>
-            </AnimatePresence>
+            <Suspense fallback={<PageLoader />}>
+              <Outlet key={location.pathname} />
+            </Suspense>
           </main>
         </div>
       </div>
 
       <button
         type="button"
-        onClick={() => navigate('/transactions?new=true')}
+        onClick={() => navigate('/transactions?new=true', { viewTransition: true })}
         className="fixed bottom-24 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-soft transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:hidden"
         aria-label="Add transaction"
       >

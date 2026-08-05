@@ -66,6 +66,7 @@ function NavigationLink({ item }: NavigationLinkProps) {
   return (
     <NavLink
       to={item.path}
+      viewTransition
       className={({ isActive }) =>
         cn(
           "flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-medium transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",

@@ -34,7 +34,7 @@ export function ModalWrapper({ open, onClose, children, className }: ModalWrappe
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center"
+          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center"
           variants={backdropVariants}
           initial="hidden"
           animate="visible"

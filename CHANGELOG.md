@@ -93,6 +93,7 @@
 
 ### Fixed
 
+-   **Mobile UI:** Resolved a z-index conflict where the `BottomNavigation` (z-50) would overlap and cover the action buttons inside modal dialogs (like the "Crear transacción" form). The `ModalWrapper` now uses `z-[60]` to properly overlay all navigation elements when open.
 -   **Database Seed & Reset:** Fully translated the initial seed data (`010_seed.sql`) categories, accounts, and goals to Spanish. Updated the `reset_database` PostgreSQL function to also drop and recreate categories in Spanish, ensuring the "Reset Database" button correctly localizes dropdowns across the application.
 -   **Transaction Sorting:** Added a secondary sort level in `fetchTransactions` queries. Transactions are now strictly ordered chronologically by `date DESC` and then by `created_at DESC`, guaranteeing that multiple transactions added on the exact same day always render the most recently added one at the very top.
 -   Dashboard loading now uses the aggregated Supabase RPC `generate_dashboard` instead of composing multiple raw data fetches on the client.
