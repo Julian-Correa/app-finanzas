@@ -41,6 +41,9 @@ export function useSettings() {
       setSavedMsg(true);
       setTimeout(() => setSavedMsg(false), 2500);
     },
+    onError: (err) => {
+      alert("Error al guardar ajustes: " + err.message);
+    }
   });
 
   const updateField = useCallback(<K extends keyof AppSettings>(key: K, value: AppSettings[K]) => {

@@ -42,6 +42,12 @@ export function getDefaultProfileId(profile: string | null): string | null {
   return null;
 }
 
+export function getProfileFromId(id: string | null): string | null {
+  if (id === "11111111-1111-4111-8111-111111111111") return "julian";
+  if (id === "22222222-2222-4222-8222-222222222222") return "pareja";
+  return null;
+}
+
 export async function loadSettingsFromDb(): Promise<AppSettings> {
   const local = getLocalSettings();
 
@@ -50,16 +56,17 @@ export async function loadSettingsFromDb(): Promise<AppSettings> {
     if (row) {
       const dbSettings: AppSettings = {
         theme: (row.theme as AppSettings["theme"]) ?? local.theme,
-        language: (row.language as AppSettings["language"]) ?? local.language,
+        language: (row.language && row.language.startsWith("es") ? "es" : "en") as AppSettings["language"],
         currency: (row.currency as AppSettings["currency"]) ?? local.currency,
-        defaultProfile: row.default_profile ?? local.defaultProfile,
+        defaultProfile: getProfileFromId(row.default_profile) ?? "ambos",
         animations: row.animations ?? local.animations,
         notifications: row.notifications ?? local.notifications,
       };
       saveLocalSettings(dbSettings);
       return dbSettings;
     }
-  } catch {
+  } catch (err) {
+    console.error("Error loading settings from DB:", err);
   }
 
   return local;
@@ -77,6 +84,8 @@ export async function persistSettings(settings: AppSettings): Promise<void> {
       animations: settings.animations,
       notifications: settings.notifications,
     });
-  } catch {
+  } catch (err) {
+    console.error("Error persisting settings to DB:", err);
+    throw err;
   }
 }
