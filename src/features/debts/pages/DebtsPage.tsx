@@ -211,7 +211,25 @@ export function DebtsPage() {
                         <div className="space-y-1.5">
                           {d.payments.map((p) => (
                             <div key={p.id} className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-xs dark:bg-white/[0.03]">
-                              <span>{new Date(p.date).toLocaleDateString(language === "en" ? "en-US" : "es-AR")}</span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={async () => {
+                                    if (window.confirm(language === "es" ? "¿Eliminar este pago?" : "Delete this payment?")) {
+                                      try {
+                                        await mutations.removePayment.mutateAsync(p.id);
+                                      } catch (err) {
+                                        console.error("Error deleting payment:", err);
+                                      }
+                                    }
+                                  }}
+                                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                  title="Delete payment"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                                <span>{new Date(p.date).toLocaleDateString(language === "en" ? "en-US" : "es-AR")}</span>
+                              </div>
                               <span className="font-medium text-emerald-600 dark:text-emerald-400">-{formatARS(Number(p.amount))}</span>
                             </div>
                           ))}
@@ -485,13 +503,34 @@ function DebtFormModal({ initial, profileId, mutations, editId, onClose }: DebtF
             </select>
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 rounded-xl border border-slate-200/70 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.04]">
-              {t("debts.form.cancel")}
-            </button>
-            <button type="submit" disabled={isPending} className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50">
-              {isPending ? t("debts.form.saving") : isEditing ? t("debts.form.saveChanges") : t("debts.form.create")}
-            </button>
+          <div className="space-y-2 pt-2">
+            <div className="flex gap-3">
+              <button type="button" onClick={onClose} className="flex-1 rounded-xl border border-slate-200/70 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.04]">
+                {t("debts.form.cancel")}
+              </button>
+              <button type="submit" disabled={isPending} className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50">
+                {isPending ? t("debts.form.saving") : isEditing ? t("debts.form.saveChanges") : t("debts.form.create")}
+              </button>
+            </div>
+            {isEditing && (
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={async () => {
+                  if (window.confirm(t("debts.deleteConfirm"))) {
+                    try {
+                      await mutations.remove.mutateAsync(editId);
+                      onClose();
+                    } catch (err) {
+                      console.error("Error deleting debt:", err);
+                    }
+                  }
+                }}
+                className="w-full rounded-xl border border-red-200/70 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 dark:border-red-500/10 dark:text-red-400 dark:hover:bg-red-950/20 disabled:opacity-50"
+              >
+                {t("debts.delete")}
+              </button>
+            )}
           </div>
         </form>
       )}

@@ -80,6 +80,8 @@ export type TranslationKey =
   | "transactions.form.saving"
   | "transactions.form.saveChanges"
   | "transactions.form.create"
+  | "transactions.delete"
+  | "transactions.deleteConfirm"
   // budgets
   | "budgets.eyebrow"
   | "budgets.title"
@@ -110,6 +112,8 @@ export type TranslationKey =
   | "budgets.form.saving"
   | "budgets.form.saveChanges"
   | "budgets.form.create"
+  | "budgets.delete"
+  | "budgets.deleteConfirm"
   // debts
   | "debts.eyebrow"
   | "debts.title"
@@ -150,6 +154,8 @@ export type TranslationKey =
   | "debts.form.saving"
   | "debts.form.saveChanges"
   | "debts.form.create"
+  | "debts.delete"
+  | "debts.deleteConfirm"
   | "debts.payForm.title"
   | "debts.payForm.amount"
   | "debts.payForm.date"
@@ -511,6 +517,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "transactions.form.saving": "Guardando...",
     "transactions.form.saveChanges": "Guardar cambios",
     "transactions.form.create": "Crear transacción",
+    "transactions.delete": "Eliminar",
+    "transactions.deleteConfirm": "¿Estás seguro de que deseas eliminar esta transacción?",
     // budgets
     "budgets.eyebrow": "Presupuestos",
     "budgets.title": "Presupuestos",
@@ -541,6 +549,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "budgets.form.saving": "Guardando...",
     "budgets.form.saveChanges": "Guardar cambios",
     "budgets.form.create": "Crear presupuesto",
+    "budgets.delete": "Eliminar",
+    "budgets.deleteConfirm": "¿Estás seguro de que deseas eliminar este presupuesto?",
     // debts
     "debts.eyebrow": "Deudas",
     "debts.title": "Seguimiento de deudas",
@@ -581,6 +591,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "debts.form.saving": "Guardando...",
     "debts.form.saveChanges": "Guardar cambios",
     "debts.form.create": "Crear deuda",
+    "debts.delete": "Eliminar",
+    "debts.deleteConfirm": "¿Estás seguro de que deseas eliminar esta deuda?",
     "debts.payForm.title": "Registrar pago",
     "debts.payForm.amount": "Monto ($)",
     "debts.payForm.date": "Fecha",
@@ -941,6 +953,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "transactions.form.saving": "Saving...",
     "transactions.form.saveChanges": "Save changes",
     "transactions.form.create": "Create transaction",
+    "transactions.delete": "Delete",
+    "transactions.deleteConfirm": "Are you sure you want to delete this transaction?",
     // budgets
     "budgets.eyebrow": "Budgets",
     "budgets.title": "Budgets",
@@ -971,6 +985,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "budgets.form.saving": "Saving...",
     "budgets.form.saveChanges": "Save changes",
     "budgets.form.create": "Create budget",
+    "budgets.delete": "Delete",
+    "budgets.deleteConfirm": "Are you sure you want to delete this budget?",
     // debts
     "debts.eyebrow": "Debts",
     "debts.title": "Debt Tracking",
@@ -1011,6 +1027,8 @@ export const translations: Record<AppLanguage, Record<TranslationKey, string>> =
     "debts.form.saving": "Saving...",
     "debts.form.saveChanges": "Save changes",
     "debts.form.create": "Create debt",
+    "debts.delete": "Delete",
+    "debts.deleteConfirm": "Are you sure you want to delete this debt?",
     "debts.payForm.title": "Register payment",
     "debts.payForm.amount": "Amount ($)",
     "debts.payForm.date": "Date",

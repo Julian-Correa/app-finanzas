@@ -340,21 +340,42 @@ function BudgetFormModal({
             />
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 rounded-xl border border-slate-200/70 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.04]"
-            >
-              {t("budgets.form.cancel")}
-            </button>
-            <button
-              type="submit"
-              disabled={isPending}
-              className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
-            >
-              {isPending ? t("budgets.form.saving") : isEditing ? t("budgets.form.saveChanges") : t("budgets.form.create")}
-            </button>
+          <div className="space-y-2 pt-2">
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 rounded-xl border border-slate-200/70 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-white/10 dark:text-zinc-300 dark:hover:bg-white/[0.04]"
+              >
+                {t("budgets.form.cancel")}
+              </button>
+              <button
+                type="submit"
+                disabled={isPending}
+                className="flex-1 rounded-xl bg-primary py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary/90 disabled:opacity-50"
+              >
+                {isPending ? t("budgets.form.saving") : isEditing ? t("budgets.form.saveChanges") : t("budgets.form.create")}
+              </button>
+            </div>
+            {isEditing && (
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={async () => {
+                  if (window.confirm(t("budgets.deleteConfirm"))) {
+                    try {
+                      await mutations.remove.mutateAsync(editId);
+                      onClose();
+                    } catch (err) {
+                      console.error("Error deleting budget:", err);
+                    }
+                  }
+                }}
+                className="w-full rounded-xl border border-red-200/70 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50 dark:border-red-500/10 dark:text-red-400 dark:hover:bg-red-950/20 disabled:opacity-50"
+              >
+                {t("budgets.delete")}
+              </button>
+            )}
           </div>
         </form>
       )}
