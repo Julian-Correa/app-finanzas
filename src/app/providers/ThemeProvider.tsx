@@ -30,6 +30,12 @@ function applyTheme(theme: ThemeMode) {
 
   document.documentElement.classList.toggle("dark", shouldUseDark);
   document.documentElement.setAttribute("data-theme", shouldUseDark ? "dark" : "light");
+
+  // Actualizar el color de la barra de estado móvil nativamente
+  let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+  if (metaThemeColor) {
+    metaThemeColor.setAttribute("content", shouldUseDark ? "#09090B" : "#F8FAFC");
+  }
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
